@@ -176,8 +176,9 @@ export function generateDefaultMetadata() {
       images: [`${SITE_URL}/og-default.jpg`],
     },
     icons: {
-      icon: '/favicon.ico',
-      apple: '/apple-touch-icon.png',
+      icon: '/icon.svg',
+      shortcut: '/icon.svg',
+      apple: '/icon.svg',
     },
     manifest: '/site.webmanifest',
   };
