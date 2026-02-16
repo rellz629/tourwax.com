@@ -6,6 +6,26 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 's1.ticketm.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'seatgeek.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.scdn.co',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.scdn.co',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

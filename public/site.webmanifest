@@ -1,0 +1,16 @@
+{
+  "name": "TourWax",
+  "short_name": "TourWax",
+  "description": "Discover upcoming concert tour dates, venues, and latest news for your favorite music artists.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
