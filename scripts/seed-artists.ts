@@ -1,6 +1,11 @@
+import { config } from 'dotenv';
+// Load .env.local BEFORE any other imports
+config({ path: '.env.local' });
+
 import { db } from '@/db';
 import { artists } from '@/db/schema';
 import { nanoid } from 'nanoid';
+import { slugify } from '@/lib/slugify';
 
 // Starter list of popular artists across genres
 const SEED_ARTISTS = [
@@ -33,6 +38,7 @@ async function main() {
     try {
       await db.insert(artists).values({
         id: nanoid(),
+        slug: slugify(artist.name),
         name: artist.name,
         genre: artist.genre,
         imageUrl: null,
