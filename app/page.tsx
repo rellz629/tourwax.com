@@ -7,6 +7,8 @@ import { generateOrganizationSchema, generateWebsiteSchema, generateBreadcrumbSc
 import { SITE_URL } from '@/lib/seo';
 import StructuredData from '@/components/StructuredData';
 
+// Use Static Site Generation with ISR
+export const dynamic = 'force-static';
 export const revalidate = 3600; // Revalidate every hour
 
 async function getFeaturedArtistsWithUpcomingEvents() {

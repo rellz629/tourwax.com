@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35"/>
+      <stop offset="100%" style="stop-color:#E63946"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="32" height="32" fill="#1a1a2e" rx="6"/>
+
+  <!-- Vinyl Record -->
+  <g transform="translate(16, 16)">
+    <!-- Outer ring -->
+    <circle cx="0" cy="0" r="12" fill="#2B2D42" stroke="#0a0a0a" stroke-width="0.5"/>
+    <!-- Grooves -->
+    <circle cx="0" cy="0" r="10" fill="none" stroke="#404258" stroke-width="0.3" opacity="0.7"/>
+    <circle cx="0" cy="0" r="8" fill="none" stroke="#404258" stroke-width="0.3" opacity="0.7"/>
+    <!-- Center label with gradient -->
+    <circle cx="0" cy="0" r="5" fill="url(#grad)"/>
+    <!-- Spindle hole -->
+    <circle cx="0" cy="0" r="1.5" fill="#0a0a0a"/>
+  </g>
+</svg>

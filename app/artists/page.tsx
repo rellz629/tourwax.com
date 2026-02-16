@@ -6,6 +6,8 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { SITE_NAME, generateCanonicalUrl } from '@/lib/seo';
 
+// Use Static Site Generation with ISR
+export const dynamic = 'force-static';
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
