@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
+  --background: #fafafa;
   --foreground: #171717;
+  --primary: #FF6B35;
+  --primary-dark: #E63946;
+  --accent: #2B2D42;
+  --accent-light: #8D99AE;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,5 +27,34 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #FF6B35 0%, #E63946 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, #FF6B35 0%, #E63946 100%);
+  }
+
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-6 py-3 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-md hover:shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-800 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-900 transition-all duration-300;
   }
 }
