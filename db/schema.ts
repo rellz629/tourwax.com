@@ -2,7 +2,9 @@ import { pgTable, text, timestamp, integer, varchar, boolean, jsonb, index } fro
 
 export const artists = pgTable('artists', {
   id: text('id').primaryKey(),
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
   name: varchar('name', { length: 255 }).notNull(),
+  bio: text('bio'),
   imageUrl: text('image_url'),
   genre: varchar('genre', { length: 100 }),
   spotifyId: text('spotify_id'),
@@ -15,6 +17,7 @@ export const artists = pgTable('artists', {
 }, (table) => ({
   nameIdx: index('artist_name_idx').on(table.name),
   genreIdx: index('artist_genre_idx').on(table.genre),
+  slugIdx: index('artist_slug_idx').on(table.slug),
 }));
 
 export const venues = pgTable('venues', {
@@ -77,6 +80,19 @@ export const newsArticles = pgTable('news_articles', {
   urlIdx: index('news_url_idx').on(table.url),
 }));
 
+export const tweets = pgTable('tweets', {
+  id: text('id').primaryKey(), // Twitter tweet ID
+  artistId: text('artist_id').notNull().references(() => artists.id, { onDelete: 'cascade' }),
+  tweetText: text('tweet_text').notNull(),
+  twitterHandle: varchar('twitter_handle', { length: 100 }).notNull(),
+  tweetUrl: text('tweet_url').notNull(),
+  publishedAt: timestamp('published_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+  artistIdx: index('tweets_artist_idx').on(table.artistId),
+  publishedIdx: index('tweets_published_idx').on(table.publishedAt),
+}));
+
 export type Artist = typeof artists.$inferSelect;
 export type NewArtist = typeof artists.$inferInsert;
 export type Venue = typeof venues.$inferSelect;
@@ -85,3 +101,5 @@ export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;
 export type NewsArticle = typeof newsArticles.$inferSelect;
 export type NewNewsArticle = typeof newsArticles.$inferInsert;
+export type Tweet = typeof tweets.$inferSelect;
+export type NewTweet = typeof tweets.$inferInsert;
