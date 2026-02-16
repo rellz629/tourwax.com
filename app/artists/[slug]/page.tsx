@@ -3,8 +3,8 @@ import { artists } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 
-export const revalidate = 1800;
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,9 +13,14 @@ interface Props {
 export default async function ArtistPageSimple({ params }: Props) {
   const { slug } = await params;
 
-  const artist = await db.query.artists.findFirst({
-    where: eq(artists.slug, slug),
-  });
+  // Use regular select instead of query builder
+  const result = await db
+    .select()
+    .from(artists)
+    .where(eq(artists.slug, slug))
+    .limit(1);
+
+  const artist = result[0];
 
   if (!artist) {
     notFound();
