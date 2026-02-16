@@ -6,6 +6,11 @@ import { notFound } from 'next/navigation';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+// Bypass layout to test if layout is causing the hang
+export const metadata = {
+  title: 'Test Artist Page',
+};
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
