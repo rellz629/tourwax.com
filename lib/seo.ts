@@ -1,7 +1,7 @@
 import type { Artist, Event, Venue } from '@/db/schema';
 
 export const SITE_NAME = 'TourWax';
-export const SITE_URL = 'https://tourwax.com';
+export const SITE_URL = 'https://www.tourwax.com';
 export const SITE_DESCRIPTION = 'Discover upcoming concert tour dates, venues, and latest news for your favorite music artists.';
 
 interface ArtistWithEvents {
