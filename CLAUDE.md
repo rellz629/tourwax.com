@@ -31,6 +31,7 @@ npm run fetch:bios          # Fetch artist biographies
 npm run import:spotify      # Import artists from Spotify
 npm run import:ticketmaster # Import artists with events from Ticketmaster
 npm run import:csv          # Import artists from CSV file
+npm run update:affiliate    # Update existing Ticketmaster events with affiliate tracking
 ```
 
 All data operation scripts use `dotenv -e .env.local -- tsx scripts/<script-name>.ts` pattern and require environment variables to be set in `.env.local`.
@@ -127,6 +128,24 @@ Use Next.js `<Image>` component with these domains.
 
 ### Error Handling in Data Fetching
 Use `Promise.allSettled()` when fetching from multiple APIs to ensure one failure doesn't block others. Check for `status === 'fulfilled'` before processing results.
+
+### Affiliate Tracking
+**Ticketmaster Affiliate Program** (`lib/affiliate.ts`):
+- Uses Impact Radius tracking via `ticketmaster.evyy.net`
+- Affiliate ID: `6993168`, Campaign ID: `264167`, Creative ID: `4272`
+- `getTicketmasterAffiliateUrl(url)` - Wraps Ticketmaster URLs with affiliate tracking
+- `getAffiliateUrl(url, source)` - Generic function that applies appropriate affiliate tracking based on event source
+
+**Automatic Integration**:
+- All Ticketmaster ticket URLs are automatically wrapped with affiliate tracking when displayed on artist pages
+- New events fetched via `scripts/fetch-tours.ts` automatically have affiliate tracking applied before storage
+- Use `npm run update:affiliate` to retroactively update existing Ticketmaster events with affiliate URLs
+
+**Adding New Affiliate Programs**:
+1. Add configuration to `AFFILIATE_CONFIG` in `lib/affiliate.ts`
+2. Create a source-specific function (e.g., `getSeatGeekAffiliateUrl`)
+3. Update the `getAffiliateUrl()` switch statement to handle the new source
+4. Update `scripts/fetch-tours.ts` to apply tracking when processing events from that source
 
 ## Environment Variables
 

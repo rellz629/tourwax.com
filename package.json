@@ -16,7 +16,8 @@
     "fetch:bios": "dotenv -e .env.local -- tsx scripts/fetch-bios.ts",
     "import:spotify": "dotenv -e .env.local -- tsx scripts/import-spotify-artists.ts",
     "import:ticketmaster": "dotenv -e .env.local -- tsx scripts/import-artists-with-events.ts",
-    "import:csv": "dotenv -e .env.local -- tsx scripts/import-from-csv.ts"
+    "import:csv": "dotenv -e .env.local -- tsx scripts/import-from-csv.ts",
+    "update:affiliate": "dotenv -e .env.local -- tsx scripts/update-affiliate-urls.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",

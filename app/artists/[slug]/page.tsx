@@ -8,6 +8,7 @@ import { ARTIST_TWITTER_HANDLES } from '@/lib/twitter';
 import { generateArtistMetadata, SITE_URL } from '@/lib/seo';
 import { generatePersonSchema, generateMusicEventSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
+import { getAffiliateUrl } from '@/lib/affiliate';
 import type { Metadata } from 'next';
 
 // Use Static Site Generation with ISR
@@ -281,7 +282,7 @@ export default async function ArtistPage({ params }: Props) {
                     <div className="flex flex-col gap-2 items-end">
                       {event.ticketUrl && (
                         <a
-                          href={event.ticketUrl}
+                          href={getAffiliateUrl(event.ticketUrl, event.source)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn-primary whitespace-nowrap"

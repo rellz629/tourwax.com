@@ -1,8 +1,13 @@
+import { config } from 'dotenv';
+// Load .env.local BEFORE any other imports
+config({ path: '.env.local' });
+
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
 import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
+import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
 
 async function fetchToursForArtist(artistId: string, artistName: string) {
   console.log(`\n🎵 Fetching tours for: ${artistName}`);
@@ -16,40 +21,56 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
 
     const allEvents = [];
     const allVenues = [];
-    const updates: { ticketmasterId?: string; seatgeekId?: string } = {};
+    const updates: {
+      ticketmasterId?: string;
+      seatgeekId?: string;
+      imageUrl?: string;
+      genre?: string;
+    } = {};
 
     // Process Ticketmaster data
     if (tmData.status === 'fulfilled') {
-      const { events: tmEvents, venues: tmVenues, ticketmasterId } = tmData.value;
-      allEvents.push(...tmEvents.map(e => ({ ...e, artistId })));
+      const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo } = tmData.value;
+      // Apply affiliate tracking to Ticketmaster event URLs
+      const tmEventsWithAffiliate = tmEvents.map(e => ({
+        ...e,
+        artistId,
+        ticketUrl: e.ticketUrl ? getTicketmasterAffiliateUrl(e.ticketUrl) : e.ticketUrl,
+      }));
+      allEvents.push(...tmEventsWithAffiliate);
       allVenues.push(...tmVenues);
       if (ticketmasterId) updates.ticketmasterId = ticketmasterId;
-      console.log(`  ✓ Ticketmaster: ${tmEvents.length} events`);
+      if (artistInfo?.imageUrl) updates.imageUrl = artistInfo.imageUrl;
+      if (artistInfo?.genre) updates.genre = artistInfo.genre;
+      console.log(`  ✓ Ticketmaster: ${tmEvents.length} events (with affiliate tracking)`);
     } else {
       console.log(`  ✗ Ticketmaster: ${tmData.reason}`);
     }
 
     // Process SeatGeek data
     if (sgData.status === 'fulfilled') {
-      const { events: sgEvents, venues: sgVenues, seatgeekId } = sgData.value;
+      const { events: sgEvents, venues: sgVenues, seatgeekId, artistInfo } = sgData.value;
       allEvents.push(...sgEvents.map(e => ({ ...e, artistId })));
       allVenues.push(...sgVenues);
       if (seatgeekId) updates.seatgeekId = seatgeekId.toString();
+      // Only update image/genre from SeatGeek if we don't have it from Ticketmaster
+      if (artistInfo?.imageUrl && !updates.imageUrl) updates.imageUrl = artistInfo.imageUrl;
+      if (artistInfo?.genre && !updates.genre) updates.genre = artistInfo.genre;
       console.log(`  ✓ SeatGeek: ${sgEvents.length} events`);
     } else {
       console.log(`  ✗ SeatGeek: ${sgData.reason}`);
     }
 
-    if (allVenues.length === 0 && allEvents.length === 0) {
-      console.log(`  ⚠️  No events found`);
-      return;
-    }
-
-    // Update artist with external IDs
+    // Update artist with external IDs, image, and genre (even if no events)
     if (Object.keys(updates).length > 0) {
       await db.update(artists)
         .set({ ...updates, updatedAt: new Date() })
         .where(eq(artists.id, artistId));
+    }
+
+    if (allVenues.length === 0 && allEvents.length === 0) {
+      console.log(`  ⚠️  No events found`);
+      return;
     }
 
     // Upsert venues
