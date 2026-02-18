@@ -6,8 +6,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ARTIST_TWITTER_HANDLES } from '@/lib/twitter';
 import { generateArtistMetadata, SITE_URL } from '@/lib/seo';
-import { generatePersonSchema, generateMusicEventSchema, generateBreadcrumbSchema } from '@/lib/schema';
+import { generatePersonSchema, generateMusicEventSchema, generateBreadcrumbSchema, generateNewsArticleSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import type { Metadata } from 'next';
 
@@ -119,11 +120,19 @@ export default async function ArtistPage({ params }: Props) {
   const eventSchemas = artistEvents.map(({ event, venue }) =>
     generateMusicEventSchema(event, artist, venue)
   );
+  const newsSchemas = news.map((article) => generateNewsArticleSchema(article));
+
+  const breadcrumbItems = [
+    { name: 'Home', url: '/' },
+    { name: 'Artists', url: '/artists' },
+    { name: artist.name, url: `/artists/${artist.slug}` },
+  ];
 
   return (
     <>
-      <StructuredData data={[personSchema, breadcrumbSchema, ...eventSchemas]} />
+      <StructuredData data={[personSchema, breadcrumbSchema, ...eventSchemas, ...newsSchemas]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <Breadcrumbs items={breadcrumbItems} />
       {/* Artist Header */}
       <div className="mb-16">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">

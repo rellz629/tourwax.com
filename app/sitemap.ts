@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { db } from '@/db';
-import { artists } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { artists, events, venues } from '@/db/schema';
+import { eq, gte, isNotNull, and } from 'drizzle-orm';
 import { SITE_URL } from '@/lib/seo';
+import { slugify } from '@/lib/slugify';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all active artists
@@ -44,5 +45,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...artistRoutes];
+  // Get distinct cities with future events
+  const now = new Date();
+  const citiesWithEvents = await db
+    .selectDistinct({ city: venues.city })
+    .from(venues)
+    .innerJoin(events, eq(events.venueId, venues.id))
+    .where(and(
+      isNotNull(venues.city),
+      gte(events.eventDate, now)
+    ));
+
+  const cityRoutes: MetadataRoute.Sitemap = citiesWithEvents
+    .filter((row) => row.city)
+    .map((row) => ({
+      url: `${SITE_URL}/concerts/${slugify(row.city!)}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.7,
+    }));
+
+  return [...staticRoutes, ...artistRoutes, ...cityRoutes];
 }

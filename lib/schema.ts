@@ -1,4 +1,4 @@
-import type { Artist, Event, Venue } from '@/db/schema';
+import type { Artist, Event, Venue, NewsArticle } from '@/db/schema';
 import { SITE_NAME, SITE_URL } from './seo';
 
 export interface BreadcrumbItem {
@@ -129,6 +129,66 @@ export function generateBreadcrumbSchema(items: BreadcrumbItem[]) {
       position: index + 1,
       name: item.name,
       item: item.url,
+    })),
+  };
+}
+
+export function generateNewsArticleSchema(article: NewsArticle) {
+  const schema: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: article.title,
+    url: article.url,
+    datePublished: new Date(article.publishedAt).toISOString(),
+  };
+
+  if (article.summary) {
+    schema.description = article.summary;
+  }
+
+  if (article.imageUrl) {
+    schema.image = article.imageUrl;
+  }
+
+  if (article.author) {
+    schema.author = {
+      '@type': 'Person',
+      name: article.author,
+    };
+  }
+
+  if (article.source) {
+    schema.publisher = {
+      '@type': 'Organization',
+      name: article.source,
+    };
+  }
+
+  return schema;
+}
+
+export function generateCityEventListSchema(
+  cityName: string,
+  state: string | null,
+  citySlug: string,
+  eventData: Array<{ event: Event; artist: { name: string; slug: string; imageUrl: string | null }; venue: Venue | null }>
+) {
+  const locationLabel = state ? `${cityName}, ${state}` : cityName;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Upcoming Concerts in ${locationLabel}`,
+    url: `${SITE_URL}/concerts/${citySlug}`,
+    numberOfItems: eventData.length,
+    itemListElement: eventData.map(({ event, artist, venue }, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: generateMusicEventSchema(
+        event,
+        { name: artist.name, slug: artist.slug, imageUrl: artist.imageUrl, genre: null } as Artist,
+        venue
+      ),
     })),
   };
 }

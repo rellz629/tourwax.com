@@ -127,6 +127,83 @@ export function generateArtistMetadata(data: ArtistWithEvents) {
   };
 }
 
+export function generateCityTitle(cityName: string, state: string | null, year: number = new Date().getFullYear()): string {
+  const location = state ? `${cityName}, ${state}` : cityName;
+  return `Concerts in ${location} ${year} | Upcoming Shows & Tickets - ${SITE_NAME}`;
+}
+
+export function generateCityDescription(
+  cityName: string,
+  state: string | null,
+  eventCount: number,
+  artistNames: string[]
+): string {
+  const location = state ? `${cityName}, ${state}` : cityName;
+  const artistText = artistNames.length > 0
+    ? ` See shows from ${artistNames.slice(0, 3).join(', ')}${artistNames.length > 3 ? ', and more' : ''}.`
+    : '';
+  const countText = eventCount === 0
+    ? `Check back for upcoming concerts in ${location}.`
+    : `Find ${eventCount} upcoming concert${eventCount === 1 ? '' : 's'} in ${location}.${artistText}`;
+
+  return `${countText} Get tickets and venue info.`;
+}
+
+export function generateCityMetadata(data: {
+  cityName: string;
+  state: string | null;
+  citySlug: string;
+  eventCount: number;
+  artistNames: string[];
+}) {
+  const { cityName, state, citySlug, eventCount, artistNames } = data;
+  const year = new Date().getFullYear();
+
+  const title = generateCityTitle(cityName, state, year);
+  const description = generateCityDescription(cityName, state, eventCount, artistNames);
+  const url = generateCanonicalUrl(`/concerts/${citySlug}`);
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: generateOpenGraphTags({
+      title,
+      description,
+      url,
+    }),
+    twitter: generateTwitterCardTags({
+      title,
+      description,
+    }),
+  };
+}
+
+export function generateConcertsIndexMetadata() {
+  const title = `Upcoming Concerts & Live Shows ${new Date().getFullYear()} - ${SITE_NAME}`;
+  const description = 'Browse upcoming concerts by city. Find live music events, tour dates, and tickets for shows near you.';
+  const url = generateCanonicalUrl('/concerts');
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: generateOpenGraphTags({
+      title,
+      description,
+      url,
+    }),
+    twitter: generateTwitterCardTags({
+      title,
+      description,
+    }),
+  };
+}
+
 export function generateDefaultMetadata() {
   return {
     metadataBase: new URL(SITE_URL),
