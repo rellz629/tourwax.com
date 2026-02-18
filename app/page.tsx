@@ -48,6 +48,7 @@ async function getUpcomingEvents() {
       venueCity: venues.city,
       venueState: venues.state,
       venueCountry: venues.country,
+      venueTimezone: venues.timezone,
     })
     .from(events)
     .innerJoin(artists, eq(events.artistId, artists.id))
@@ -180,6 +181,22 @@ export default async function HomePage() {
                               .join(', ')}
                           </p>
                         )}
+                        <p className="text-sm text-gray-400 mt-1">
+                          {new Date(event.eventDate).toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            timeZone: 'UTC',
+                          })}
+                          {event.venueTimezone && (
+                            <span>
+                              {' '}
+                              {new Intl.DateTimeFormat('en-US', {
+                                timeZone: event.venueTimezone,
+                                timeZoneName: 'short',
+                              }).formatToParts(event.eventDate).find(p => p.type === 'timeZoneName')?.value}
+                            </span>
+                          )}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">

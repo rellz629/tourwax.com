@@ -276,6 +276,15 @@ export default async function ArtistPage({ params }: Props) {
                                 minute: '2-digit',
                                 timeZone: 'UTC',
                               })}
+                              {venue?.timezone && (
+                                <span>
+                                  {' '}
+                                  {new Intl.DateTimeFormat('en-US', {
+                                    timeZone: venue.timezone,
+                                    timeZoneName: 'short',
+                                  }).formatToParts(event.eventDate).find(p => p.type === 'timeZoneName')?.value}
+                                </span>
+                              )}
                             </span>
                             {(event.minPrice || event.maxPrice) && (
                               <>
