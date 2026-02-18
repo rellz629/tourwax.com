@@ -11,6 +11,7 @@
     "db:migrate": "dotenv -e .env.local -- tsx scripts/migrate.ts",
     "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
     "seed": "dotenv -e .env.local -- tsx scripts/seed-artists.ts",
+    "seed:batch2": "dotenv -e .env.local -- tsx scripts/seed-artists-batch2.ts",
     "fetch:tours": "dotenv -e .env.local -- tsx scripts/fetch-tours.ts",
     "fetch:news": "dotenv -e .env.local -- tsx scripts/fetch-news.ts",
     "fetch:bios": "dotenv -e .env.local -- tsx scripts/fetch-bios.ts",
