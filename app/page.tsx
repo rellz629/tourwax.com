@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { artists, events } from '@/db/schema';
+import { artists, events, venues } from '@/db/schema';
 import { eq, desc, gte, and } from 'drizzle-orm';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -45,9 +45,13 @@ async function getUpcomingEvents() {
       artistName: artists.name,
       artistId: artists.id,
       artistSlug: artists.slug,
+      venueCity: venues.city,
+      venueState: venues.state,
+      venueCountry: venues.country,
     })
     .from(events)
     .innerJoin(artists, eq(events.artistId, artists.id))
+    .leftJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now))
     .orderBy(events.eventDate)
     .limit(10);
@@ -169,6 +173,13 @@ export default async function HomePage() {
                           {event.artistName}
                         </h3>
                         <p className="text-gray-600">{event.name}</p>
+                        {(event.venueCity || event.venueState || event.venueCountry) && (
+                          <p className="text-sm text-gray-500 mt-1">
+                            {[event.venueCity, event.venueState, event.venueCountry]
+                              .filter(Boolean)
+                              .join(', ')}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
@@ -177,11 +188,13 @@ export default async function HomePage() {
                           {new Date(event.eventDate).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
+                            timeZone: 'UTC',
                           })}
                         </p>
                         <p className="text-sm opacity-90">
                           {new Date(event.eventDate).toLocaleDateString('en-US', {
                             year: 'numeric',
+                            timeZone: 'UTC',
                           })}
                         </p>
                       </div>
