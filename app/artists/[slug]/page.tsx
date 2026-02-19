@@ -25,8 +25,7 @@ export async function generateStaticParams() {
   const allArtists = await db
     .select({ slug: artists.slug })
     .from(artists)
-    .where(eq(artists.isActive, true))
-    .limit(100); // Pre-build top 100 artists
+    .where(eq(artists.isActive, true));
 
   return allArtists.map((artist) => ({
     slug: artist.slug,
