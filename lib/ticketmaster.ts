@@ -192,10 +192,16 @@ export async function getArtistByName(artistName: string): Promise<{
 
   const attraction = exactMatch || attractions[0];
 
+  // Pick the highest resolution image
+  const images = attraction.images || [];
+  const bestImage = images
+    .filter((img: any) => img.width && img.height)
+    .sort((a: any, b: any) => (b.width * b.height) - (a.width * a.height))[0];
+
   return {
     id: attraction.id,
     name: attraction.name,
-    imageUrl: attraction.images?.[0]?.url,
+    imageUrl: bestImage?.url || images[0]?.url,
     genre: attraction.classifications?.[0]?.genre?.name,
   };
 }
