@@ -29,7 +29,7 @@ async function getFeaturedArtistsWithUpcomingEvents() {
       eq(artists.isActive, true),
       gte(events.eventDate, now)
     ))
-    .limit(12);
+    .limit(24);
 
   return artistsWithEvents;
 }
@@ -127,36 +127,36 @@ export default async function HomePage() {
             </svg>
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {featuredArtists.map((artist) => (
             <Link
               key={artist.id}
               href={`/artists/${artist.slug}`}
-              className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100"
+              className="group bg-white rounded-lg shadow-md hover:shadow-xl card-hover overflow-hidden border border-gray-100"
             >
               <div className="aspect-square bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 relative overflow-hidden">
                 {artist.imageUrl ? (
                   <Image
                     src={artist.imageUrl}
                     alt={artist.name}
-                    width={400}
-                    height={400}
+                    width={200}
+                    height={200}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    sizes="(max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white text-4xl font-bold">
+                  <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">
                     {artist.name.charAt(0)}
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
-              <div className="p-4 bg-white">
-                <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors mb-1">
+              <div className="p-3 bg-white">
+                <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors text-sm truncate">
                   {artist.name}
                 </h3>
                 {artist.genre && (
-                  <p className="text-sm text-gray-500 font-medium">{artist.genre}</p>
+                  <p className="text-xs text-gray-500 font-medium truncate">{artist.genre}</p>
                 )}
               </div>
             </Link>
