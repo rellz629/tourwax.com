@@ -183,7 +183,7 @@ export default async function HomePage() {
             {Array.from(groupEventsByDay(upcomingEvents)).map(([dayLabel, dayEvents]) => (
               <div key={dayLabel}>
                 <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-lg font-bold text-gray-900 whitespace-nowrap">{dayLabel}</h3>
+                  <h3 className="text-lg font-bold whitespace-nowrap"><span className="gradient-text">{dayLabel}</span></h3>
                   <div className="h-px bg-gradient-to-r from-orange-200 to-transparent flex-1"></div>
                   <span className="text-sm text-gray-400 whitespace-nowrap">{dayEvents.length} {dayEvents.length === 1 ? 'show' : 'shows'}</span>
                 </div>
