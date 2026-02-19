@@ -28,8 +28,7 @@ async function getFeaturedArtistsWithUpcomingEvents() {
     .where(and(
       eq(artists.isActive, true),
       gte(events.eventDate, now)
-    ))
-    .limit(24);
+    ));
 
   return artistsWithEvents;
 }
