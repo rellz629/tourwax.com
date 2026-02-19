@@ -185,7 +185,7 @@ export default async function HomePage() {
                           {new Date(event.eventDate).toLocaleTimeString('en-US', {
                             hour: 'numeric',
                             minute: '2-digit',
-                            timeZone: 'UTC',
+                            timeZone: event.venueTimezone ?? 'UTC',
                           })}
                           {event.venueTimezone && (
                             <span>
@@ -205,13 +205,13 @@ export default async function HomePage() {
                           {new Date(event.eventDate).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
-                            timeZone: 'UTC',
+                            timeZone: event.venueTimezone ?? 'UTC',
                           })}
                         </p>
                         <p className="text-sm opacity-90">
                           {new Date(event.eventDate).toLocaleDateString('en-US', {
                             year: 'numeric',
-                            timeZone: 'UTC',
+                            timeZone: event.venueTimezone ?? 'UTC',
                           })}
                         </p>
                       </div>

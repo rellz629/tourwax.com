@@ -236,13 +236,13 @@ export default async function ArtistPage({ params }: Props) {
                           <span className="text-xs font-semibold uppercase">
                             {new Date(event.eventDate).toLocaleDateString('en-US', {
                               month: 'short',
-                              timeZone: 'UTC',
+                              timeZone: venue?.timezone ?? 'UTC',
                             })}
                           </span>
                           <span className="text-xl font-bold">
                             {new Date(event.eventDate).toLocaleDateString('en-US', {
                               day: 'numeric',
-                              timeZone: 'UTC',
+                              timeZone: venue?.timezone ?? 'UTC',
                             })}
                           </span>
                         </div>
@@ -274,7 +274,7 @@ export default async function ArtistPage({ params }: Props) {
                               {new Date(event.eventDate).toLocaleTimeString('en-US', {
                                 hour: 'numeric',
                                 minute: '2-digit',
-                                timeZone: 'UTC',
+                                timeZone: venue?.timezone ?? 'UTC',
                               })}
                               {venue?.timezone && (
                                 <span>
