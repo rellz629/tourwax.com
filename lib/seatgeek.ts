@@ -51,9 +51,28 @@ export async function searchArtistEvents(artistName: string): Promise<{
   events: NewEvent[];
   venues: NewVenue[];
   seatgeekId?: number;
+  artistInfo?: {
+    name: string;
+    imageUrl?: string;
+    genre?: string;
+  };
 }> {
+  // Step 1: Get the official performer ID first
+  const performer = await getPerformerByName(artistName);
+
+  if (!performer) {
+    console.log(`  ⚠️  Could not find official performer ID for ${artistName}`);
+    return { events: [], venues: [] };
+  }
+
+  // Log the matched performer for verification
+  if (performer.name.toLowerCase() !== artistName.toLowerCase()) {
+    console.log(`  ℹ️  Matched "${artistName}" to "${performer.name}" (ID: ${performer.id})`);
+  }
+
+  // Step 2: Search for events by the specific performer ID (official events only)
   const params = getAuthParams();
-  params.append('q', artistName);
+  params.append('performers.id', performer.id.toString()); // This ensures we only get official events
   params.append('type', 'concert');
   params.append('per_page', '100');
   params.append('sort', 'datetime_local.asc');
@@ -69,16 +88,10 @@ export async function searchArtistEvents(artistName: string): Promise<{
   const events: NewEvent[] = [];
   const venues: NewVenue[] = [];
   const venueIds = new Set<string>();
-  let seatgeekId: number | undefined;
 
   const sgEvents = data.events || [];
 
   for (const event of sgEvents) {
-    // Get the first performer ID as seatgeek artist ID
-    if (!seatgeekId && event.performers?.[0]) {
-      seatgeekId = event.performers[0].id;
-    }
-
     const venue = event.venue;
     const venueId = `sg-${venue.id}`;
 
@@ -117,7 +130,16 @@ export async function searchArtistEvents(artistName: string): Promise<{
     });
   }
 
-  return { events, venues, seatgeekId };
+  return {
+    events,
+    venues,
+    seatgeekId: performer.id,
+    artistInfo: {
+      name: performer.name,
+      imageUrl: performer.imageUrl,
+      genre: performer.genre,
+    },
+  };
 }
 
 export async function getPerformerByName(artistName: string): Promise<{
@@ -128,6 +150,7 @@ export async function getPerformerByName(artistName: string): Promise<{
 } | null> {
   const params = getAuthParams();
   params.append('q', artistName);
+  params.append('per_page', '20'); // Get more results to find exact match
 
   const response = await fetch(`${BASE_URL}/performers?${params}`);
 
@@ -136,11 +159,18 @@ export async function getPerformerByName(artistName: string): Promise<{
   }
 
   const data = await response.json();
-  const performer = data.performers?.[0];
+  const performers = data.performers || [];
 
-  if (!performer) {
+  if (performers.length === 0) {
     return null;
   }
+
+  // First, try to find an exact name match (case-insensitive)
+  const exactMatch = performers.find(
+    (perf: any) => perf.name.toLowerCase() === artistName.toLowerCase()
+  );
+
+  const performer = exactMatch || performers[0];
 
   return {
     id: performer.id,

@@ -44,16 +44,35 @@ export async function searchArtistEvents(artistName: string): Promise<{
   events: NewEvent[];
   venues: NewVenue[];
   ticketmasterId?: string;
+  artistInfo?: {
+    name: string;
+    imageUrl?: string;
+    genre?: string;
+  };
 }> {
   if (!process.env.TICKETMASTER_API_KEY) {
     throw new Error('TICKETMASTER_API_KEY is not set');
   }
 
+  // Step 1: Get the official artist/attraction ID first
+  const artist = await getArtistByName(artistName);
+
+  if (!artist) {
+    console.log(`  ⚠️  Could not find official artist ID for ${artistName}`);
+    return { events: [], venues: [] };
+  }
+
+  // Log the matched artist for verification
+  if (artist.name.toLowerCase() !== artistName.toLowerCase()) {
+    console.log(`  ℹ️  Matched "${artistName}" to "${artist.name}" (ID: ${artist.id})`);
+  }
+
+  // Step 2: Search for events by the specific attraction ID (official events only)
   const params = new URLSearchParams({
     apikey: process.env.TICKETMASTER_API_KEY,
-    keyword: artistName,
+    attractionId: artist.id, // This ensures we only get official events
     classificationName: 'music',
-    size: '100',
+    size: '200',
     sort: 'date,asc',
   });
 
@@ -68,20 +87,15 @@ export async function searchArtistEvents(artistName: string): Promise<{
   const events: NewEvent[] = [];
   const venues: NewVenue[] = [];
   const venueIds = new Set<string>();
-  let ticketmasterId: string | undefined;
 
   const tmEvents = data._embedded?.events || [];
 
   for (const event of tmEvents) {
-    // Get the first attraction ID as ticketmaster artist ID
-    if (!ticketmasterId && event._embedded?.attractions?.[0]) {
-      ticketmasterId = event._embedded.attractions[0].id;
-    }
-
     const venue = event._embedded?.venues?.[0];
     let venueId: string | undefined;
 
-    if (venue) {
+    // Only process venues that have a name (skip invalid data)
+    if (venue && venue.name) {
       venueId = `tm-${venue.id}`;
 
       if (!venueIds.has(venueId)) {
@@ -129,7 +143,16 @@ export async function searchArtistEvents(artistName: string): Promise<{
     });
   }
 
-  return { events, venues, ticketmasterId };
+  return {
+    events,
+    venues,
+    ticketmasterId: artist.id,
+    artistInfo: {
+      name: artist.name,
+      imageUrl: artist.imageUrl,
+      genre: artist.genre,
+    },
+  };
 }
 
 export async function getArtistByName(artistName: string): Promise<{
@@ -146,6 +169,7 @@ export async function getArtistByName(artistName: string): Promise<{
     apikey: process.env.TICKETMASTER_API_KEY,
     keyword: artistName,
     classificationName: 'music',
+    size: '20', // Get more results to find exact match
   });
 
   const response = await fetch(`${BASE_URL}/attractions.json?${params}`);
@@ -155,11 +179,18 @@ export async function getArtistByName(artistName: string): Promise<{
   }
 
   const data = await response.json();
-  const attraction = data._embedded?.attractions?.[0];
+  const attractions = data._embedded?.attractions || [];
 
-  if (!attraction) {
+  if (attractions.length === 0) {
     return null;
   }
+
+  // First, try to find an exact name match (case-insensitive)
+  const exactMatch = attractions.find(
+    (attr: any) => attr.name.toLowerCase() === artistName.toLowerCase()
+  );
+
+  const attraction = exactMatch || attractions[0];
 
   return {
     id: attraction.id,

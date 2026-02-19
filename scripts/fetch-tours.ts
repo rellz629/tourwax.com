@@ -4,7 +4,7 @@ config({ path: '.env.local' });
 
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
-import { eq, or } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
 import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
@@ -88,12 +88,24 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
       console.log(`  ✓ Stored ${allVenues.length} venues`);
     }
 
-    // Delete old events for this artist to avoid duplicates
-    await db.delete(events).where(eq(events.artistId, artistId));
-
-    // Insert new events
+    // Upsert events
     if (allEvents.length > 0) {
-      await db.insert(events).values(allEvents);
+      await db.insert(events)
+        .values(allEvents)
+        .onConflictDoUpdate({
+          target: events.id,
+          set: {
+            name: events.name,
+            eventDate: events.eventDate,
+            status: events.status,
+            ticketUrl: events.ticketUrl,
+            minPrice: events.minPrice,
+            maxPrice: events.maxPrice,
+            currency: events.currency,
+            metadata: events.metadata,
+            updatedAt: new Date(),
+          },
+        });
       console.log(`  ✓ Stored ${allEvents.length} events`);
     }
 
