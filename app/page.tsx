@@ -55,7 +55,7 @@ async function getUpcomingEvents() {
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now))
     .orderBy(events.eventDate)
-    .limit(10);
+    .limit(25);
 
   return upcomingEvents;
 }
@@ -158,7 +158,7 @@ export default async function HomePage() {
                 <p className="text-gray-500 text-lg">No upcoming events yet. Check back soon!</p>
               </div>
             ) : (
-              upcomingEvents.map((event, index) => (
+              upcomingEvents.map((event) => (
                 <Link
                   key={event.id}
                   href={`/artists/${event.artistSlug}`}
@@ -166,8 +166,19 @@ export default async function HomePage() {
                 >
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex items-start gap-4 flex-1">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-lg">
-                        {index + 1}
+                      <div className="w-12 h-14 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex flex-col items-center justify-center flex-shrink-0 text-white">
+                        <span className="text-xs font-semibold uppercase leading-none">
+                          {new Date(event.eventDate).toLocaleDateString('en-US', {
+                            month: 'short',
+                            timeZone: event.venueTimezone ?? 'UTC',
+                          })}
+                        </span>
+                        <span className="text-lg font-bold leading-tight">
+                          {new Date(event.eventDate).toLocaleDateString('en-US', {
+                            day: 'numeric',
+                            timeZone: event.venueTimezone ?? 'UTC',
+                          })}
+                        </span>
                       </div>
                       <div className="flex-1">
                         <h3 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors mb-1 text-lg">
