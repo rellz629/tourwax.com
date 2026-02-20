@@ -45,6 +45,7 @@ async function getUpcomingEvents() {
       artistName: artists.name,
       artistId: artists.id,
       artistSlug: artists.slug,
+      venueId: events.venueId,
       venueCity: venues.city,
       venueState: venues.state,
       venueCountry: venues.country,
@@ -59,7 +60,25 @@ async function getUpcomingEvents() {
     ))
     .orderBy(events.eventDate);
 
-  return upcomingEvents;
+  // Deduplicate: keep one event per artist+city+date, preferring non-package events
+  const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'suite',
+    'box seat', 'vinyl room', 'premium', 'platinum', 'hospitality', 'club level',
+    'logen-seat', 'payment plan', 'upsell', 'excluding concert ticket'];
+  const isPackage = (name: string) =>
+    packageKeywords.some(kw => name.toLowerCase().includes(kw));
+
+  const groups = new Map<string, typeof upcomingEvents[0]>();
+  for (const e of upcomingEvents) {
+    const dateKey = new Date(e.eventDate).toISOString().slice(0, 10);
+    const key = `${e.artistId}_${e.venueCity || 'none'}_${dateKey}`;
+    const existing = groups.get(key);
+    if (!existing) {
+      groups.set(key, e);
+    } else if (isPackage(existing.name) && !isPackage(e.name)) {
+      groups.set(key, e);
+    }
+  }
+  return Array.from(groups.values());
 }
 
 function groupEventsByDay(eventsList: Awaited<ReturnType<typeof getUpcomingEvents>>) {

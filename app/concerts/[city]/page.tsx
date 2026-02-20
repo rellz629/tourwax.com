@@ -59,7 +59,25 @@ async function getCityEvents(cityName: string) {
     )
     .orderBy(events.eventDate);
 
-  return cityEvents;
+  // Deduplicate: keep one event per artist+date, preferring non-package events
+  const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'suite',
+    'box seat', 'vinyl room', 'premium', 'platinum', 'hospitality', 'club level',
+    'logen-seat', 'payment plan', 'upsell', 'excluding concert ticket'];
+  const isPackage = (name: string) =>
+    packageKeywords.some(kw => name.toLowerCase().includes(kw));
+
+  const groups = new Map<string, typeof cityEvents[0]>();
+  for (const row of cityEvents) {
+    const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
+    const key = `${row.event.artistId}_${dateKey}`;
+    const existing = groups.get(key);
+    if (!existing) {
+      groups.set(key, row);
+    } else if (isPackage(existing.event.name) && !isPackage(row.event.name)) {
+      groups.set(key, row);
+    }
+  }
+  return Array.from(groups.values());
 }
 
 export async function generateStaticParams() {

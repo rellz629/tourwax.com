@@ -8,6 +8,49 @@ import { eq } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
 import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
+import type { NewEvent } from '@/db/schema';
+
+// Keywords that indicate a ticket package variant rather than the main event
+const PACKAGE_KEYWORDS = [
+  'vip', 'package', 'upgrade', 'comfort seat', 'lounge', 'meet & greet',
+  'meet and greet', 'premium', 'platinum', 'gold circle', 'early entry',
+  'soundcheck', 'vinyl room', 'hospitality', 'suite', 'box seat',
+  'excluding concert ticket', 'hot ticket', 'upsell',
+];
+
+function isPackageVariant(eventName: string): boolean {
+  const lower = eventName.toLowerCase();
+  return PACKAGE_KEYWORDS.some(kw => lower.includes(kw));
+}
+
+// Deduplicate events: keep only the main event per venue+date, filtering out package variants
+function deduplicateEvents(eventList: NewEvent[]): NewEvent[] {
+  const groups = new Map<string, NewEvent[]>();
+
+  for (const event of eventList) {
+    // Group by venue + calendar date
+    const dateKey = event.eventDate instanceof Date
+      ? event.eventDate.toISOString().slice(0, 10)
+      : new Date(event.eventDate).toISOString().slice(0, 10);
+    const key = `${event.venueId || 'unknown'}_${dateKey}`;
+
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(event);
+  }
+
+  const deduped: NewEvent[] = [];
+  for (const group of groups.values()) {
+    if (group.length === 1) {
+      deduped.push(group[0]);
+      continue;
+    }
+    // Prefer the main event (non-package), or fallback to the first one
+    const mainEvent = group.find(e => !isPackageVariant(e.name)) || group[0];
+    deduped.push(mainEvent);
+  }
+
+  return deduped;
+}
 
 async function fetchToursForArtist(artistId: string, artistName: string) {
   console.log(`\n🎵 Fetching tours for: ${artistName}`);
@@ -88,10 +131,16 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
       console.log(`  ✓ Stored ${allVenues.length} venues`);
     }
 
+    // Deduplicate events (remove VIP/package variants for the same show)
+    const dedupedEvents = deduplicateEvents(allEvents);
+    if (dedupedEvents.length < allEvents.length) {
+      console.log(`  🔄 Deduped: ${allEvents.length} → ${dedupedEvents.length} events (removed ${allEvents.length - dedupedEvents.length} package variants)`);
+    }
+
     // Upsert events
-    if (allEvents.length > 0) {
+    if (dedupedEvents.length > 0) {
       await db.insert(events)
-        .values(allEvents)
+        .values(dedupedEvents)
         .onConflictDoUpdate({
           target: events.id,
           set: {
@@ -106,7 +155,7 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
             updatedAt: new Date(),
           },
         });
-      console.log(`  ✓ Stored ${allEvents.length} events`);
+      console.log(`  ✓ Stored ${dedupedEvents.length} events`);
     }
 
   } catch (error) {

@@ -57,7 +57,30 @@ async function getArtistEvents(artistId: string) {
     ))
     .orderBy(events.eventDate);
 
-  return artistEvents;
+  // Deduplicate: keep one event per date+city, preferring non-package events
+  const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'lounge',
+    'meet & greet', 'premium', 'platinum', 'suite', 'box seat', 'vinyl room',
+    'hospitality', 'excluding concert ticket', 'hot ticket', 'upsell',
+    'club level', 'logen-seat', 'accessible ticket', 'payment plan'];
+
+  const isPackage = (name: string) =>
+    packageKeywords.some(kw => name.toLowerCase().includes(kw));
+
+  const groups = new Map<string, typeof artistEvents[0]>();
+  for (const row of artistEvents) {
+    const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
+    const city = row.venue?.city || 'unknown';
+    const key = `${city}_${dateKey}`;
+    const existing = groups.get(key);
+    if (!existing) {
+      groups.set(key, row);
+    } else if (isPackage(existing.event.name) && !isPackage(row.event.name)) {
+      // Replace a package event with a non-package one
+      groups.set(key, row);
+    }
+  }
+
+  return Array.from(groups.values());
 }
 
 async function getArtistNews(artistId: string) {
