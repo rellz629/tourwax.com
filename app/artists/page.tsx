@@ -29,6 +29,19 @@ export const metadata: Metadata = {
   },
 };
 
+// Normalize API genre names to clean display names
+function normalizeGenre(genre: string | null): string {
+  if (!genre) return 'Other';
+  const map: Record<string, string> = {
+    'Hip-Hop/Rap': 'Hip-Hop',
+    'Dance/Electronic': 'Electronic',
+    'World': 'Latin',
+    'Jazz': 'R&B',
+    'Reggae': 'Latin',
+  };
+  return map[genre] || genre;
+}
+
 export default async function ArtistsPage() {
   const allArtists = await db
     .select()
@@ -36,9 +49,9 @@ export default async function ArtistsPage() {
     .where(eq(artists.isActive, true))
     .orderBy(artists.name);
 
-  // Group by genre
+  // Group by normalized genre
   const artistsByGenre = allArtists.reduce((acc, artist) => {
-    const genre = artist.genre || 'Other';
+    const genre = normalizeGenre(artist.genre);
     if (!acc[genre]) acc[genre] = [];
     acc[genre].push(artist);
     return acc;
