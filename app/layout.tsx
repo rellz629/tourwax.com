@@ -81,6 +81,12 @@ export default function RootLayout({
                     Concerts
                   </Link>
                   <Link
+                    href="/tours"
+                    className="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all"
+                  >
+                    Tours
+                  </Link>
+                  <Link
                     href="/about"
                     className="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all"
                   >

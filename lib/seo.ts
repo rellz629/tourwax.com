@@ -204,6 +204,75 @@ export function generateConcertsIndexMetadata() {
   };
 }
 
+export function generateGenreTitle(genreName: string, year: number = new Date().getFullYear()): string {
+  return `${genreName} Tours & Concerts ${year} | Live Show Dates - ${SITE_NAME}`;
+}
+
+export function generateGenreDescription(
+  genreName: string,
+  artistCount: number,
+  artistNames: string[]
+): string {
+  const artistText = artistNames.length > 0
+    ? ` See shows from ${artistNames.slice(0, 3).join(', ')}${artistNames.length > 3 ? ', and more' : ''}.`
+    : '';
+  return `Browse ${artistCount} ${genreName} artist${artistCount === 1 ? '' : 's'} on tour with upcoming concerts and tickets.${artistText}`;
+}
+
+export function generateGenreMetadata(data: {
+  genreName: string;
+  genreSlug: string;
+  artistCount: number;
+  artistNames: string[];
+}) {
+  const { genreName, genreSlug, artistCount, artistNames } = data;
+  const year = new Date().getFullYear();
+
+  const title = generateGenreTitle(genreName, year);
+  const description = generateGenreDescription(genreName, artistCount, artistNames);
+  const url = generateCanonicalUrl(`/tours/${genreSlug}`);
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: generateOpenGraphTags({
+      title,
+      description,
+      url,
+    }),
+    twitter: generateTwitterCardTags({
+      title,
+      description,
+    }),
+  };
+}
+
+export function generateToursIndexMetadata() {
+  const title = `Music Tours by Genre ${new Date().getFullYear()} - ${SITE_NAME}`;
+  const description = 'Browse upcoming music tours by genre. Find Hip-Hop, Pop, Rock, Country, R&B, and Electronic concert dates and tickets.';
+  const url = generateCanonicalUrl('/tours');
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: generateOpenGraphTags({
+      title,
+      description,
+      url,
+    }),
+    twitter: generateTwitterCardTags({
+      title,
+      description,
+    }),
+  };
+}
+
 export function generateDefaultMetadata() {
   return {
     metadataBase: new URL(SITE_URL),

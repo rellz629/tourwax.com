@@ -193,6 +193,29 @@ export function generateCityEventListSchema(
   };
 }
 
+export function generateGenreEventListSchema(
+  genreName: string,
+  genreSlug: string,
+  eventData: Array<{ event: Event; artist: { name: string; slug: string; imageUrl: string | null }; venue: Venue | null }>
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Upcoming ${genreName} Tours & Concerts`,
+    url: `${SITE_URL}/tours/${genreSlug}`,
+    numberOfItems: eventData.length,
+    itemListElement: eventData.map(({ event, artist, venue }, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: generateMusicEventSchema(
+        event,
+        { name: artist.name, slug: artist.slug, imageUrl: artist.imageUrl, genre: genreName } as Artist,
+        venue
+      ),
+    })),
+  };
+}
+
 export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',

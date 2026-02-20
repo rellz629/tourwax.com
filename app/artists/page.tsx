@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { SITE_NAME, generateCanonicalUrl } from '@/lib/seo';
+import { normalizeGenre } from '@/lib/genres';
 
 // Use Static Site Generation with ISR
 export const dynamic = 'force-static';
@@ -28,19 +29,6 @@ export const metadata: Metadata = {
     description: 'Discover artists currently on tour. Find concert dates, tickets, and venues for Hip-Hop, Pop, Rock, Country, and more.',
   },
 };
-
-// Normalize API genre names to clean display names
-function normalizeGenre(genre: string | null): string {
-  if (!genre) return 'Other';
-  const map: Record<string, string> = {
-    'Hip-Hop/Rap': 'Hip-Hop',
-    'Dance/Electronic': 'Electronic',
-    'World': 'Latin',
-    'Jazz': 'R&B',
-    'Reggae': 'Latin',
-  };
-  return map[genre] || genre;
-}
 
 export default async function ArtistsPage() {
   const allArtists = await db

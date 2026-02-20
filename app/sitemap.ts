@@ -4,6 +4,7 @@ import { artists, events, venues } from '@/db/schema';
 import { eq, gte, isNotNull, and } from 'drizzle-orm';
 import { SITE_URL } from '@/lib/seo';
 import { slugify } from '@/lib/slugify';
+import { normalizeGenre, genreSlug } from '@/lib/genres';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all active artists
@@ -65,5 +66,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-  return [...staticRoutes, ...artistRoutes, ...cityRoutes];
+  // Get distinct normalized genres from active artists
+  const allGenreArtists = await db
+    .select({ genre: artists.genre })
+    .from(artists)
+    .where(eq(artists.isActive, true));
+
+  const genreSlugs = new Set<string>();
+  for (const a of allGenreArtists) {
+    genreSlugs.add(genreSlug(normalizeGenre(a.genre)));
+  }
+
+  const genreRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/tours`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    ...Array.from(genreSlugs).map((slug) => ({
+      url: `${SITE_URL}/tours/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.7,
+    })),
+  ];
+
+  return [...staticRoutes, ...artistRoutes, ...cityRoutes, ...genreRoutes];
 }
