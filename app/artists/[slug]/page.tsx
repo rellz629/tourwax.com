@@ -41,7 +41,21 @@ async function getArtist(slug: string) {
   return artist;
 }
 
-async function getArtistEvents(artistId: string) {
+interface TicketSource {
+  source: string;
+  ticketUrl: string | null;
+  minPrice: number | null;
+  maxPrice: number | null;
+  currency: string | null;
+}
+
+interface GroupedEvent {
+  event: typeof events.$inferSelect;
+  venue: typeof venues.$inferSelect | null;
+  ticketSources: TicketSource[];
+}
+
+async function getArtistEvents(artistId: string): Promise<GroupedEvent[]> {
   const now = new Date();
 
   const artistEvents = await db
@@ -58,6 +72,7 @@ async function getArtistEvents(artistId: string) {
     .orderBy(events.eventDate);
 
   // Deduplicate: keep one event per date+city, preferring non-package events
+  // Collect all ticket sources for each group
   const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'lounge',
     'meet & greet', 'premium', 'platinum', 'suite', 'box seat', 'vinyl room',
     'hospitality', 'excluding concert ticket', 'hot ticket', 'upsell',
@@ -66,17 +81,37 @@ async function getArtistEvents(artistId: string) {
   const isPackage = (name: string) =>
     packageKeywords.some(kw => name.toLowerCase().includes(kw));
 
-  const groups = new Map<string, typeof artistEvents[0]>();
+  const groups = new Map<string, GroupedEvent>();
   for (const row of artistEvents) {
     const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
     const city = row.venue?.city || 'unknown';
     const key = `${city}_${dateKey}`;
     const existing = groups.get(key);
+
+    const ticketSource: TicketSource = {
+      source: row.event.source,
+      ticketUrl: row.event.ticketUrl,
+      minPrice: row.event.minPrice,
+      maxPrice: row.event.maxPrice,
+      currency: row.event.currency,
+    };
+
     if (!existing) {
-      groups.set(key, row);
-    } else if (isPackage(existing.event.name) && !isPackage(row.event.name)) {
-      // Replace a package event with a non-package one
-      groups.set(key, row);
+      groups.set(key, {
+        event: row.event,
+        venue: row.venue,
+        ticketSources: isPackage(row.event.name) ? [] : [ticketSource],
+      });
+    } else {
+      // Add non-package events as ticket sources
+      if (!isPackage(row.event.name)) {
+        existing.ticketSources.push(ticketSource);
+        // If current primary is a package, replace it with this non-package event
+        if (isPackage(existing.event.name)) {
+          existing.event = row.event;
+          existing.venue = row.venue;
+        }
+      }
     }
   }
 
@@ -142,6 +177,13 @@ export default async function ArtistPage({ params }: Props) {
   const eventSchemas = artistEvents.map(({ event, venue }) =>
     generateMusicEventSchema(event, artist, venue)
   );
+  // Deduplicate ticket sources for display (remove duplicates from same source)
+  const deduplicatedEvents = artistEvents.map(grouped => ({
+    ...grouped,
+    ticketSources: grouped.ticketSources.filter((ts, i, arr) =>
+      arr.findIndex(t => t.source === ts.source) === i
+    ),
+  }));
   const newsSchemas = news.map((article) => generateNewsArticleSchema(article));
 
   const breadcrumbItems = [
@@ -246,7 +288,7 @@ export default async function ArtistPage({ params }: Props) {
             </div>
           ) : (
             <div className="space-y-4">
-              {artistEvents.map(({ event, venue }) => (
+              {deduplicatedEvents.map(({ event, venue, ticketSources }) => (
                 <div
                   key={event.id}
                   className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100"
@@ -308,34 +350,47 @@ export default async function ArtistPage({ params }: Props) {
                                 </span>
                               )}
                             </span>
-                            {(event.minPrice || event.maxPrice) && (
-                              <>
-                                <span className="text-gray-300">•</span>
-                                <span className="font-semibold text-orange-600">
-                                  From {event.currency} {event.minPrice || event.maxPrice}
-                                  {event.maxPrice && event.minPrice !== event.maxPrice &&
-                                    ` - ${event.currency} ${event.maxPrice}`}
-                                </span>
-                              </>
-                            )}
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-2 items-end">
-                      {event.ticketUrl && (
-                        <a
-                          href={getAffiliateUrl(event.ticketUrl, event.source)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn-primary whitespace-nowrap"
-                        >
-                          Get Tickets
-                        </a>
+                    <div className="flex flex-col gap-2 items-end w-full md:w-auto">
+                      {ticketSources.length > 0 ? (
+                        ticketSources.map((ts) => (
+                          ts.ticketUrl && (
+                            <a
+                              key={ts.source}
+                              href={getAffiliateUrl(ts.ticketUrl, ts.source)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm text-white whitespace-nowrap transition-all shadow-md hover:shadow-lg w-full md:w-auto ${
+                                ts.source.toLowerCase() === 'seatgeek'
+                                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
+                                  : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
+                              }`}
+                            >
+                              {ts.minPrice ? (
+                                <span>From ${ts.minPrice}</span>
+                              ) : (
+                                <span>Get Tickets</span>
+                              )}
+                              <span className="text-white/80">—</span>
+                              <span className="capitalize">{ts.source}</span>
+                            </a>
+                          )
+                        ))
+                      ) : (
+                        event.ticketUrl && (
+                          <a
+                            href={getAffiliateUrl(event.ticketUrl, event.source)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-primary whitespace-nowrap"
+                          >
+                            Get Tickets
+                          </a>
+                        )
                       )}
-                      <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">
-                        via {event.source}
-                      </span>
                     </div>
                   </div>
                 </div>
