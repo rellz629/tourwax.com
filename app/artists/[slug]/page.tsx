@@ -1,12 +1,13 @@
 import { db } from '@/db';
 import { artists, events, venues, newsArticles } from '@/db/schema';
-import { eq, gte, and, desc } from 'drizzle-orm';
+import { eq, gte, and, desc, ne, sql } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ARTIST_TWITTER_HANDLES } from '@/lib/twitter';
-import { generateArtistMetadata, SITE_URL } from '@/lib/seo';
-import { generatePersonSchema, generateMusicEventSchema, generateBreadcrumbSchema, generateNewsArticleSchema } from '@/lib/schema';
+import { generateArtistMetadata, SITE_URL, extractCitiesFromEvents } from '@/lib/seo';
+import { generatePersonSchema, generateMusicEventSchema, generateBreadcrumbSchema, generateNewsArticleSchema, generateFAQSchema } from '@/lib/schema';
+import { normalizeGenre, genreSlug } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
@@ -129,6 +130,100 @@ async function getArtistNews(artistId: string) {
   return news;
 }
 
+async function getRelatedArtists(artistId: string, genre: string | null) {
+  if (!genre) return [];
+  const normalized = normalizeGenre(genre);
+  const now = new Date();
+
+  // Get same-genre artists with upcoming event counts, excluding current artist
+  const allArtists = await db
+    .select({
+      id: artists.id,
+      name: artists.name,
+      slug: artists.slug,
+      imageUrl: artists.imageUrl,
+      genre: artists.genre,
+      eventCount: sql<number>`count(${events.id})`.as('event_count'),
+    })
+    .from(artists)
+    .leftJoin(events, and(eq(events.artistId, artists.id), gte(events.eventDate, now)))
+    .where(and(eq(artists.isActive, true), ne(artists.id, artistId)))
+    .groupBy(artists.id)
+    .orderBy(sql`count(${events.id}) desc`);
+
+  // Filter by normalized genre in JS (same pattern as genre pages)
+  return allArtists
+    .filter((a) => normalizeGenre(a.genre) === normalized)
+    .slice(0, 6);
+}
+
+function generateArtistFAQs(
+  artistName: string,
+  genre: string | null,
+  eventCount: number,
+  cities: string[],
+  nextEvent: { date: Date; venueName: string | null; city: string | null } | null
+) {
+  const year = new Date().getFullYear();
+  const faqs: Array<{ question: string; answer: string }> = [];
+
+  // Q1: Next concert
+  if (nextEvent) {
+    const dateStr = new Date(nextEvent.date).toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+    const location = [nextEvent.venueName, nextEvent.city].filter(Boolean).join(' in ');
+    faqs.push({
+      question: `When is ${artistName}'s next concert?`,
+      answer: `${artistName}'s next upcoming concert is on ${dateStr}${location ? ` at ${location}` : ''}. Check this page for the full list of upcoming tour dates and ticket links.`,
+    });
+  } else {
+    faqs.push({
+      question: `When is ${artistName}'s next concert?`,
+      answer: `${artistName} does not have any upcoming concerts announced at this time. Check back regularly as new tour dates are added frequently.`,
+    });
+  }
+
+  // Q2: Ticket sources
+  faqs.push({
+    question: `Where can I buy ${artistName} concert tickets?`,
+    answer: `You can buy ${artistName} tickets through Ticketmaster and SeatGeek. TourWax compares prices from multiple ticket sources so you can find the best deal for each show.`,
+  });
+
+  // Q3: Show count
+  if (eventCount > 0) {
+    const cityText = cities.length > 0
+      ? ` in cities including ${cities.slice(0, 5).join(', ')}${cities.length > 5 ? ', and more' : ''}`
+      : '';
+    faqs.push({
+      question: `How many upcoming ${artistName} shows are there?`,
+      answer: `${artistName} currently has ${eventCount} upcoming show${eventCount === 1 ? '' : 's'} scheduled${cityText}.`,
+    });
+  }
+
+  // Q4: Genre
+  if (genre) {
+    const normalized = normalizeGenre(genre);
+    faqs.push({
+      question: `What genre is ${artistName}?`,
+      answer: `${artistName} is a ${normalized} artist. Browse more ${normalized} tours and concerts on TourWax.`,
+    });
+  }
+
+  // Q5: Tour cities
+  if (cities.length > 0) {
+    faqs.push({
+      question: `What cities is ${artistName} touring in ${year}?`,
+      answer: `${artistName} has concerts scheduled in ${cities.join(', ')}. Visit the tour dates section above for full venue details and ticket links.`,
+    });
+  }
+
+  return faqs;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const artist = await getArtist(slug);
@@ -158,14 +253,22 @@ export default async function ArtistPage({ params }: Props) {
     notFound();
   }
 
-  // Then fetch events and news using the artist ID
-  const [artistEvents, news] = await Promise.all([
+  // Then fetch events, news, and related artists using the artist ID
+  const [artistEvents, news, relatedArtists] = await Promise.all([
     getArtistEvents(artist.id),
     getArtistNews(artist.id),
+    getRelatedArtists(artist.id, artist.genre),
   ]);
 
   // Get Twitter handle for this artist
   const twitterHandle = ARTIST_TWITTER_HANDLES[artist.name];
+
+  // Extract cities and prepare FAQ data
+  const cities = extractCitiesFromEvents(artistEvents);
+  const nextEvent = artistEvents.length > 0
+    ? { date: artistEvents[0].event.eventDate, venueName: artistEvents[0].venue?.name ?? null, city: artistEvents[0].venue?.city ?? null }
+    : null;
+  const faqs = generateArtistFAQs(artist.name, artist.genre, artistEvents.length, cities, nextEvent);
 
   // Generate structured data schemas
   const personSchema = generatePersonSchema(artist);
@@ -185,6 +288,7 @@ export default async function ArtistPage({ params }: Props) {
     ),
   }));
   const newsSchemas = news.map((article) => generateNewsArticleSchema(article));
+  const faqSchema = generateFAQSchema(faqs);
 
   const breadcrumbItems = [
     { name: 'Home', url: '/' },
@@ -194,7 +298,7 @@ export default async function ArtistPage({ params }: Props) {
 
   return (
     <>
-      <StructuredData data={[personSchema, breadcrumbSchema, ...eventSchemas, ...newsSchemas]} />
+      <StructuredData data={[personSchema, breadcrumbSchema, faqSchema, ...eventSchemas, ...newsSchemas]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <Breadcrumbs items={breadcrumbItems} />
       {/* Artist Header */}
@@ -229,15 +333,48 @@ export default async function ArtistPage({ params }: Props) {
                 </h1>
                 {artist.genre && (
                   <div className="inline-flex items-center gap-2 mb-4">
-                    <span className="px-4 py-1.5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-bold rounded-full">
+                    <Link
+                      href={`/tours/${genreSlug(normalizeGenre(artist.genre))}`}
+                      className="px-4 py-1.5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-bold rounded-full hover:from-orange-600 hover:to-red-600 transition-all"
+                    >
                       {artist.genre}
-                    </span>
+                    </Link>
                   </div>
                 )}
                 {artist.bio && (
                   <p className="text-gray-700 mb-6 max-w-3xl leading-relaxed text-lg">
                     {artist.bio}
                   </p>
+                )}
+                {(artist.spotifyId || artist.ticketmasterId) && (
+                  <div className="flex items-center gap-3 mb-6">
+                    {artist.spotifyId && (
+                      <a
+                        href={`https://open.spotify.com/artist/${artist.spotifyId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#1DB954] text-white text-sm font-semibold rounded-lg hover:bg-[#1ed760] transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                        </svg>
+                        Spotify
+                      </a>
+                    )}
+                    {artist.ticketmasterId && (
+                      <a
+                        href={`https://www.ticketmaster.com/artist/${artist.ticketmasterId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#026CDF] text-white text-sm font-semibold rounded-lg hover:bg-[#0256b3] transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22c-5.523 0-10-4.477-10-10S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-2-15v10l8-5-8-5z" />
+                        </svg>
+                        Ticketmaster
+                      </a>
+                    )}
+                  </div>
                 )}
                 <div className="flex flex-wrap gap-6 text-sm">
                   <div className="flex items-center gap-2">
@@ -495,6 +632,80 @@ export default async function ArtistPage({ params }: Props) {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Related Artists */}
+      {relatedArtists.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold mb-6">
+            Similar <span className="gradient-text">Artists</span>
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {relatedArtists.map((related) => (
+              <Link
+                key={related.id}
+                href={`/artists/${related.slug}`}
+                className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100"
+              >
+                <div className="aspect-square bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 relative overflow-hidden">
+                  {related.imageUrl ? (
+                    <Image
+                      src={related.imageUrl}
+                      alt={related.name}
+                      width={200}
+                      height={200}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      sizes="(max-width: 768px) 50vw, 16vw"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">
+                      {related.name.charAt(0)}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <div className="p-3 bg-white">
+                  <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors text-sm line-clamp-1">
+                    {related.name}
+                  </h3>
+                  {related.eventCount > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">{related.eventCount} upcoming show{related.eventCount === 1 ? '' : 's'}</p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* FAQ Section */}
+      <div className="mt-16">
+        <h2 className="text-3xl font-bold mb-6">
+          Frequently Asked <span className="gradient-text">Questions</span>
+        </h2>
+        <div className="space-y-3">
+          {faqs.map((faq, index) => (
+            <details
+              key={index}
+              className="group bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden"
+            >
+              <summary className="flex items-center justify-between cursor-pointer p-6 font-semibold text-gray-900 hover:text-orange-600 transition-colors">
+                <span>{faq.question}</span>
+                <svg
+                  className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="px-6 pb-6 text-gray-600 leading-relaxed">
+                {faq.answer}
+              </div>
+            </details>
+          ))}
         </div>
       </div>
     </div>

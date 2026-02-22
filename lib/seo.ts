@@ -24,6 +24,7 @@ export function generateArtistDescription(
   eventCount: number,
   cities: string[]
 ): string {
+  const year = new Date().getFullYear();
   const genreText = genre ? ` ${genre}` : '';
   const eventsText = eventCount === 0
     ? `Check back for upcoming${genreText} tour dates and concert information.`
@@ -31,7 +32,7 @@ export function generateArtistDescription(
     ? `1 upcoming show${cities.length > 0 ? ` in ${cities[0]}` : ''}.`
     : `${eventCount} upcoming shows${cities.length > 0 ? ` in ${cities.slice(0, 3).join(', ')}${cities.length > 3 ? ' and more' : ''}` : ''}.`;
 
-  return `Find ${artistName} tour dates, concert tickets, and venue information. ${eventsText} Latest${genreText} music news and tour updates.`;
+  return `Find ${artistName} ${year} tour dates, concert tickets, and venue information. ${eventsText} Compare ticket prices, get${genreText} music news, and never miss a show.`;
 }
 
 export function extractCitiesFromEvents(events: Array<{ event: Event; venue: Venue | null }>): string[] {
