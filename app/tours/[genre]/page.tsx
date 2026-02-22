@@ -11,6 +11,7 @@ import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { normalizeGenre, genreSlug, GENRE_DESCRIPTIONS, GENRE_DISPLAY_NAMES } from '@/lib/genres';
+import { slugify } from '@/lib/slugify';
 
 export const dynamic = 'force-static';
 export const revalidate = 1800;
@@ -304,10 +305,10 @@ export default async function GenrePage({ params }: Props) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                   </svg>
-                                  <span className="font-medium">{row.venue.name}</span>
+                                  <Link href={`/venues/${slugify(row.venue.name)}`} className="font-medium hover:text-orange-600 transition-colors">{row.venue.name}</Link>
                                   {row.venue.city && (
                                     <span className="text-gray-400">
-                                      {row.venue.state ? `${row.venue.city}, ${row.venue.state}` : row.venue.city}
+                                      <Link href={`/concerts/${slugify(row.venue.city)}`} className="hover:text-orange-600 transition-colors">{row.venue.city}</Link>{row.venue.state ? `, ${row.venue.state}` : ''}
                                     </span>
                                   )}
                                 </div>

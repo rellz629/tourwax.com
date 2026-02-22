@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { generateOrganizationSchema, generateWebsiteSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { SITE_URL } from '@/lib/seo';
+import { slugify } from '@/lib/slugify';
 import StructuredData from '@/components/StructuredData';
 
 // Use Static Site Generation with ISR
@@ -223,9 +224,11 @@ export default async function HomePage() {
                         <p className="text-sm text-gray-500 sm:hidden truncate">{event.name}</p>
                         {(event.venueCity || event.venueState || event.venueCountry) && (
                           <p className="text-sm text-gray-400 truncate">
-                            {[event.venueCity, event.venueState, event.venueCountry]
-                              .filter(Boolean)
-                              .join(', ')}
+                            {event.venueCity ? (
+                              <Link href={`/concerts/${slugify(event.venueCity)}`} className="hover:text-orange-600 transition-colors">{event.venueCity}</Link>
+                            ) : null}
+                            {event.venueCity && (event.venueState || event.venueCountry) ? ', ' : ''}
+                            {[event.venueState, event.venueCountry].filter(Boolean).join(', ')}
                           </p>
                         )}
                       </div>

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { SITE_NAME, generateCanonicalUrl } from '@/lib/seo';
-import { normalizeGenre } from '@/lib/genres';
+import { normalizeGenre, genreSlug } from '@/lib/genres';
 
 // Use Static Site Generation with ISR
 export const dynamic = 'force-static';
@@ -62,7 +62,9 @@ export default async function ArtistsPage() {
         <section key={genre} className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-1 w-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
-            <h2 className="text-3xl font-bold text-gray-900">{genre}</h2>
+            <h2 className="text-3xl font-bold text-gray-900">
+              <Link href={`/tours/${genreSlug(genre)}`} className="hover:text-orange-600 transition-colors">{genre}</Link>
+            </h2>
             <div className="h-1 flex-1 bg-gradient-to-r from-red-500 to-transparent rounded-full"></div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

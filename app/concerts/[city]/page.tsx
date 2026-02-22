@@ -252,7 +252,7 @@ export default async function CityPage({ params }: Props) {
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <span className="font-medium">{row.venue.name}</span>
+                                <Link href={`/venues/${slugify(row.venue.name)}`} className="font-medium hover:text-orange-600 transition-colors">{row.venue.name}</Link>
                               </div>
                             )}
                             <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-500">

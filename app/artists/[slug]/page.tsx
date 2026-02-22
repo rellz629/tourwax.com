@@ -11,6 +11,7 @@ import { normalizeGenre, genreSlug } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
+import { slugify } from '@/lib/slugify';
 import type { Metadata } from 'next';
 
 // Use Static Site Generation with ISR
@@ -458,12 +459,14 @@ export default async function ArtistPage({ params }: Props) {
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <p className="font-semibold text-gray-700">{venue.name}</p>
+                                <Link href={`/venues/${slugify(venue.name)}`} className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">{venue.name}</Link>
                               </div>
                               <p className="ml-6">
-                                {[venue.city, venue.state, venue.country]
-                                  .filter(Boolean)
-                                  .join(', ')}
+                                {venue.city ? (
+                                  <Link href={`/concerts/${slugify(venue.city)}`} className="hover:text-orange-600 transition-colors">{venue.city}</Link>
+                                ) : null}
+                                {venue.city && (venue.state || venue.country) ? ', ' : ''}
+                                {[venue.state, venue.country].filter(Boolean).join(', ')}
                               </p>
                             </div>
                           )}

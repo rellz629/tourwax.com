@@ -88,7 +88,9 @@ export default async function VenuesPage() {
               <section key={cityLabel}>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
-                  <h2 className="text-xl font-bold text-gray-900">{cityLabel}</h2>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    <Link href={`/concerts/${slugify(cityLabel.split(',')[0].trim())}`} className="hover:text-orange-600 transition-colors">{cityLabel}</Link>
+                  </h2>
                   <div className="h-px flex-1 bg-gray-200"></div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
