@@ -92,5 +92,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  return [...staticRoutes, ...artistRoutes, ...cityRoutes, ...genreRoutes];
+  // Get distinct venues with future events
+  const venuesWithEvents = await db
+    .selectDistinct({ venueName: venues.name })
+    .from(venues)
+    .innerJoin(events, eq(events.venueId, venues.id))
+    .where(gte(events.eventDate, now));
+
+  const venueRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/venues`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    ...venuesWithEvents.map((row) => ({
+      url: `${SITE_URL}/venues/${slugify(row.venueName)}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.7,
+    })),
+  ];
+
+  return [...staticRoutes, ...artistRoutes, ...cityRoutes, ...genreRoutes, ...venueRoutes];
 }

@@ -216,6 +216,68 @@ export function generateGenreEventListSchema(
   };
 }
 
+export function generateVenueSchema(venue: Venue) {
+  const schema: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': 'Place',
+    name: venue.name,
+  };
+
+  if (venue.url) {
+    schema.url = venue.url;
+  }
+
+  const addressParts: Record<string, any> = {
+    '@type': 'PostalAddress',
+  };
+  if (venue.address) addressParts.streetAddress = venue.address;
+  if (venue.city) addressParts.addressLocality = venue.city;
+  if (venue.state) addressParts.addressRegion = venue.state;
+  if (venue.postalCode) addressParts.postalCode = venue.postalCode;
+  if (venue.country) addressParts.addressCountry = venue.country;
+
+  if (Object.keys(addressParts).length > 1) {
+    schema.address = addressParts;
+  }
+
+  if (venue.latitude && venue.longitude) {
+    schema.geo = {
+      '@type': 'GeoCoordinates',
+      latitude: venue.latitude,
+      longitude: venue.longitude,
+    };
+  }
+
+  if (venue.capacity) {
+    schema.maximumAttendeeCapacity = venue.capacity;
+  }
+
+  return schema;
+}
+
+export function generateVenueEventListSchema(
+  venue: Venue,
+  venueSlug: string,
+  eventData: Array<{ event: Event; artist: { name: string; slug: string; imageUrl: string | null }; venue: Venue | null }>
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Upcoming Concerts at ${venue.name}`,
+    url: `${SITE_URL}/venues/${venueSlug}`,
+    numberOfItems: eventData.length,
+    itemListElement: eventData.map(({ event, artist, venue: v }, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: generateMusicEventSchema(
+        event,
+        { name: artist.name, slug: artist.slug, imageUrl: artist.imageUrl, genre: null } as Artist,
+        v
+      ),
+    })),
+  };
+}
+
 export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',
