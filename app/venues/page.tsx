@@ -21,16 +21,15 @@ export default async function VenuesPage() {
 
   const venuesWithCounts = await db
     .select({
-      venueId: venues.id,
       venueName: venues.name,
-      city: venues.city,
-      state: venues.state,
+      city: sql<string>`min(${venues.city})`,
+      state: sql<string>`min(${venues.state})`,
       eventCount: sql<number>`count(*)::int`,
     })
     .from(events)
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now))
-    .groupBy(venues.id, venues.name, venues.city, venues.state)
+    .groupBy(venues.name)
     .orderBy(sql`count(*) desc`);
 
   // Group venues by city
@@ -97,7 +96,7 @@ export default async function VenuesPage() {
                     const venueSlug = slugify(row.venueName);
                     return (
                       <Link
-                        key={row.venueId}
+                        key={venueSlug}
                         href={`/venues/${venueSlug}`}
                         className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100"
                       >
