@@ -21,7 +21,7 @@ export default async function VenuesPage() {
 
   const venuesWithCounts = await db
     .select({
-      venueName: venues.name,
+      venueName: sql<string>`max(${venues.name})`,
       city: sql<string>`min(${venues.city})`,
       state: sql<string>`min(${venues.state})`,
       eventCount: sql<number>`count(*)::int`,
@@ -29,7 +29,7 @@ export default async function VenuesPage() {
     .from(events)
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now))
-    .groupBy(venues.name)
+    .groupBy(sql`lower(${venues.name})`)
     .orderBy(sql`count(*) desc`);
 
   // Group venues by city

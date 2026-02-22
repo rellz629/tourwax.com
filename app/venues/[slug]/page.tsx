@@ -20,7 +20,12 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-async function getVenueBySlug(venueSlug: string): Promise<Venue | null> {
+interface VenueMatch {
+  venue: Venue;
+  allVenueIds: string[];
+}
+
+async function getVenueBySlug(venueSlug: string): Promise<VenueMatch | null> {
   const now = new Date();
 
   // Get all venues with future events
@@ -32,15 +37,20 @@ async function getVenueBySlug(venueSlug: string): Promise<Venue | null> {
     .innerJoin(events, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now));
 
-  // Find matching venue by slug
-  const match = venuesWithEvents.find(
+  // Find ALL matching venues by slug (same venue can have multiple DB records from different sources)
+  const matches = venuesWithEvents.filter(
     (row) => slugify(row.venue.name) === venueSlug
   );
 
-  return match?.venue || null;
+  if (matches.length === 0) return null;
+
+  return {
+    venue: matches[0].venue,
+    allVenueIds: matches.map((m) => m.venue.id),
+  };
 }
 
-async function getVenueEvents(venueId: string) {
+async function getVenueEvents(venueIds: string[]) {
   const now = new Date();
 
   const venueEvents = await db
@@ -55,7 +65,7 @@ async function getVenueEvents(venueId: string) {
     .innerJoin(venues, eq(events.venueId, venues.id))
     .innerJoin(artists, eq(events.artistId, artists.id))
     .where(
-      sql`${events.venueId} = ${venueId} AND ${events.eventDate} >= ${now}`
+      sql`${events.venueId} IN ${venueIds} AND ${events.eventDate} >= ${now}`
     )
     .orderBy(events.eventDate);
 
@@ -102,23 +112,23 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug: venueSlug } = await params;
-  const venue = await getVenueBySlug(venueSlug);
+  const match = await getVenueBySlug(venueSlug);
 
-  if (!venue) {
+  if (!match) {
     return {
       title: 'Venue Not Found',
       description: 'The venue you are looking for could not be found.',
     };
   }
 
-  const venueEvents = await getVenueEvents(venue.id);
+  const venueEvents = await getVenueEvents(match.allVenueIds);
   const artistNames = [...new Set(venueEvents.map((e) => e.artistName))];
 
   return generateVenueMetadata({
-    venueName: venue.name,
+    venueName: match.venue.name,
     venueSlug,
-    city: venue.city,
-    state: venue.state,
+    city: match.venue.city,
+    state: match.venue.state,
     eventCount: venueEvents.length,
     artistNames,
   });
@@ -126,13 +136,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function VenuePage({ params }: Props) {
   const { slug: venueSlug } = await params;
-  const venue = await getVenueBySlug(venueSlug);
+  const match = await getVenueBySlug(venueSlug);
 
-  if (!venue) {
+  if (!match) {
     notFound();
   }
 
-  const venueEvents = await getVenueEvents(venue.id);
+  const { venue } = match;
+  const venueEvents = await getVenueEvents(match.allVenueIds);
 
   const locationParts: string[] = [];
   if (venue.city) locationParts.push(venue.city);
