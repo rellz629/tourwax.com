@@ -278,6 +278,48 @@ export function generateVenueEventListSchema(
   };
 }
 
+export function generateBlogPostingSchema(post: {
+  title: string;
+  excerpt: string;
+  slug: string;
+  author: string;
+  featuredImage: string | null;
+  publishedAt: string;
+  updatedAt: string;
+}) {
+  const schema: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: new Date(post.publishedAt).toISOString(),
+    dateModified: new Date(post.updatedAt).toISOString(),
+    author: {
+      '@type': 'Person',
+      name: post.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/logo.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/blog/${post.slug}`,
+    },
+  };
+
+  if (post.featuredImage) {
+    schema.image = post.featuredImage;
+  }
+
+  return schema;
+}
+
 export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',

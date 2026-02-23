@@ -352,6 +352,69 @@ export function generateVenuesIndexMetadata() {
   };
 }
 
+export function generateBlogIndexMetadata() {
+  const title = `Music Blog - Concert Tips, Tour News & Artist Spotlights | ${SITE_NAME}`;
+  const description = 'Read the latest concert tips, tour news, and artist spotlights. Get insider advice on finding tickets, tracking tours, and making the most of live music.';
+  const url = generateCanonicalUrl('/blog');
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: generateOpenGraphTags({
+      title,
+      description,
+      url,
+    }),
+    twitter: generateTwitterCardTags({
+      title,
+      description,
+    }),
+  };
+}
+
+export function generateBlogPostMetadata(post: {
+  title: string;
+  excerpt: string;
+  slug: string;
+  featuredImage: string | null;
+  publishedAt: string;
+  updatedAt: string;
+  author: string;
+}) {
+  const title = `${post.title} | ${SITE_NAME}`;
+  const description = post.excerpt;
+  const url = generateCanonicalUrl(`/blog/${post.slug}`);
+  const image = post.featuredImage || undefined;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      ...generateOpenGraphTags({
+        title,
+        description,
+        url,
+        image,
+        type: 'article',
+      }),
+      publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt,
+      authors: [post.author],
+    },
+    twitter: generateTwitterCardTags({
+      title,
+      description,
+      image,
+    }),
+  };
+}
+
 export function generateDefaultMetadata() {
   return {
     metadataBase: new URL(SITE_URL),

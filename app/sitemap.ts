@@ -5,6 +5,7 @@ import { eq, gte, isNotNull, and } from 'drizzle-orm';
 import { SITE_URL } from '@/lib/seo';
 import { slugify } from '@/lib/slugify';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
+import { getAllPosts } from '@/lib/blog';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all active artists
@@ -114,5 +115,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  return [...staticRoutes, ...artistRoutes, ...cityRoutes, ...genreRoutes, ...venueRoutes];
+  // Blog routes
+  const blogPosts = getAllPosts();
+  const blogRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    ...blogPosts.map((post) => ({
+      url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified: new Date(post.updatedAt),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    })),
+  ];
+
+  return [...staticRoutes, ...artistRoutes, ...cityRoutes, ...genreRoutes, ...venueRoutes, ...blogRoutes];
 }
