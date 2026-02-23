@@ -41,6 +41,9 @@ export const metadata: Metadata = {
     icon: '/icon.svg',
   },
   manifest: '/site.webmanifest',
+  other: {
+    'impact-site-verification': '14fbf304-5f00-473c-af9b-cd49c53ce839',
+  },
 };
 
 export const viewport: Viewport = {
