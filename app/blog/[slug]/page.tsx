@@ -56,19 +56,26 @@ export default async function BlogPostPage({
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <article>
-          <header className="mb-10">
+        <article className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
+
+          <header className="px-6 sm:px-10 pt-8 pb-6 border-b border-gray-100">
             <div className="mb-4">
               <span className="inline-block px-3 py-1 text-xs font-semibold text-orange-600 bg-orange-50 rounded-full">
                 {post.category}
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4">
               <span className="gradient-text">{post.title}</span>
             </h1>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span>{post.author}</span>
-              <span>|</span>
+            <div className="flex items-center gap-3 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                  {post.author.split(' ').map(w => w[0]).join('')}
+                </div>
+                <span className="font-medium text-gray-700">{post.author}</span>
+              </div>
+              <span className="text-gray-300">|</span>
               <time dateTime={post.publishedAt}>
                 {new Date(post.publishedAt).toLocaleDateString('en-US', {
                   year: 'numeric',
@@ -79,16 +86,18 @@ export default async function BlogPostPage({
             </div>
           </header>
 
-          <div
-            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-a:text-orange-500 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          <div className="px-6 sm:px-10 py-8">
+            <div
+              className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+          </div>
         </article>
 
-        <div className="mt-12 pt-8 border-t border-gray-200">
+        <div className="mt-8 flex justify-between items-center">
           <Link
             href="/blog"
-            className="inline-flex items-center text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
           >
             ← Back to Blog
           </Link>
