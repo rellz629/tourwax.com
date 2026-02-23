@@ -46,11 +46,27 @@ export function generateMusicEventSchema(
   artist: Artist,
   venue: Venue | null
 ) {
+  // Build description from available data
+  const eventDate = new Date(event.eventDate);
+  const dateStr = eventDate.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const venueLabel = venue
+    ? `${venue.name}${venue.city ? ` in ${venue.city}` : ''}${venue.state ? `, ${venue.state}` : ''}`
+    : null;
+  const description = venueLabel
+    ? `${artist.name} live at ${venueLabel} on ${dateStr}.`
+    : `${artist.name} live on ${dateStr}.`;
+
   const schema: Record<string, any> = {
     '@context': 'https://schema.org',
     '@type': 'MusicEvent',
     name: event.name,
-    startDate: new Date(event.eventDate).toISOString(),
+    description,
+    startDate: eventDate.toISOString(),
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     performer: {
@@ -60,12 +76,10 @@ export function generateMusicEventSchema(
     },
   };
 
-  // Add image if available
-  if (artist.imageUrl) {
-    schema.image = artist.imageUrl;
-  }
+  // Add image — fall back to site default so Google always has one
+  schema.image = artist.imageUrl || `${SITE_URL}/og-default.jpg`;
 
-  // Add venue/location information
+  // Location (required by Google) — always provide a Place
   if (venue) {
     const location: Record<string, any> = {
       '@type': 'Place',
@@ -95,27 +109,44 @@ export function generateMusicEventSchema(
     }
 
     schema.location = location;
-  }
-
-  // Add ticket offer information
-  if (event.ticketUrl || event.minPrice) {
-    const offer: Record<string, any> = {
-      '@type': 'Offer',
-      url: event.ticketUrl || `${SITE_URL}/artists/${artist.slug}`,
-      availability: 'https://schema.org/InStock',
+  } else {
+    schema.location = {
+      '@type': 'Place',
+      name: 'Venue TBA',
     };
-
-    if (event.minPrice) {
-      offer.price = event.minPrice;
-      offer.priceCurrency = event.currency || 'USD';
-    }
-
-    if (event.minPrice && event.maxPrice && event.minPrice !== event.maxPrice) {
-      offer.priceRange = `${event.minPrice}-${event.maxPrice}`;
-    }
-
-    schema.offers = offer;
   }
+
+  // Organizer — use venue when available, otherwise TourWax
+  if (venue) {
+    schema.organizer = {
+      '@type': 'Organization',
+      name: venue.name,
+      ...(venue.url ? { url: venue.url } : {}),
+    };
+  } else {
+    schema.organizer = {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+    };
+  }
+
+  // Offers — always include so Google gets price/currency/validFrom
+  const offer: Record<string, any> = {
+    '@type': 'Offer',
+    url: event.ticketUrl || `${SITE_URL}/artists/${artist.slug}`,
+    availability: 'https://schema.org/InStock',
+    price: event.minPrice ?? 0,
+    priceCurrency: event.currency || 'USD',
+    validFrom: new Date(event.createdAt).toISOString(),
+  };
+
+  if (event.minPrice && event.maxPrice && event.minPrice !== event.maxPrice) {
+    offer.highPrice = event.maxPrice;
+    offer.lowPrice = event.minPrice;
+  }
+
+  schema.offers = offer;
 
   return schema;
 }
