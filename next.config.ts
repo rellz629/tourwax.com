@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'seatgeekimages.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'i.scdn.co',
       },
       {
