@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Link from "next/link";
+import SearchBar from "@/components/SearchBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -99,6 +100,9 @@ export default function RootLayout({
                     About
                   </Link>
                 </div>
+              </div>
+              <div className="flex items-center">
+                <SearchBar />
               </div>
             </div>
           </div>
