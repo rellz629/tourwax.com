@@ -20,6 +20,7 @@ interface SeatgeekEvent {
   id: number;
   title: string;
   datetime_local: string;
+  datetime_utc?: string;
   venue: SeatgeekVenue;
   stats?: {
     lowest_price?: number;
@@ -118,7 +119,7 @@ export async function searchArtistEvents(artistName: string): Promise<{
       artistId: '', // Will be set by caller
       venueId,
       name: event.title,
-      eventDate: new Date(event.datetime_local),
+      eventDate: new Date(event.datetime_utc || event.datetime_local),
       status: 'scheduled',
       ticketUrl: event.url || null,
       minPrice: event.stats?.lowest_price || null,

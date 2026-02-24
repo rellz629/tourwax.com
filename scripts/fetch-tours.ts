@@ -23,16 +23,23 @@ function isPackageVariant(eventName: string): boolean {
   return PACKAGE_KEYWORDS.some(kw => lower.includes(kw));
 }
 
-// Deduplicate events: keep only the main event per venue+date, filtering out package variants
-function deduplicateEvents(eventList: NewEvent[]): NewEvent[] {
+// Deduplicate events: keep only the main event per city+date, filtering out package variants
+function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null }[]): NewEvent[] {
   const groups = new Map<string, NewEvent[]>();
 
+  // Build venue-to-city lookup for cross-source matching
+  const venueIdToCity = new Map<string, string>();
+  for (const v of venueList) {
+    if (v.city) venueIdToCity.set(v.id, v.city.toLowerCase());
+  }
+
   for (const event of eventList) {
-    // Group by venue + calendar date
+    // Group by city + calendar date (catches cross-source dupes for the same venue)
     const dateKey = event.eventDate instanceof Date
       ? event.eventDate.toISOString().slice(0, 10)
       : new Date(event.eventDate).toISOString().slice(0, 10);
-    const key = `${event.venueId || 'unknown'}_${dateKey}`;
+    const city = (event.venueId && venueIdToCity.get(event.venueId)) || 'unknown';
+    const key = `${city}_${dateKey}`;
 
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(event);
@@ -131,8 +138,8 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
       console.log(`  ✓ Stored ${allVenues.length} venues`);
     }
 
-    // Deduplicate events (remove VIP/package variants for the same show)
-    const dedupedEvents = deduplicateEvents(allEvents);
+    // Deduplicate events (remove VIP/package variants and cross-source dupes)
+    const dedupedEvents = deduplicateEvents(allEvents, allVenues);
     if (dedupedEvents.length < allEvents.length) {
       console.log(`  🔄 Deduped: ${allEvents.length} → ${dedupedEvents.length} events (removed ${allEvents.length - dedupedEvents.length} package variants)`);
     }

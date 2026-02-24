@@ -119,7 +119,7 @@ export async function searchArtistEvents(artistName: string): Promise<{
 
     const eventDateTime = event.dates.start.dateTime ||
       (event.dates.start.localDate ?
-        `${event.dates.start.localDate}T${event.dates.start.localTime || '20:00:00'}` :
+        `${event.dates.start.localDate}T${event.dates.start.localTime || '20:00:00'}Z` :
         null);
 
     if (!eventDateTime) continue;

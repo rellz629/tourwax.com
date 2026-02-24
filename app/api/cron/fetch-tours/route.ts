@@ -25,14 +25,21 @@ function isPackageVariant(eventName: string): boolean {
   return PACKAGE_KEYWORDS.some(kw => lower.includes(kw));
 }
 
-function deduplicateEvents(eventList: NewEvent[]): NewEvent[] {
+function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null }[]): NewEvent[] {
   const groups = new Map<string, NewEvent[]>();
+
+  // Build venue-to-city lookup for cross-source matching
+  const venueIdToCity = new Map<string, string>();
+  for (const v of venueList) {
+    if (v.city) venueIdToCity.set(v.id, v.city.toLowerCase());
+  }
 
   for (const event of eventList) {
     const dateKey = event.eventDate instanceof Date
       ? event.eventDate.toISOString().slice(0, 10)
       : new Date(event.eventDate).toISOString().slice(0, 10);
-    const key = `${event.venueId || 'unknown'}_${dateKey}`;
+    const city = (event.venueId && venueIdToCity.get(event.venueId)) || 'unknown';
+    const key = `${city}_${dateKey}`;
 
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(event);
@@ -112,7 +119,7 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
       });
   }
 
-  const dedupedEvents = deduplicateEvents(allEvents);
+  const dedupedEvents = deduplicateEvents(allEvents, allVenues);
 
   if (dedupedEvents.length > 0) {
     await db.insert(events)
