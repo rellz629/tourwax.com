@@ -351,6 +351,96 @@ export function generateBlogPostingSchema(post: {
   return schema;
 }
 
+export function generateArticleSchema(article: {
+  headline: string;
+  description: string;
+  slug: string;
+  dateModified: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.headline,
+    description: article.description,
+    dateModified: article.dateModified,
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/logo.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/insights/${article.slug}`,
+    },
+  };
+}
+
+export function generateFestivalEventSchema(festival: {
+  name: string;
+  date: string;
+  venue: Venue;
+  artists: Array<{ name: string; slug: string; imageUrl: string | null; genre: string | null }>;
+  events: Array<{ ticketUrl: string | null; minPrice: number | null; maxPrice: number | null; currency: string | null; source: string }>;
+}) {
+  const eventDate = new Date(festival.date);
+  const isFestival = festival.artists.length >= 5;
+
+  const schema: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': isFestival ? 'Festival' : 'MusicEvent',
+    name: festival.name,
+    startDate: eventDate.toISOString(),
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    image: `${SITE_URL}/og-default.jpg`,
+    performer: festival.artists.map((a) => ({
+      '@type': a.genre ? 'MusicGroup' : 'Person',
+      name: a.name,
+      url: `${SITE_URL}/artists/${a.slug}`,
+    })),
+  };
+
+  // Location
+  const location: Record<string, any> = {
+    '@type': 'Place',
+    name: festival.venue.name,
+  };
+
+  const addressParts: Record<string, any> = { '@type': 'PostalAddress' };
+  if (festival.venue.city) addressParts.addressLocality = festival.venue.city;
+  if (festival.venue.state) addressParts.addressRegion = festival.venue.state;
+  if (festival.venue.country) addressParts.addressCountry = festival.venue.country;
+  if (Object.keys(addressParts).length > 1) location.address = addressParts;
+
+  if (festival.venue.latitude && festival.venue.longitude) {
+    location.geo = {
+      '@type': 'GeoCoordinates',
+      latitude: festival.venue.latitude,
+      longitude: festival.venue.longitude,
+    };
+  }
+  schema.location = location;
+
+  // Best offer
+  const priced = festival.events.filter((e) => e.minPrice);
+  if (priced.length > 0) {
+    const lowest = priced.reduce((min, e) => (e.minPrice! < min.minPrice! ? e : min), priced[0]);
+    schema.offers = {
+      '@type': 'Offer',
+      url: lowest.ticketUrl || SITE_URL,
+      availability: 'https://schema.org/InStock',
+      price: lowest.minPrice,
+      priceCurrency: lowest.currency || 'USD',
+    };
+  }
+
+  return schema;
+}
+
 export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',

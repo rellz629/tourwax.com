@@ -6,6 +6,7 @@ import { SITE_URL } from '@/lib/seo';
 import { slugify } from '@/lib/slugify';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
 import { getAllPosts } from '@/lib/blog';
+import { getAllFestivals } from '@/lib/festivals';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all active artists
@@ -132,5 +133,44 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  return [...staticRoutes, ...artistRoutes, ...cityRoutes, ...genreRoutes, ...venueRoutes, ...blogRoutes];
+  // Insights routes
+  const insightsRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/insights`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/insights/most-toured-cities`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/insights/busiest-touring-artists`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+  ];
+
+  // Festival routes
+  const allFestivals = await getAllFestivals();
+  const festivalRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/festivals`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    ...allFestivals.map((festival) => ({
+      url: `${SITE_URL}/festivals/${festival.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.7,
+    })),
+  ];
+
+  return [...staticRoutes, ...artistRoutes, ...cityRoutes, ...genreRoutes, ...venueRoutes, ...blogRoutes, ...insightsRoutes, ...festivalRoutes];
 }

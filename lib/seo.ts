@@ -415,6 +415,117 @@ export function generateBlogPostMetadata(post: {
   };
 }
 
+export function generateInsightsIndexMetadata() {
+  const title = `Live Music Insights & Data ${new Date().getFullYear()} - ${SITE_NAME}`;
+  const description = 'Data-driven insights about live music touring. Discover the most toured cities, busiest touring artists, and trends in the concert industry.';
+  const url = generateCanonicalUrl('/insights');
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: generateOpenGraphTags({
+      title,
+      description,
+      url,
+    }),
+    twitter: generateTwitterCardTags({
+      title,
+      description,
+    }),
+  };
+}
+
+export function generateInsightMetadata(data: {
+  title: string;
+  description: string;
+  slug: string;
+}) {
+  const title = `${data.title} | ${SITE_NAME}`;
+  const url = generateCanonicalUrl(`/insights/${data.slug}`);
+
+  return {
+    title,
+    description: data.description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      ...generateOpenGraphTags({
+        title,
+        description: data.description,
+        url,
+        type: 'article',
+      }),
+    },
+    twitter: generateTwitterCardTags({
+      title,
+      description: data.description,
+    }),
+  };
+}
+
+export function generateFestivalsIndexMetadata() {
+  const title = `Music Festivals & Multi-Artist Events ${new Date().getFullYear()} - ${SITE_NAME}`;
+  const description = 'Discover music festivals and multi-artist events with full lineups, ticket info, and venue details. Find festivals near you.';
+  const url = generateCanonicalUrl('/festivals');
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: generateOpenGraphTags({
+      title,
+      description,
+      url,
+    }),
+    twitter: generateTwitterCardTags({
+      title,
+      description,
+    }),
+  };
+}
+
+export function generateFestivalMetadata(data: {
+  festivalName: string;
+  slug: string;
+  venueName: string;
+  city: string | null;
+  date: string;
+  artistCount: number;
+  artistNames: string[];
+}) {
+  const year = new Date().getFullYear();
+  const location = data.city ? ` in ${data.city}` : '';
+  const title = `${data.festivalName}${location} ${year} | Lineup & Tickets - ${SITE_NAME}`;
+  const artistText = data.artistNames.length > 0
+    ? ` See ${data.artistNames.slice(0, 3).join(', ')}${data.artistNames.length > 3 ? ', and more' : ''}.`
+    : '';
+  const description = `${data.festivalName} at ${data.venueName}${location} on ${data.date}. ${data.artistCount} artists performing.${artistText} Get tickets and lineup info.`;
+  const url = generateCanonicalUrl(`/festivals/${data.slug}`);
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: generateOpenGraphTags({
+      title,
+      description,
+      url,
+    }),
+    twitter: generateTwitterCardTags({
+      title,
+      description,
+    }),
+  };
+}
+
 export function generateDefaultMetadata() {
   return {
     metadataBase: new URL(SITE_URL),

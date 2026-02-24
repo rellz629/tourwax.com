@@ -89,6 +89,19 @@ export default function BlogPage() {
             ))}
           </div>
         )}
+
+        <div className="mt-12 bg-white rounded-xl shadow-md p-8 border border-gray-100">
+          <h2 className="text-lg font-bold text-gray-900 mb-2">Data Insights</h2>
+          <p className="text-gray-600 mb-4">
+            Explore data-driven rankings of the busiest touring artists and most popular concert cities.
+          </p>
+          <Link
+            href="/insights"
+            className="text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+          >
+            View Live Music Insights →
+          </Link>
+        </div>
       </div>
     </>
   );
