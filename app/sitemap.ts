@@ -59,14 +59,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       gte(events.eventDate, now)
     ));
 
-  const cityRoutes: MetadataRoute.Sitemap = citiesWithEvents
+  const cityRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/concerts`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    ...citiesWithEvents
     .filter((row) => row.city)
     .map((row) => ({
       url: `${SITE_URL}/concerts/${slugify(row.city!)}`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 0.7,
-    }));
+    })),
+  ];
 
   // Get distinct normalized genres from active artists
   const allGenreArtists = await db
