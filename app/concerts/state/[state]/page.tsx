@@ -72,7 +72,7 @@ async function getStateData(stateSlug: string) {
     .from(events)
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(
-      sql`${venues.state} = ${match.state} AND ${events.eventDate} >= ${now} AND ${venues.city} IS NOT NULL`
+      sql`${venues.state} = ${match.state} AND ${events.eventDate} >= ${now.toISOString()} AND ${venues.city} IS NOT NULL`
     )
     .groupBy(venues.city)
     .orderBy(sql`count(*) desc`);
@@ -84,7 +84,7 @@ async function getStateData(stateSlug: string) {
     .innerJoin(events, eq(events.artistId, artists.id))
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(
-      sql`${venues.state} = ${match.state} AND ${events.eventDate} >= ${now}`
+      sql`${venues.state} = ${match.state} AND ${events.eventDate} >= ${now.toISOString()}`
     )
     .limit(10);
 

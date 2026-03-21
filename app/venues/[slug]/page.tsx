@@ -65,7 +65,7 @@ async function getVenueEvents(venueIds: string[]) {
     .innerJoin(venues, eq(events.venueId, venues.id))
     .innerJoin(artists, eq(events.artistId, artists.id))
     .where(
-      sql`${events.venueId} IN ${venueIds} AND ${events.eventDate} >= ${now}`
+      sql`${events.venueId} IN ${venueIds} AND ${events.eventDate} >= ${now.toISOString()}`
     )
     .orderBy(events.eventDate);
 
