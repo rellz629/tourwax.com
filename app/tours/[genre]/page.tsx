@@ -132,14 +132,18 @@ export default async function GenrePage({ params }: Props) {
 
   const genreArtists = await getGenreArtists(genreName);
   const artistIds = genreArtists.map((a) => a.id);
-  const genreEvents = await getGenreEvents(artistIds);
+  const allGenreEvents = await getGenreEvents(artistIds);
 
-  // Count events per artist for display
+  // Count events per artist for display (use full list)
   const eventCountByArtist = new Map<string, number>();
-  for (const row of genreEvents) {
+  for (const row of allGenreEvents) {
     const current = eventCountByArtist.get(row.event.artistId) || 0;
     eventCountByArtist.set(row.event.artistId, current + 1);
   }
+
+  // Limit displayed events to keep page size under Vercel's 19MB limit
+  const genreEvents = allGenreEvents.slice(0, 100);
+  const hasMore = allGenreEvents.length > 100;
 
   // Group events by date
   const eventsByDate = genreEvents.reduce((acc, row) => {
@@ -165,7 +169,7 @@ export default async function GenrePage({ params }: Props) {
   const eventListSchema = generateGenreEventListSchema(
     genreName,
     slug,
-    genreEvents.map((row) => ({
+    genreEvents.slice(0, 50).map((row) => ({
       event: row.event,
       artist: {
         name: row.artistName,
@@ -189,7 +193,7 @@ export default async function GenrePage({ params }: Props) {
   const faqs = [
     {
       question: `How many ${genreName} artists are currently on tour?`,
-      answer: `There are currently ${genreArtists.length} ${genreName} artist${genreArtists.length === 1 ? '' : 's'} on tour with ${genreEvents.length} upcoming show${genreEvents.length === 1 ? '' : 's'} in ${year}.`,
+      answer: `There are currently ${genreArtists.length} ${genreName} artist${genreArtists.length === 1 ? '' : 's'} on tour with ${allGenreEvents.length} upcoming show${allGenreEvents.length === 1 ? '' : 's'} in ${year}.`,
     },
     {
       question: `Which ${genreName} artists are touring in ${year}?`,
@@ -386,6 +390,15 @@ export default async function GenrePage({ params }: Props) {
               ))}
             </div>
           </section>
+        )}
+
+        {hasMore && (
+          <div className="mt-8 text-center">
+            <p className="text-gray-500">
+              Showing {genreEvents.length} of {allGenreEvents.length} upcoming {genreName} concerts.
+              Browse individual artist pages for complete tour schedules.
+            </p>
+          </div>
         )}
 
         {genreEvents.length === 0 && (

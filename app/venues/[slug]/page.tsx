@@ -174,7 +174,7 @@ export default async function VenuePage({ params }: Props) {
   const eventListSchema = generateVenueEventListSchema(
     venue,
     venueSlug,
-    venueEvents.map((row) => ({
+    venueEvents.slice(0, 50).map((row) => ({
       event: row.event,
       artist: {
         name: row.artistName,

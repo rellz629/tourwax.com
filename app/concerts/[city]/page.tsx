@@ -161,7 +161,7 @@ export default async function CityPage({ params }: Props) {
     cityInfo.city,
     cityInfo.state,
     citySlug,
-    cityEvents.map((row) => ({
+    cityEvents.slice(0, 50).map((row) => ({
       event: row.event,
       artist: {
         name: row.artistName,
