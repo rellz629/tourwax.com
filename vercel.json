@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/fetch-tours",
-      "schedule": "0 6 * * *"
+      "schedule": "0 */6 * * *"
     },
     {
       "path": "/api/cron/fetch-news",
-      "schedule": "0 18 * * *"
+      "schedule": "0 */12 * * *"
     }
   ]
 }
