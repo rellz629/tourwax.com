@@ -18,6 +18,7 @@
     "import:spotify": "dotenv -e .env.local -- tsx scripts/import-spotify-artists.ts",
     "import:ticketmaster": "dotenv -e .env.local -- tsx scripts/import-artists-with-events.ts",
     "import:csv": "dotenv -e .env.local -- tsx scripts/import-from-csv.ts",
+    "import:curated": "dotenv -e .env.local -- tsx scripts/import-curated-artists.ts",
     "update:affiliate": "dotenv -e .env.local -- tsx scripts/update-affiliate-urls.ts"
   },
   "dependencies": {
