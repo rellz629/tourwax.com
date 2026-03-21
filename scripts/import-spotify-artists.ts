@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { artists } from '@/db/schema';
 import { nanoid } from 'nanoid';
 import { getTopArtistsByGenre, getTopArtists, GENRES } from '@/lib/spotify';
+import { slugify } from '@/lib/slugify';
 
 async function importFromSpotify() {
   console.log('🎵 Importing artists from Spotify...\n');
@@ -44,6 +45,7 @@ async function importFromSpotify() {
     try {
       await db.insert(artists).values({
         id: nanoid(),
+        slug: slugify(artist.name),
         name: artist.name,
         genre: artist.genres[0] || null,
         imageUrl: artist.images[0]?.url || null,

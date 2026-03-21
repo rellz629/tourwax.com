@@ -4,6 +4,7 @@ config({ path: '.env.local' });
 import { db } from '@/db';
 import { artists } from '@/db/schema';
 import { nanoid } from 'nanoid';
+import { slugify } from '@/lib/slugify';
 
 /**
  * Import artists from Ticketmaster who have upcoming events
@@ -23,21 +24,24 @@ async function getArtistsWithEvents(): Promise<TicketmasterAttraction[]> {
   }
 
   const allArtists: TicketmasterAttraction[] = [];
-  const genres = ['Pop', 'Rock', 'Hip-Hop/Rap', 'Country', 'R&B', 'Alternative', 'Metal'];
 
-  for (const genre of genres) {
-    console.log(`🎸 Fetching ${genre} artists with upcoming events...`);
+  // Fetch multiple pages of music events and extract the artists/attractions
+  const totalPages = 5;
+  for (let page = 0; page < totalPages; page++) {
+    console.log(`🎸 Fetching events page ${page + 1}/${totalPages}...`);
 
     const params = new URLSearchParams({
       apikey: process.env.TICKETMASTER_API_KEY,
       classificationName: 'music',
-      genreId: genre,
-      size: '100',
+      size: '200',
+      page: String(page),
+      sort: 'relevance,desc',
+      countryCode: 'US',
     });
 
     try {
       const response = await fetch(
-        `https://app.ticketmaster.com/discovery/v2/attractions.json?${params}`
+        `https://app.ticketmaster.com/discovery/v2/events.json?${params}`
       );
 
       if (!response.ok) {
@@ -46,15 +50,27 @@ async function getArtistsWithEvents(): Promise<TicketmasterAttraction[]> {
       }
 
       const data = await response.json();
-      const attractions = data._embedded?.attractions || [];
+      const evts = data._embedded?.events || [];
 
-      allArtists.push(...attractions);
-      console.log(`  ✓ Found ${attractions.length} ${genre} artists`);
+      for (const evt of evts) {
+        const attractions = evt._embedded?.attractions || [];
+        for (const attraction of attractions) {
+          // Only include music artists (not venues, sponsors, etc.)
+          const isMusicArtist = attraction.classifications?.some(
+            (c: any) => c.segment?.name === 'Music'
+          );
+          if (isMusicArtist || !attraction.classifications) {
+            allArtists.push(attraction);
+          }
+        }
+      }
+
+      console.log(`  ✓ Extracted artists from ${evts.length} events (total: ${allArtists.length})`);
 
       // Delay to avoid rate limits
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
-      console.error(`  ✗ Error fetching ${genre}:`, error);
+      console.error(`  ✗ Error fetching page ${page}:`, error);
     }
   }
 
@@ -80,6 +96,7 @@ async function importArtists() {
     try {
       await db.insert(artists).values({
         id: nanoid(),
+        slug: slugify(artist.name),
         name: artist.name,
         genre: artist.classifications?.[0]?.genre?.name || null,
         imageUrl: artist.images?.[0]?.url || null,
