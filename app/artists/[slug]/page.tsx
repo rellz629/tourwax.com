@@ -8,6 +8,7 @@ import { ARTIST_TWITTER_HANDLES } from '@/lib/twitter';
 import { generateArtistMetadata, SITE_URL, extractCitiesFromEvents } from '@/lib/seo';
 import { generatePersonSchema, generateMusicEventSchema, generateBreadcrumbSchema, generateNewsArticleSchema, generateFAQSchema } from '@/lib/schema';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
+import ShareButtons from '@/components/ShareButtons';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
@@ -377,6 +378,9 @@ export default async function ArtistPage({ params }: Props) {
                     )}
                   </div>
                 )}
+                <div className="mb-4">
+                  <ShareButtons url={`${SITE_URL}/artists/${artist.slug}`} title={`${artist.name} Tour Dates & Concerts`} />
+                </div>
                 <div className="flex flex-wrap gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
@@ -637,6 +641,29 @@ export default async function ArtistPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Cities on This Tour */}
+      {cities.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold mb-6">
+            Cities on This <span className="gradient-text">Tour</span>
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {cities.map((city) => {
+              const cityName = city.split(',')[0].trim();
+              return (
+                <Link
+                  key={city}
+                  href={`/concerts/${slugify(cityName)}`}
+                  className="px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-100 text-sm font-medium text-gray-700 hover:text-orange-600 hover:border-orange-200 hover:shadow-md transition-all"
+                >
+                  {city}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Related Artists */}
       {relatedArtists.length > 0 && (

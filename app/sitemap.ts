@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
-import { eq, gte, isNotNull, and } from 'drizzle-orm';
+import { eq, gte, isNotNull, and, sql } from 'drizzle-orm';
 import { SITE_URL } from '@/lib/seo';
 import { slugify } from '@/lib/slugify';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
@@ -180,5 +180,53 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  return [...staticRoutes, ...artistRoutes, ...cityRoutes, ...genreRoutes, ...venueRoutes, ...blogRoutes, ...insightsRoutes, ...festivalRoutes];
+  // Time-based routes
+  const timeRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/concerts/tonight`,
+      lastModified: new Date(),
+      changeFrequency: 'hourly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/concerts/this-weekend`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/concerts/this-week`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+  ];
+
+  // State routes
+  const statesWithEvents = await db
+    .selectDistinct({ state: venues.state })
+    .from(venues)
+    .innerJoin(events, eq(events.venueId, venues.id))
+    .where(and(isNotNull(venues.state), gte(events.eventDate, now)));
+
+  const stateRoutes: MetadataRoute.Sitemap = statesWithEvents
+    .filter((row) => row.state)
+    .map((row) => ({
+      url: `${SITE_URL}/concerts/state/${slugify(row.state!)}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.7,
+    }));
+
+  // Search route
+  const searchRoute: MetadataRoute.Sitemap = [
+    {
+      url: `${SITE_URL}/search`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    },
+  ];
+
+  return [...staticRoutes, ...artistRoutes, ...cityRoutes, ...genreRoutes, ...venueRoutes, ...blogRoutes, ...insightsRoutes, ...festivalRoutes, ...timeRoutes, ...stateRoutes, ...searchRoute];
 }

@@ -1,12 +1,12 @@
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
-import { eq, gte, sql } from 'drizzle-orm';
+import { eq, gte, sql, and, isNotNull, ne } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateVenueMetadata, SITE_URL } from '@/lib/seo';
-import { generateBreadcrumbSchema, generateVenueSchema, generateVenueEventListSchema } from '@/lib/schema';
+import { generateBreadcrumbSchema, generateVenueSchema, generateVenueEventListSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
@@ -191,9 +191,37 @@ export default async function VenuePage({ params }: Props) {
     { name: venue.name, url: `/venues/${venueSlug}` },
   ];
 
+  const year = new Date().getFullYear();
+  const uniqueArtistNames = [...new Set(venueEvents.map((e) => e.artistName))];
+
+  const faqs = [
+    {
+      question: `How many concerts are coming to ${venue.name}?`,
+      answer: `There are currently ${venueEvents.length} upcoming concert${venueEvents.length === 1 ? '' : 's'} scheduled at ${venue.name}${locationLabel ? ` in ${locationLabel}` : ''} for ${year}.`,
+    },
+    {
+      question: `What artists are performing at ${venue.name}?`,
+      answer: uniqueArtistNames.length > 0
+        ? `Artists with upcoming shows at ${venue.name} include ${uniqueArtistNames.slice(0, 5).join(', ')}${uniqueArtistNames.length > 5 ? `, and ${uniqueArtistNames.length - 5} more` : ''}.`
+        : `Check back for upcoming artist announcements at ${venue.name}.`,
+    },
+    {
+      question: `Where is ${venue.name} located?`,
+      answer: venue.address
+        ? `${venue.name} is located at ${venue.address}${locationLabel ? `, ${locationLabel}` : ''}.${venue.capacity ? ` The venue has a capacity of ${venue.capacity.toLocaleString()}.` : ''}`
+        : `${venue.name} is located${locationLabel ? ` in ${locationLabel}` : ''}.${venue.capacity ? ` The venue has a capacity of ${venue.capacity.toLocaleString()}.` : ''}`,
+    },
+    {
+      question: `How do I get tickets for shows at ${venue.name}?`,
+      answer: `Browse upcoming concerts at ${venue.name} on TourWax and click "Get Tickets" for any show. We compare prices from Ticketmaster and SeatGeek.`,
+    },
+  ];
+
+  const faqSchema = generateFAQSchema(faqs);
+
   return (
     <>
-      <StructuredData data={[breadcrumbSchema, venueSchema, eventListSchema]} />
+      <StructuredData data={[breadcrumbSchema, venueSchema, eventListSchema, faqSchema]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Breadcrumbs items={breadcrumbItems} />
 
@@ -323,6 +351,42 @@ export default async function VenuePage({ params }: Props) {
             ))}
           </div>
         )}
+
+        {/* More Venues in City */}
+        {venue.city && (
+          <section className="mt-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              More Venues in {venue.city}
+            </h2>
+            <p className="text-gray-600">
+              Looking for more concerts in {venue.city}?{' '}
+              <Link href={`/concerts/${slugify(venue.city)}`} className="text-orange-500 hover:text-orange-600 font-medium">
+                Browse all upcoming concerts in {venue.city}
+              </Link>
+              {venue.state && (
+                <> or <Link href={`/concerts/state/${slugify(venue.state)}`} className="text-orange-500 hover:text-orange-600 font-medium">all concerts in {venue.state}</Link></>
+              )}.
+            </p>
+          </section>
+        )}
+
+        {/* FAQ Section */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <details key={i} className="group bg-white rounded-xl shadow-md border border-gray-100">
+                <summary className="cursor-pointer p-5 font-semibold text-gray-900 hover:text-orange-600 transition-colors list-none flex justify-between items-center">
+                  {faq.question}
+                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 pb-5 text-gray-600">{faq.answer}</div>
+              </details>
+            ))}
+          </div>
+        </section>
       </div>
     </>
   );

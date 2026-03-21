@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { migrate } from 'drizzle-orm/neon-serverless/migrator';
-import { Pool } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { Pool } from 'pg';
 
 // Load .env.local
 config({ path: '.env.local' });
@@ -21,6 +21,7 @@ const runMigrate = async () => {
   const end = Date.now();
 
   console.log(`✅ Migrations completed in ${end - start}ms`);
+  await pool.end();
   process.exit(0);
 };
 

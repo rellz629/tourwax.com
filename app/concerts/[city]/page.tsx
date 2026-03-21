@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateCityMetadata, SITE_URL } from '@/lib/seo';
-import { generateBreadcrumbSchema, generateCityEventListSchema } from '@/lib/schema';
+import { generateBreadcrumbSchema, generateCityEventListSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
@@ -178,9 +178,38 @@ export default async function CityPage({ params }: Props) {
     { name: cityInfo.city, url: `/concerts/${citySlug}` },
   ];
 
+  const year = new Date().getFullYear();
+  const uniqueArtistNames = [...new Set(cityEvents.map((e) => e.artistName))];
+  const uniqueVenueNames = [...new Set(cityEvents.filter((e) => e.venue).map((e) => e.venue!.name))];
+
+  const faqs = [
+    {
+      question: `How many concerts are coming to ${locationLabel} in ${year}?`,
+      answer: `There are currently ${cityEvents.length} upcoming concert${cityEvents.length === 1 ? '' : 's'} scheduled in ${locationLabel}. Check back regularly as new shows are added daily.`,
+    },
+    {
+      question: `What artists are performing in ${cityInfo.city} soon?`,
+      answer: uniqueArtistNames.length > 0
+        ? `Artists with upcoming shows in ${cityInfo.city} include ${uniqueArtistNames.slice(0, 5).join(', ')}${uniqueArtistNames.length > 5 ? `, and ${uniqueArtistNames.length - 5} more` : ''}.`
+        : `Check back soon for upcoming artist announcements in ${cityInfo.city}.`,
+    },
+    {
+      question: `What are the main concert venues in ${cityInfo.city}?`,
+      answer: uniqueVenueNames.length > 0
+        ? `Popular concert venues in ${cityInfo.city} include ${uniqueVenueNames.slice(0, 5).join(', ')}${uniqueVenueNames.length > 5 ? ', and more' : ''}.`
+        : `Check our venues page for concert venues in ${cityInfo.city}.`,
+    },
+    {
+      question: `How do I find cheap concert tickets in ${cityInfo.city}?`,
+      answer: `Compare ticket prices for ${cityInfo.city} concerts on TourWax. We show prices from Ticketmaster and SeatGeek so you can find the best deal. Prices often drop closer to the show date.`,
+    },
+  ];
+
+  const faqSchema = generateFAQSchema(faqs);
+
   return (
     <>
-      <StructuredData data={[breadcrumbSchema, eventListSchema]} />
+      <StructuredData data={[breadcrumbSchema, eventListSchema, faqSchema]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Breadcrumbs items={breadcrumbItems} />
 
@@ -301,6 +330,40 @@ export default async function CityPage({ params }: Props) {
             ))}
           </div>
         )}
+
+        {/* More concerts in state */}
+        {cityInfo.state && (
+          <section className="mt-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              More Concerts in {cityInfo.state}
+            </h2>
+            <p className="text-gray-600">
+              Looking for more live music?{' '}
+              <Link href={`/concerts/state/${slugify(cityInfo.state)}`} className="text-orange-500 hover:text-orange-600 font-medium">
+                Browse all concerts in {cityInfo.state}
+              </Link>
+              {' '}or explore <Link href="/concerts" className="text-orange-500 hover:text-orange-600 font-medium">concerts in all cities</Link>.
+            </p>
+          </section>
+        )}
+
+        {/* FAQ Section */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <details key={i} className="group bg-white rounded-xl shadow-md border border-gray-100">
+                <summary className="cursor-pointer p-5 font-semibold text-gray-900 hover:text-orange-600 transition-colors list-none flex justify-between items-center">
+                  {faq.question}
+                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 pb-5 text-gray-600">{faq.answer}</div>
+              </details>
+            ))}
+          </div>
+        </section>
       </div>
     </>
   );

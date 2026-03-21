@@ -38,6 +38,7 @@ export const venues = pgTable('venues', {
 }, (table) => ({
   cityIdx: index('venue_city_idx').on(table.city),
   nameIdx: index('venue_name_idx').on(table.name),
+  stateIdx: index('venue_state_idx').on(table.state),
 }));
 
 export const events = pgTable('events', {

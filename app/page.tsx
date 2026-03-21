@@ -1,11 +1,12 @@
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
-import { eq, desc, gte, lte, and } from 'drizzle-orm';
+import { eq, desc, gte, lte, and, sql, isNotNull } from 'drizzle-orm';
 import Link from 'next/link';
 import Image from 'next/image';
 import { generateOrganizationSchema, generateWebsiteSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { SITE_URL } from '@/lib/seo';
 import { slugify } from '@/lib/slugify';
+import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
 
 // Use Static Site Generation with ISR
@@ -102,10 +103,45 @@ function groupEventsByDay(eventsList: Awaited<ReturnType<typeof getUpcomingEvent
   return groups;
 }
 
+async function getSiteStats() {
+  const now = new Date();
+  const [artistCount, eventCount, cityCount] = await Promise.all([
+    db.select({ count: sql<number>`count(*)::int` }).from(artists).where(eq(artists.isActive, true)),
+    db.select({ count: sql<number>`count(*)::int` }).from(events).where(gte(events.eventDate, now)),
+    db.selectDistinct({ city: venues.city })
+      .from(venues)
+      .innerJoin(events, eq(events.venueId, venues.id))
+      .where(and(isNotNull(venues.city), gte(events.eventDate, now))),
+  ]);
+  return {
+    artists: artistCount[0]?.count ?? 0,
+    events: eventCount[0]?.count ?? 0,
+    cities: cityCount.length,
+  };
+}
+
+async function getTopCities() {
+  const now = new Date();
+  return db
+    .select({
+      city: venues.city,
+      state: venues.state,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(events)
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .where(and(gte(events.eventDate, now), isNotNull(venues.city)))
+    .groupBy(venues.city, venues.state)
+    .orderBy(sql`count(*) desc`)
+    .limit(12);
+}
+
 export default async function HomePage() {
-  const [featuredArtists, upcomingEvents] = await Promise.all([
+  const [featuredArtists, upcomingEvents, stats, topCities] = await Promise.all([
     getFeaturedArtistsWithUpcomingEvents(),
     getUpcomingEvents(),
+    getSiteStats(),
+    getTopCities(),
   ]);
 
   // Generate structured data schemas
@@ -254,6 +290,92 @@ export default async function HomePage() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* Site Stats */}
+      <section className="mt-20 grid grid-cols-3 gap-6">
+        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 text-center">
+          <div className="text-3xl font-black gradient-text">{stats.artists.toLocaleString()}</div>
+          <div className="text-sm text-gray-500 font-medium mt-1">Artists Tracked</div>
+        </div>
+        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 text-center">
+          <div className="text-3xl font-black gradient-text">{stats.events.toLocaleString()}</div>
+          <div className="text-sm text-gray-500 font-medium mt-1">Upcoming Shows</div>
+        </div>
+        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 text-center">
+          <div className="text-3xl font-black gradient-text">{stats.cities.toLocaleString()}</div>
+          <div className="text-sm text-gray-500 font-medium mt-1">Cities</div>
+        </div>
+      </section>
+
+      {/* Browse by Genre */}
+      <section className="mt-20">
+        <h2 className="text-4xl font-bold text-gray-900 mb-8">
+          Browse by <span className="gradient-text">Genre</span>
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Object.entries(GENRE_DISPLAY_NAMES).filter(([slug]) => slug !== 'other').map(([slug, name]) => (
+            <Link
+              key={slug}
+              href={`/tours/${slug}`}
+              className="group bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5"
+            >
+              <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">{name}</h3>
+              <p className="text-sm text-gray-500 mt-1">View tour dates</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Find Concerts by City */}
+      {topCities.length > 0 && (
+        <section className="mt-20">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-4xl font-bold text-gray-900">
+              Find Concerts by <span className="gradient-text">City</span>
+            </h2>
+            <Link
+              href="/concerts"
+              className="group inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-lg transition-colors"
+            >
+              All Cities
+              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {topCities.map((row) => (
+              <Link
+                key={`${row.city}-${row.state}`}
+                href={`/concerts/${slugify(row.city!)}`}
+                className="group bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5"
+              >
+                <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">{row.city}</h3>
+                <p className="text-sm text-gray-500 mt-1">{row.count} upcoming show{row.count === 1 ? '' : 's'}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* SEO Description */}
+      <section className="mt-20 bg-white rounded-xl shadow-md border border-gray-100 p-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Guide to Live Music in {new Date().getFullYear()}</h2>
+        <div className="text-gray-600 leading-relaxed space-y-4">
+          <p>
+            TourWax is the easiest way to find concert tour dates, compare ticket prices, and never miss a show from your favorite artists.
+            We track upcoming concerts across Hip-Hop, Pop, Rock, Country, R&B, Electronic, and Latin music — updated daily with data from
+            Ticketmaster and SeatGeek.
+          </p>
+          <p>
+            Browse <Link href="/concerts" className="text-orange-500 hover:text-orange-600 font-medium">concerts by city</Link>, explore
+            {' '}<Link href="/tours" className="text-orange-500 hover:text-orange-600 font-medium">tours by genre</Link>, or find events at your
+            favorite <Link href="/venues" className="text-orange-500 hover:text-orange-600 font-medium">concert venues</Link>. Looking for something
+            happening soon? Check out <Link href="/concerts/this-weekend" className="text-orange-500 hover:text-orange-600 font-medium">concerts this
+            weekend</Link> or <Link href="/concerts/tonight" className="text-orange-500 hover:text-orange-600 font-medium">shows tonight</Link>.
+          </p>
+        </div>
       </section>
     </div>
     </>

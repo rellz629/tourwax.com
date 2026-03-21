@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateGenreMetadata, SITE_URL } from '@/lib/seo';
-import { generateBreadcrumbSchema, generateGenreEventListSchema } from '@/lib/schema';
+import { generateBreadcrumbSchema, generateGenreEventListSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
@@ -183,10 +183,37 @@ export default async function GenrePage({ params }: Props) {
   ];
 
   const year = new Date().getFullYear();
+  const topArtistNames = genreArtists.slice(0, 5).map((a) => a.name);
+  const uniqueCities = [...new Set(genreEvents.filter((e) => e.venue?.city).map((e) => e.venue!.city!))];
+
+  const faqs = [
+    {
+      question: `How many ${genreName} artists are currently on tour?`,
+      answer: `There are currently ${genreArtists.length} ${genreName} artist${genreArtists.length === 1 ? '' : 's'} on tour with ${genreEvents.length} upcoming show${genreEvents.length === 1 ? '' : 's'} in ${year}.`,
+    },
+    {
+      question: `Which ${genreName} artists are touring in ${year}?`,
+      answer: topArtistNames.length > 0
+        ? `${genreName} artists currently on tour include ${topArtistNames.join(', ')}${genreArtists.length > 5 ? `, and ${genreArtists.length - 5} more` : ''}.`
+        : `Check back for upcoming ${genreName} tour announcements.`,
+    },
+    {
+      question: `Where can I see ${genreName} concerts?`,
+      answer: uniqueCities.length > 0
+        ? `Upcoming ${genreName} concerts are scheduled in ${uniqueCities.slice(0, 5).join(', ')}${uniqueCities.length > 5 ? `, and ${uniqueCities.length - 5} more cities` : ''}.`
+        : `Browse our concerts page to find ${genreName} shows near you.`,
+    },
+    {
+      question: `How do I get ${genreName} concert tickets?`,
+      answer: `Browse ${genreName} tour dates on TourWax and click "Get Tickets" for any show. We compare prices from Ticketmaster and SeatGeek to help you find the best deal.`,
+    },
+  ];
+
+  const faqSchema = generateFAQSchema(faqs);
 
   return (
     <>
-      <StructuredData data={[breadcrumbSchema, eventListSchema]} />
+      <StructuredData data={[breadcrumbSchema, eventListSchema, faqSchema]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Breadcrumbs items={breadcrumbItems} />
 
@@ -371,6 +398,24 @@ export default async function GenrePage({ params }: Props) {
             <p className="text-gray-500 text-lg">No upcoming {genreName} concerts. Check back soon!</p>
           </div>
         )}
+
+        {/* FAQ Section */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <details key={i} className="group bg-white rounded-xl shadow-md border border-gray-100">
+                <summary className="cursor-pointer p-5 font-semibold text-gray-900 hover:text-orange-600 transition-colors list-none flex justify-between items-center">
+                  {faq.question}
+                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 pb-5 text-gray-600">{faq.answer}</div>
+              </details>
+            ))}
+          </div>
+        </section>
       </div>
     </>
   );

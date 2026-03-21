@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 import "./globals.css";
 import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
@@ -41,6 +42,11 @@ export const metadata: Metadata = {
     icon: '/icon.svg',
   },
   manifest: '/site.webmanifest',
+  alternates: {
+    types: {
+      'application/rss+xml': '/blog/feed.xml',
+    },
+  },
   other: {
     'impact-site-verification': '14fbf304-5f00-473c-af9b-cd49c53ce839',
   },
@@ -126,26 +132,75 @@ export default function RootLayout({
           {children}
         </main>
         <footer className="bg-gradient-to-br from-gray-900 to-gray-800 border-t border-gray-700">
-          <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="max-w-7xl mx-auto pt-12 pb-8 px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+              <div>
+                <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Browse</h3>
+                <ul className="space-y-2">
+                  <li><Link href="/artists" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Artists</Link></li>
+                  <li><Link href="/concerts" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Concerts by City</Link></li>
+                  <li><Link href="/tours" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Tours by Genre</Link></li>
+                  <li><Link href="/venues" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Venues</Link></li>
+                  <li><Link href="/festivals" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Festivals</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Top Genres</h3>
+                <ul className="space-y-2">
+                  <li><Link href="/tours/hip-hop" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Hip-Hop</Link></li>
+                  <li><Link href="/tours/pop" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Pop</Link></li>
+                  <li><Link href="/tours/rock" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Rock</Link></li>
+                  <li><Link href="/tours/country" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Country</Link></li>
+                  <li><Link href="/tours/rb" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">R&B</Link></li>
+                  <li><Link href="/tours/electronic" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Electronic</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Quick Links</h3>
+                <ul className="space-y-2">
+                  <li><Link href="/concerts/tonight" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Concerts Tonight</Link></li>
+                  <li><Link href="/concerts/this-weekend" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">This Weekend</Link></li>
+                  <li><Link href="/concerts/this-week" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">This Week</Link></li>
+                  <li><Link href="/insights" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Insights</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Resources</h3>
+                <ul className="space-y-2">
+                  <li><Link href="/blog" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">Blog</Link></li>
+                  <li><Link href="/about" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">About TourWax</Link></li>
+                  <li><Link href="/blog/feed.xml" className="text-gray-400 hover:text-orange-400 text-sm transition-colors">RSS Feed</Link></li>
+                </ul>
+              </div>
+            </div>
+            <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10" />
                   </svg>
                 </div>
-                <div>
-                  <p className="text-white font-bold">TourWax</p>
-                  <p className="text-gray-400 text-sm">Live music tour dates & news</p>
-                </div>
+                <span className="text-white font-bold text-sm">TourWax</span>
               </div>
-              <p className="text-gray-400 text-sm">
-                © 2026 TourWax. All rights reserved.
+              <p className="text-gray-500 text-xs">
+                © {new Date().getFullYear()} TourWax. All rights reserved. Concert data from Ticketmaster and SeatGeek.
               </p>
             </div>
           </div>
         </footer>
         <Analytics />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-SBN01WP17J"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-SBN01WP17J');
+          `}
+        </Script>
       </body>
     </html>
   );

@@ -15,7 +15,7 @@ export function generateCanonicalUrl(path: string): string {
 }
 
 export function generateArtistTitle(artistName: string, year: number = new Date().getFullYear()): string {
-  return `${artistName} Tour Dates ${year} | Concerts & Tickets - ${SITE_NAME}`;
+  return `${artistName} Tour Dates & Concert Schedule ${year} - ${SITE_NAME}`;
 }
 
 export function generateArtistDescription(
@@ -26,13 +26,16 @@ export function generateArtistDescription(
 ): string {
   const year = new Date().getFullYear();
   const genreText = genre ? ` ${genre}` : '';
-  const eventsText = eventCount === 0
-    ? `Check back for upcoming${genreText} tour dates and concert information.`
-    : eventCount === 1
-    ? `1 upcoming show${cities.length > 0 ? ` in ${cities[0]}` : ''}.`
-    : `${eventCount} upcoming shows${cities.length > 0 ? ` in ${cities.slice(0, 3).join(', ')}${cities.length > 3 ? ' and more' : ''}` : ''}.`;
 
-  return `Find ${artistName} ${year} tour dates, concert tickets, and venue information. ${eventsText} Compare ticket prices, get${genreText} music news, and never miss a show.`;
+  if (eventCount === 0) {
+    return `${artistName} ${year} tour dates coming soon. Get notified about upcoming${genreText} concerts, ticket prices, and venue info on ${SITE_NAME}.`;
+  }
+
+  const cityText = cities.length > 0
+    ? ` in ${cities.slice(0, 3).join(', ')}${cities.length > 3 ? ' & more cities' : ''}`
+    : '';
+
+  return `${artistName} has ${eventCount} upcoming concert${eventCount === 1 ? '' : 's'}${cityText}. Browse the full ${year}${genreText} tour schedule, compare ticket prices, and buy tickets.`;
 }
 
 export function extractCitiesFromEvents(events: Array<{ event: Event; venue: Venue | null }>): string[] {
@@ -130,7 +133,7 @@ export function generateArtistMetadata(data: ArtistWithEvents) {
 
 export function generateCityTitle(cityName: string, state: string | null, year: number = new Date().getFullYear()): string {
   const location = state ? `${cityName}, ${state}` : cityName;
-  return `Concerts in ${location} ${year} | Upcoming Shows & Tickets - ${SITE_NAME}`;
+  return `Concerts in ${location} ${year} - Upcoming Shows & Tickets | ${SITE_NAME}`;
 }
 
 export function generateCityDescription(
@@ -139,15 +142,18 @@ export function generateCityDescription(
   eventCount: number,
   artistNames: string[]
 ): string {
+  const year = new Date().getFullYear();
   const location = state ? `${cityName}, ${state}` : cityName;
-  const artistText = artistNames.length > 0
-    ? ` See shows from ${artistNames.slice(0, 3).join(', ')}${artistNames.length > 3 ? ', and more' : ''}.`
-    : '';
-  const countText = eventCount === 0
-    ? `Check back for upcoming concerts in ${location}.`
-    : `Find ${eventCount} upcoming concert${eventCount === 1 ? '' : 's'} in ${location}.${artistText}`;
 
-  return `${countText} Get tickets and venue info.`;
+  if (eventCount === 0) {
+    return `No concerts currently scheduled in ${location}. Check back for upcoming ${year} shows and ticket info.`;
+  }
+
+  const artistText = artistNames.length > 0
+    ? ` See ${artistNames.slice(0, 3).join(', ')}${artistNames.length > 3 ? ' & more' : ''}.`
+    : '';
+
+  return `${eventCount} upcoming concert${eventCount === 1 ? '' : 's'} in ${location} for ${year}.${artistText} Browse shows, compare ticket prices & buy tickets.`;
 }
 
 export function generateCityMetadata(data: {
@@ -183,8 +189,8 @@ export function generateCityMetadata(data: {
 }
 
 export function generateConcertsIndexMetadata() {
-  const title = `Upcoming Concerts & Live Shows ${new Date().getFullYear()} - ${SITE_NAME}`;
-  const description = 'Browse upcoming concerts by city. Find live music events, tour dates, and tickets for shows near you.';
+  const title = `Concerts Near You ${new Date().getFullYear()} - Find Shows & Buy Tickets | ${SITE_NAME}`;
+  const description = `Browse upcoming concerts in ${new Date().getFullYear()} by city. Find live music events, tour dates, venues, and tickets for shows near you.`;
   const url = generateCanonicalUrl('/concerts');
 
   return {
@@ -206,7 +212,7 @@ export function generateConcertsIndexMetadata() {
 }
 
 export function generateGenreTitle(genreName: string, year: number = new Date().getFullYear()): string {
-  return `${genreName} Tours & Concerts ${year} | Live Show Dates - ${SITE_NAME}`;
+  return `${genreName} Concerts & Tour Dates ${year} - Buy Tickets | ${SITE_NAME}`;
 }
 
 export function generateGenreDescription(
@@ -214,10 +220,11 @@ export function generateGenreDescription(
   artistCount: number,
   artistNames: string[]
 ): string {
+  const year = new Date().getFullYear();
   const artistText = artistNames.length > 0
-    ? ` See shows from ${artistNames.slice(0, 3).join(', ')}${artistNames.length > 3 ? ', and more' : ''}.`
+    ? ` See ${artistNames.slice(0, 3).join(', ')}${artistNames.length > 3 ? ' & more' : ''}.`
     : '';
-  return `Browse ${artistCount} ${genreName} artist${artistCount === 1 ? '' : 's'} on tour with upcoming concerts and tickets.${artistText}`;
+  return `${artistCount} ${genreName} artist${artistCount === 1 ? '' : 's'} on tour in ${year}.${artistText} Browse concert schedules, compare ticket prices & buy tickets.`;
 }
 
 export function generateGenreMetadata(data: {
@@ -276,7 +283,7 @@ export function generateToursIndexMetadata() {
 
 export function generateVenueTitle(venueName: string, city: string | null, year: number = new Date().getFullYear()): string {
   const location = city ? ` in ${city}` : '';
-  return `${venueName} Concerts ${year} | Upcoming Shows${location} - ${SITE_NAME}`;
+  return `${venueName} Concert Schedule ${year}${location} - Tickets | ${SITE_NAME}`;
 }
 
 export function generateVenueDescription(
@@ -285,15 +292,18 @@ export function generateVenueDescription(
   eventCount: number,
   artistNames: string[]
 ): string {
+  const year = new Date().getFullYear();
   const location = city ? ` in ${city}` : '';
-  const artistText = artistNames.length > 0
-    ? ` See ${artistNames.slice(0, 3).join(', ')}${artistNames.length > 3 ? ', and more' : ''}.`
-    : '';
-  const countText = eventCount === 0
-    ? `Check back for upcoming concerts at ${venueName}${location}.`
-    : `Find ${eventCount} upcoming concert${eventCount === 1 ? '' : 's'} at ${venueName}${location}.${artistText}`;
 
-  return `${countText} Get tickets and show info.`;
+  if (eventCount === 0) {
+    return `No concerts currently scheduled at ${venueName}${location}. Check back for upcoming ${year} shows.`;
+  }
+
+  const artistText = artistNames.length > 0
+    ? ` See ${artistNames.slice(0, 3).join(', ')}${artistNames.length > 3 ? ' & more' : ''}.`
+    : '';
+
+  return `${eventCount} upcoming concert${eventCount === 1 ? '' : 's'} at ${venueName}${location} in ${year}.${artistText} Compare ticket prices & buy tickets.`;
 }
 
 export function generateVenueMetadata(data: {
@@ -523,6 +533,98 @@ export function generateFestivalMetadata(data: {
       title,
       description,
     }),
+  };
+}
+
+export function generateThisWeekendMetadata(eventCount: number) {
+  const title = `Concerts This Weekend ${new Date().getFullYear()} - Shows Near You | ${SITE_NAME}`;
+  const description = eventCount > 0
+    ? `${eventCount} concerts happening this weekend. Find live shows, compare ticket prices & buy tickets for this weekend's events.`
+    : `Find concerts happening this weekend. Browse upcoming live shows and buy tickets on ${SITE_NAME}.`;
+  const url = generateCanonicalUrl('/concerts/this-weekend');
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: generateOpenGraphTags({ title, description, url }),
+    twitter: generateTwitterCardTags({ title, description }),
+  };
+}
+
+export function generateTonightMetadata(eventCount: number) {
+  const title = `Concerts Tonight ${new Date().getFullYear()} - Live Shows Near You | ${SITE_NAME}`;
+  const description = eventCount > 0
+    ? `${eventCount} concerts happening tonight. Find last-minute tickets and live shows near you.`
+    : `Find concerts happening tonight. Browse live shows and buy last-minute tickets on ${SITE_NAME}.`;
+  const url = generateCanonicalUrl('/concerts/tonight');
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: generateOpenGraphTags({ title, description, url }),
+    twitter: generateTwitterCardTags({ title, description }),
+  };
+}
+
+export function generateThisWeekMetadata(eventCount: number) {
+  const title = `Concerts This Week ${new Date().getFullYear()} - Upcoming Shows | ${SITE_NAME}`;
+  const description = eventCount > 0
+    ? `${eventCount} concerts happening this week. Browse shows, compare ticket prices & buy tickets.`
+    : `Find concerts happening this week. Browse upcoming live shows and buy tickets on ${SITE_NAME}.`;
+  const url = generateCanonicalUrl('/concerts/this-week');
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: generateOpenGraphTags({ title, description, url }),
+    twitter: generateTwitterCardTags({ title, description }),
+  };
+}
+
+export function generateStateMetadata(data: {
+  stateName: string;
+  stateSlug: string;
+  eventCount: number;
+  cityCount: number;
+  artistNames: string[];
+}) {
+  const year = new Date().getFullYear();
+  const title = `Concerts in ${data.stateName} ${year} - Shows & Tickets | ${SITE_NAME}`;
+  const artistText = data.artistNames.length > 0
+    ? ` See ${data.artistNames.slice(0, 3).join(', ')}${data.artistNames.length > 3 ? ' & more' : ''}.`
+    : '';
+  const description = data.eventCount > 0
+    ? `${data.eventCount} upcoming concert${data.eventCount === 1 ? '' : 's'} across ${data.cityCount} cities in ${data.stateName}.${artistText} Browse shows & buy tickets.`
+    : `Find upcoming concerts in ${data.stateName} for ${year}. Browse shows by city and buy tickets.`;
+  const url = generateCanonicalUrl(`/concerts/state/${data.stateSlug}`);
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: generateOpenGraphTags({ title, description, url }),
+    twitter: generateTwitterCardTags({ title, description }),
+  };
+}
+
+export function generateSearchMetadata(query: string | null) {
+  const title = query
+    ? `Search Results for "${query}" | ${SITE_NAME}`
+    : `Search Artists, Concerts & Venues | ${SITE_NAME}`;
+  const description = query
+    ? `Search results for "${query}" on ${SITE_NAME}. Find tour dates, concerts, and tickets.`
+    : `Search for artists, concerts, and venues on ${SITE_NAME}. Find tour dates and buy tickets.`;
+  const url = generateCanonicalUrl('/search');
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: generateOpenGraphTags({ title, description, url }),
+    twitter: generateTwitterCardTags({ title, description }),
   };
 }
 

@@ -58,6 +58,11 @@ export default async function ConcertsPage() {
           <p className="text-xl text-gray-600">
             Browse concerts in {cities.length} cities
           </p>
+          <div className="flex flex-wrap gap-3 mt-4">
+            <Link href="/concerts/tonight" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-4 py-2 rounded-lg transition-colors">Tonight</Link>
+            <Link href="/concerts/this-weekend" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-4 py-2 rounded-lg transition-colors">This Weekend</Link>
+            <Link href="/concerts/this-week" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-4 py-2 rounded-lg transition-colors">This Week</Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
