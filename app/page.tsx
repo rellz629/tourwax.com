@@ -18,21 +18,25 @@ export const revalidate = 3600; // Revalidate every hour
 async function getFeaturedArtistsWithUpcomingEvents() {
   const now = new Date();
 
-  // Get artists with upcoming events
+  // Get the 24 most actively touring artists (most upcoming events)
   const artistsWithEvents = await db
-    .selectDistinct({
+    .select({
       id: artists.id,
       slug: artists.slug,
       name: artists.name,
       genre: artists.genre,
       imageUrl: artists.imageUrl,
+      eventCount: sql<number>`count(${events.id})::int`,
     })
     .from(artists)
     .innerJoin(events, eq(artists.id, events.artistId))
     .where(and(
       eq(artists.isActive, true),
       gte(events.eventDate, now)
-    ));
+    ))
+    .groupBy(artists.id, artists.slug, artists.name, artists.genre, artists.imageUrl)
+    .orderBy(sql`count(${events.id}) desc`)
+    .limit(24);
 
   return artistsWithEvents;
 }
