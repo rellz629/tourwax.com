@@ -393,10 +393,11 @@ export default async function ArtistPage({ params }: Props) {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-[#1DB954] text-white text-sm font-semibold rounded-lg hover:bg-[#1ed760] transition-colors"
                       >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                         </svg>
                         Spotify
+                        <span className="sr-only">(opens in new tab)</span>
                       </a>
                     )}
                     {artist.ticketmasterId && (
@@ -406,10 +407,11 @@ export default async function ArtistPage({ params }: Props) {
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-[#026CDF] text-white text-sm font-semibold rounded-lg hover:bg-[#0256b3] transition-colors"
                       >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22c-5.523 0-10-4.477-10-10S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-2-15v10l8-5-8-5z" />
                         </svg>
                         Ticketmaster
+                        <span className="sr-only">(opens in new tab)</span>
                       </a>
                     )}
                   </div>
@@ -420,7 +422,7 @@ export default async function ArtistPage({ params }: Props) {
                 <div className="flex flex-wrap gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-orange-600" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
@@ -432,7 +434,7 @@ export default async function ArtistPage({ params }: Props) {
                   {news.length > 0 && (
                     <div className="flex items-center gap-2">
                       <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-red-600" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                         </svg>
                       </div>
@@ -458,7 +460,7 @@ export default async function ArtistPage({ params }: Props) {
           {artistEvents.length === 0 ? (
             <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
               <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-orange-500" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -474,7 +476,7 @@ export default async function ArtistPage({ params }: Props) {
                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                     <div className="flex-1">
                       <div className="flex items-start gap-4 mb-4">
-                        <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex flex-col items-center justify-center text-white flex-shrink-0 shadow-lg">
+                        <time dateTime={new Date(event.eventDate).toISOString()} className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex flex-col items-center justify-center text-white flex-shrink-0 shadow-lg">
                           <span className="text-xs font-semibold uppercase">
                             {new Date(event.eventDate).toLocaleDateString('en-US', {
                               month: 'short',
@@ -487,7 +489,7 @@ export default async function ArtistPage({ params }: Props) {
                               timeZone: venue?.timezone ?? 'UTC',
                             })}
                           </span>
-                        </div>
+                        </time>
                         <div className="flex-1">
                           <h3 className="font-bold text-gray-900 mb-2 text-lg group-hover:text-orange-600 transition-colors">
                             {event.name}
@@ -512,7 +514,7 @@ export default async function ArtistPage({ params }: Props) {
                           )}
                           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-500">
                             <span className="flex items-center gap-1">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                               {new Date(event.eventDate).toLocaleTimeString('en-US', {
@@ -556,6 +558,7 @@ export default async function ArtistPage({ params }: Props) {
                               )}
                               <span className="text-white/80">—</span>
                               <span className="capitalize">{ts.source}</span>
+                              <span className="sr-only">(opens in new tab)</span>
                             </a>
                           )
                         ))
@@ -568,6 +571,7 @@ export default async function ArtistPage({ params }: Props) {
                             className="btn-primary whitespace-nowrap"
                           >
                             Get Tickets
+                            <span className="sr-only">(opens in new tab)</span>
                           </a>
                         )
                       )}
@@ -589,7 +593,7 @@ export default async function ArtistPage({ params }: Props) {
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <svg className="w-7 h-7 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-7 h-7 text-blue-500" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                     </svg>
                   </div>
@@ -608,6 +612,7 @@ export default async function ArtistPage({ params }: Props) {
                   className="block w-full text-center px-4 py-3 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-bold shadow-lg"
                 >
                   Follow @{twitterHandle}
+                  <span className="sr-only">(opens in new tab)</span>
                 </a>
               </div>
             </div>
@@ -621,7 +626,7 @@ export default async function ArtistPage({ params }: Props) {
             {news.length === 0 ? (
               <div className="bg-white rounded-xl shadow-md p-8 text-center border border-gray-100">
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-3 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-orange-500" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                   </svg>
                 </div>
@@ -651,6 +656,7 @@ export default async function ArtistPage({ params }: Props) {
                     )}
                     <h3 className="font-bold text-gray-900 group-hover:text-orange-600 mb-2 text-sm line-clamp-2 transition-colors">
                       {article.title}
+                      <span className="sr-only">(opens in new tab)</span>
                     </h3>
                     {article.summary && (
                       <p className="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">
@@ -663,12 +669,12 @@ export default async function ArtistPage({ params }: Props) {
                           {article.source}
                         </span>
                       )}
-                      <span className="text-gray-500">
+                      <time dateTime={new Date(article.publishedAt).toISOString()} className="text-gray-500">
                         {new Date(article.publishedAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                         })}
-                      </span>
+                      </time>
                     </div>
                   </a>
                 ))}

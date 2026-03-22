@@ -150,8 +150,17 @@ export default function SearchBar() {
           aria-controls="search-listbox"
           aria-autocomplete="list"
           aria-activedescendant={activeOptionId}
-          className="w-48 sm:w-64 lg:w-72 pl-9 pr-3 py-2 text-sm rounded-lg bg-gray-100 border border-transparent focus:bg-white focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400 transition-colors"
+          className="w-48 sm:w-64 lg:w-72 pl-9 pr-8 py-2 text-sm rounded-lg bg-gray-100 border border-transparent focus:bg-white focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400 transition-colors"
         />
+        {isLoading && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2" role="status">
+            <svg className="w-4 h-4 animate-spin text-orange-500" aria-hidden="true" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            <span className="sr-only">Loading search results</span>
+          </div>
+        )}
       </div>
 
       {isOpen && (

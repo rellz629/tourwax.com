@@ -263,7 +263,7 @@ export default async function HomePage() {
                           </p>
                         )}
                       </div>
-                      <div className="text-sm text-gray-500 font-medium whitespace-nowrap flex-shrink-0">
+                      <time dateTime={new Date(event.eventDate).toISOString()} className="text-sm text-gray-500 font-medium whitespace-nowrap flex-shrink-0">
                         {new Date(event.eventDate).toLocaleTimeString('en-US', {
                           hour: 'numeric',
                           minute: '2-digit',
@@ -277,7 +277,7 @@ export default async function HomePage() {
                             }).formatToParts(event.eventDate).find(p => p.type === 'timeZoneName')?.value}
                           </span>
                         )}
-                      </div>
+                      </time>
                     </Link>
                   ))}
                 </div>
