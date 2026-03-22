@@ -13,11 +13,24 @@ import { nanoid } from 'nanoid';
 import type { FestivalLineup } from '@/lib/ticketmaster';
 import type { NewEvent } from '@/db/schema';
 
+function normalizeCity(city: string): string {
+  return city
+    .toLowerCase()
+    .replace(/\bst\.?\s/g, 'saint ')
+    .replace(/\bft\.?\s/g, 'fort ')
+    .replace(/\bmt\.?\s/g, 'mount ')
+    .replace(/\bn\.?\s/g, 'north ')
+    .replace(/\bs\.?\s/g, 'south ')
+    .replace(/\be\.?\s/g, 'east ')
+    .replace(/\bw\.?\s/g, 'west ')
+    .trim();
+}
+
 function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null }[]): NewEvent[] {
   const groups = new Map<string, NewEvent[]>();
   const venueIdToCity = new Map<string, string>();
   for (const v of venueList) {
-    if (v.city) venueIdToCity.set(v.id, v.city.toLowerCase());
+    if (v.city) venueIdToCity.set(v.id, normalizeCity(v.city));
   }
 
   for (const event of eventList) {

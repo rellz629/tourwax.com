@@ -14,6 +14,21 @@ import { nanoid } from 'nanoid';
 import type { FestivalLineup } from '@/lib/ticketmaster';
 import type { NewEvent } from '@/db/schema';
 
+// Normalize city names so abbreviation variants match during dedup
+// e.g., "St Augustine" and "Saint Augustine" → "saint augustine"
+function normalizeCity(city: string): string {
+  return city
+    .toLowerCase()
+    .replace(/\bst\.?\s/g, 'saint ')
+    .replace(/\bft\.?\s/g, 'fort ')
+    .replace(/\bmt\.?\s/g, 'mount ')
+    .replace(/\bn\.?\s/g, 'north ')
+    .replace(/\bs\.?\s/g, 'south ')
+    .replace(/\be\.?\s/g, 'east ')
+    .replace(/\bw\.?\s/g, 'west ')
+    .trim();
+}
+
 // Deduplicate events: keep only the main event per city+date, filtering out package variants
 // Groups by city + date, and also catches events that span a UTC date boundary
 // (e.g., a 11 PM EDT event is Oct 2 UTC but should dedup with Oct 1 events in the same city)
@@ -24,7 +39,7 @@ function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?
   const venueIdToCity = new Map<string, string>();
   const venueIdToName = new Map<string, string>();
   for (const v of venueList) {
-    if (v.city) venueIdToCity.set(v.id, v.city.toLowerCase());
+    if (v.city) venueIdToCity.set(v.id, normalizeCity(v.city));
     if (v.name) venueIdToName.set(v.id, v.name.toLowerCase());
   }
 
