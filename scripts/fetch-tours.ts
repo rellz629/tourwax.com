@@ -22,10 +22,10 @@ function normalizeCity(city: string): string {
     .replace(/\bst\.?\s/g, 'saint ')
     .replace(/\bft\.?\s/g, 'fort ')
     .replace(/\bmt\.?\s/g, 'mount ')
-    .replace(/\bn\.?\s/g, 'north ')
-    .replace(/\bs\.?\s/g, 'south ')
-    .replace(/\be\.?\s/g, 'east ')
-    .replace(/\bw\.?\s/g, 'west ')
+    .replace(/\bn\.\s/g, 'north ')
+    .replace(/\bs\.\s/g, 'south ')
+    .replace(/\be\.\s/g, 'east ')
+    .replace(/\bw\.\s/g, 'west ')
     .trim();
 }
 
