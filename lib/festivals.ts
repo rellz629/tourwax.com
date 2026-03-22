@@ -1,20 +1,12 @@
+import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
 import { eq, gte, sql } from 'drizzle-orm';
 import { slugify } from './slugify';
+import { isPackage } from './event-utils';
 import type { Artist, Event, Venue } from '@/db/schema';
 
 export const MIN_ARTISTS_FOR_FESTIVAL = 3;
-
-const PACKAGE_KEYWORDS = [
-  'vip', 'package', 'upgrade', 'comfort seat', 'suite',
-  'box seat', 'vinyl room', 'premium', 'platinum', 'hospitality',
-  'club level', 'logen-seat', 'payment plan', 'upsell', 'excluding concert ticket',
-];
-
-function isPackage(name: string): boolean {
-  return PACKAGE_KEYWORDS.some(kw => name.toLowerCase().includes(kw));
-}
 
 export interface FestivalArtist {
   name: string;
@@ -73,7 +65,7 @@ export function deriveFestivalName(eventNames: string[], venueName: string, form
   return `${venueName} - ${formattedDate}`;
 }
 
-export async function getAllFestivals(): Promise<Festival[]> {
+export const getAllFestivals = cache(async function getAllFestivals(): Promise<Festival[]> {
   const now = new Date();
 
   // Fetch all future events with venue and artist info
@@ -182,7 +174,7 @@ export async function getAllFestivals(): Promise<Festival[]> {
   festivals.sort((a, b) => b.artistCount - a.artistCount);
 
   return festivals;
-}
+});
 
 export async function getFestivalBySlug(slug: string): Promise<Festival | null> {
   const festivals = await getAllFestivals();

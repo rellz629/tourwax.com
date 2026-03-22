@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { slugify } from '@/lib/slugify';
 
 export const metadata: Metadata = {
   title: 'Page Not Found',
@@ -50,7 +51,7 @@ export default function NotFound() {
             {['Drake', 'Taylor Swift', 'Bad Bunny', 'The Weeknd', 'Ed Sheeran', 'Beyoncé'].map((artist) => (
               <Link
                 key={artist}
-                href={`/artists/${artist.toLowerCase().replace(/\s+/g, '-')}`}
+                href={`/artists/${slugify(artist)}`}
                 className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full hover:from-orange-600 hover:to-red-600 transition-all font-semibold shadow-md"
               >
                 {artist}

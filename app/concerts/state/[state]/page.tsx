@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
 import { eq, gte, sql, and, isNotNull } from 'drizzle-orm';
@@ -46,7 +47,7 @@ function resolveStateName(stateSlug: string): string | null {
   return null;
 }
 
-async function getStateData(stateSlug: string) {
+const getStateData = cache(async function getStateData(stateSlug: string) {
   const now = new Date();
 
   // Get all distinct states with future events
@@ -97,7 +98,7 @@ async function getStateData(stateSlug: string) {
     totalEvents,
     artistNames: stateArtists.map((a) => a.name),
   };
-}
+});
 
 export async function generateStaticParams() {
   const now = new Date();

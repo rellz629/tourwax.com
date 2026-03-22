@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
 import { eq, gte, sql } from 'drizzle-orm';
@@ -10,6 +11,7 @@ import { generateBreadcrumbSchema, generateGenreEventListSchema, generateFAQSche
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
+import { isPackage } from '@/lib/event-utils';
 import { normalizeGenre, genreSlug, GENRE_DESCRIPTIONS, GENRE_DISPLAY_NAMES } from '@/lib/genres';
 import { slugify } from '@/lib/slugify';
 
@@ -30,7 +32,7 @@ function findGenreBySlug(slug: string, genreMap: Map<string, string>): string | 
   return null;
 }
 
-async function getGenreArtists(genreName: string) {
+const getGenreArtists = cache(async function getGenreArtists(genreName: string) {
   const allArtists = await db
     .select()
     .from(artists)
@@ -38,7 +40,7 @@ async function getGenreArtists(genreName: string) {
     .orderBy(artists.name);
 
   return allArtists.filter((a) => normalizeGenre(a.genre) === genreName);
-}
+});
 
 async function getGenreEvents(artistIds: string[]) {
   if (artistIds.length === 0) return [];
@@ -62,12 +64,6 @@ async function getGenreEvents(artistIds: string[]) {
     .orderBy(events.eventDate);
 
   // Deduplicate: keep one event per artist+date, preferring non-package events
-  const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'suite',
-    'box seat', 'vinyl room', 'premium', 'platinum', 'hospitality', 'club level',
-    'logen-seat', 'payment plan', 'upsell', 'excluding concert ticket'];
-  const isPackage = (name: string) =>
-    packageKeywords.some(kw => name.toLowerCase().includes(kw));
-
   const groups = new Map<string, typeof genreEvents[0]>();
   for (const row of genreEvents) {
     const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
@@ -83,7 +79,7 @@ async function getGenreEvents(artistIds: string[]) {
 }
 
 /** Build a slug → displayName map from all active artists */
-async function buildGenreSlugMap(): Promise<Map<string, string>> {
+const buildGenreSlugMap = cache(async function buildGenreSlugMap(): Promise<Map<string, string>> {
   const allArtists = await db
     .select({ genre: artists.genre })
     .from(artists)
@@ -95,7 +91,7 @@ async function buildGenreSlugMap(): Promise<Map<string, string>> {
     map.set(genreSlug(normalized), normalized);
   }
   return map;
-}
+});
 
 export async function generateStaticParams() {
   const slugMap = await buildGenreSlugMap();

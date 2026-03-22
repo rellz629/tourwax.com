@@ -8,20 +8,8 @@ import { eq } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
 import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
+import { isPackage } from '@/lib/event-utils';
 import type { NewEvent } from '@/db/schema';
-
-// Keywords that indicate a ticket package variant rather than the main event
-const PACKAGE_KEYWORDS = [
-  'vip', 'package', 'upgrade', 'comfort seat', 'lounge', 'meet & greet',
-  'meet and greet', 'premium', 'platinum', 'gold circle', 'early entry',
-  'soundcheck', 'vinyl room', 'hospitality', 'suite', 'box seat',
-  'excluding concert ticket', 'hot ticket', 'upsell',
-];
-
-function isPackageVariant(eventName: string): boolean {
-  const lower = eventName.toLowerCase();
-  return PACKAGE_KEYWORDS.some(kw => lower.includes(kw));
-}
 
 // Deduplicate events: keep only the main event per city+date, filtering out package variants
 function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null }[]): NewEvent[] {
@@ -52,7 +40,7 @@ function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?
       continue;
     }
     // Prefer the main event (non-package), or fallback to the first one
-    const mainEvent = group.find(e => !isPackageVariant(e.name)) || group[0];
+    const mainEvent = group.find(e => !isPackage(e.name)) || group[0];
     deduped.push(mainEvent);
   }
 

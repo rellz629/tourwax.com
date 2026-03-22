@@ -19,15 +19,16 @@ async function fetchNewsForArtist(artistId: string, artistName: string) {
   const articles = await fetchArtistNews(artistName);
 
   if (articles.length > 0) {
-    await db.delete(newsArticles).where(eq(newsArticles.artistId, artistId));
-
     const articlesWithIds = articles.map(article => ({
       ...article,
       id: nanoid(),
       artistId,
     }));
 
-    await db.insert(newsArticles).values(articlesWithIds);
+    await db.transaction(async (tx) => {
+      await tx.delete(newsArticles).where(eq(newsArticles.artistId, artistId));
+      await tx.insert(newsArticles).values(articlesWithIds);
+    });
     articlesStored = articles.length;
   }
 
@@ -36,8 +37,6 @@ async function fetchNewsForArtist(artistId: string, artistName: string) {
     const artistTweets = await fetchArtistTweets(twitterHandle);
 
     if (artistTweets.length > 0) {
-      await db.delete(tweets).where(eq(tweets.artistId, artistId));
-
       const tweetsWithData = artistTweets.map(tweet => ({
         id: tweet.id,
         artistId,
@@ -47,7 +46,10 @@ async function fetchNewsForArtist(artistId: string, artistName: string) {
         publishedAt: new Date(tweet.created_at),
       }));
 
-      await db.insert(tweets).values(tweetsWithData);
+      await db.transaction(async (tx) => {
+        await tx.delete(tweets).where(eq(tweets.artistId, artistId));
+        await tx.insert(tweets).values(tweetsWithData);
+      });
       tweetsStored = artistTweets.length;
     }
   }
@@ -71,7 +73,8 @@ async function processBatch<T, R>(
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

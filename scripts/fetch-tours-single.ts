@@ -7,19 +7,8 @@ import { eq } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
 import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
+import { isPackage } from '@/lib/event-utils';
 import type { NewEvent } from '@/db/schema';
-
-const PACKAGE_KEYWORDS = [
-  'vip', 'package', 'upgrade', 'comfort seat', 'lounge', 'meet & greet',
-  'meet and greet', 'premium', 'platinum', 'gold circle', 'early entry',
-  'soundcheck', 'vinyl room', 'hospitality', 'suite', 'box seat',
-  'excluding concert ticket', 'hot ticket', 'upsell',
-];
-
-function isPackageVariant(eventName: string): boolean {
-  const lower = eventName.toLowerCase();
-  return PACKAGE_KEYWORDS.some(kw => lower.includes(kw));
-}
 
 function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null }[]): NewEvent[] {
   const groups = new Map<string, NewEvent[]>();
@@ -41,7 +30,7 @@ function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?
   const deduped: NewEvent[] = [];
   for (const group of groups.values()) {
     if (group.length === 1) { deduped.push(group[0]); continue; }
-    const mainEvent = group.find(e => !isPackageVariant(e.name)) || group[0];
+    const mainEvent = group.find(e => !isPackage(e.name)) || group[0];
     deduped.push(mainEvent);
   }
   return deduped;

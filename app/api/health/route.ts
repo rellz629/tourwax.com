@@ -31,11 +31,7 @@ export async function GET() {
     return NextResponse.json({
       status: 'error',
       database: 'disconnected',
-      error: error.message,
-      stack: error.stack?.split('\n').slice(0, 5),
       responseTime: `${duration}ms`,
-      environment: process.env.NODE_ENV,
-      databaseUrlExists: !!process.env.DATABASE_URL,
       timestamp: new Date().toISOString(),
     }, { status: 500 });
   }

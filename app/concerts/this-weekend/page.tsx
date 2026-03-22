@@ -9,6 +9,7 @@ import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
+import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 
 export const dynamic = 'force-static';
@@ -44,12 +45,6 @@ async function getWeekendEvents() {
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(gte(events.eventDate, start), lte(events.eventDate, end)))
     .orderBy(events.eventDate);
-
-  const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'suite',
-    'box seat', 'vinyl room', 'premium', 'platinum', 'hospitality', 'club level',
-    'logen-seat', 'payment plan', 'upsell', 'excluding concert ticket'];
-  const isPackage = (name: string) =>
-    packageKeywords.some(kw => name.toLowerCase().includes(kw));
 
   const groups = new Map<string, typeof results[0]>();
   for (const row of results) {

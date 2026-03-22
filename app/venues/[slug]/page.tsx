@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
 import { eq, gte, sql, and, isNotNull, ne } from 'drizzle-orm';
@@ -10,6 +11,7 @@ import { generateBreadcrumbSchema, generateVenueSchema, generateVenueEventListSc
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
+import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import type { Venue } from '@/db/schema';
 
@@ -25,7 +27,7 @@ interface VenueMatch {
   allVenueIds: string[];
 }
 
-async function getVenueBySlug(venueSlug: string): Promise<VenueMatch | null> {
+const getVenueBySlug = cache(async function getVenueBySlug(venueSlug: string): Promise<VenueMatch | null> {
   const now = new Date();
 
   // Get all venues with future events
@@ -48,9 +50,9 @@ async function getVenueBySlug(venueSlug: string): Promise<VenueMatch | null> {
     venue: matches[0].venue,
     allVenueIds: matches.map((m) => m.venue.id),
   };
-}
+});
 
-async function getVenueEvents(venueIds: string[]) {
+const getVenueEvents = cache(async function getVenueEvents(venueIds: string[]) {
   const now = new Date();
 
   const venueEvents = await db
@@ -70,12 +72,6 @@ async function getVenueEvents(venueIds: string[]) {
     .orderBy(events.eventDate);
 
   // Deduplicate: keep one event per artist+date, preferring non-package events
-  const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'suite',
-    'box seat', 'vinyl room', 'premium', 'platinum', 'hospitality', 'club level',
-    'logen-seat', 'payment plan', 'upsell', 'excluding concert ticket'];
-  const isPackage = (name: string) =>
-    packageKeywords.some(kw => name.toLowerCase().includes(kw));
-
   const groups = new Map<string, typeof venueEvents[0]>();
   for (const row of venueEvents) {
     const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
@@ -88,7 +84,7 @@ async function getVenueEvents(venueIds: string[]) {
     }
   }
   return Array.from(groups.values());
-}
+});
 
 export async function generateStaticParams() {
   const now = new Date();

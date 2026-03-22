@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { generateOrganizationSchema, generateWebsiteSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { SITE_URL } from '@/lib/seo';
+import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
@@ -63,12 +64,6 @@ async function getUpcomingEvents() {
     .orderBy(events.eventDate);
 
   // Deduplicate: keep one event per artist+city+date, preferring non-package events
-  const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'suite',
-    'box seat', 'vinyl room', 'premium', 'platinum', 'hospitality', 'club level',
-    'logen-seat', 'payment plan', 'upsell', 'excluding concert ticket'];
-  const isPackage = (name: string) =>
-    packageKeywords.some(kw => name.toLowerCase().includes(kw));
-
   const groups = new Map<string, typeof upcomingEvents[0]>();
   for (const e of upcomingEvents) {
     const dateKey = new Date(e.eventDate).toISOString().slice(0, 10);

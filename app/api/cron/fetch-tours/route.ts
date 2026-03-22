@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
 import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
+import { isPackage } from '@/lib/event-utils';
 import type { NewEvent } from '@/db/schema';
 
 export const runtime = 'nodejs';
@@ -12,18 +13,6 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
 const BATCH_SIZE = 5;
-
-const PACKAGE_KEYWORDS = [
-  'vip', 'package', 'upgrade', 'comfort seat', 'lounge', 'meet & greet',
-  'meet and greet', 'premium', 'platinum', 'gold circle', 'early entry',
-  'soundcheck', 'vinyl room', 'hospitality', 'suite', 'box seat',
-  'excluding concert ticket', 'hot ticket', 'upsell',
-];
-
-function isPackageVariant(eventName: string): boolean {
-  const lower = eventName.toLowerCase();
-  return PACKAGE_KEYWORDS.some(kw => lower.includes(kw));
-}
 
 function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null }[]): NewEvent[] {
   const groups = new Map<string, NewEvent[]>();
@@ -51,7 +40,7 @@ function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?
       deduped.push(group[0]);
       continue;
     }
-    const mainEvent = group.find(e => !isPackageVariant(e.name)) || group[0];
+    const mainEvent = group.find(e => !isPackage(e.name)) || group[0];
     deduped.push(mainEvent);
   }
 
@@ -159,7 +148,8 @@ async function processBatch<T, R>(
 
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

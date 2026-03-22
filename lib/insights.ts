@@ -2,16 +2,7 @@ import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
 import { eq, gte, sql } from 'drizzle-orm';
 import { slugify } from './slugify';
-
-const PACKAGE_KEYWORDS = [
-  'vip', 'package', 'upgrade', 'comfort seat', 'suite',
-  'box seat', 'vinyl room', 'premium', 'platinum', 'hospitality',
-  'club level', 'logen-seat', 'payment plan', 'upsell', 'excluding concert ticket',
-];
-
-function isPackage(name: string): boolean {
-  return PACKAGE_KEYWORDS.some(kw => name.toLowerCase().includes(kw));
-}
+import { isPackage } from './event-utils';
 
 export interface CityInsight {
   city: string;

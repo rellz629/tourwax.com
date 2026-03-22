@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
 import { eq, gte, sql } from 'drizzle-orm';
@@ -10,6 +11,7 @@ import { generateBreadcrumbSchema, generateCityEventListSchema, generateFAQSchem
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
+import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 
 export const dynamic = 'force-static';
@@ -19,7 +21,7 @@ interface Props {
   params: Promise<{ city: string }>;
 }
 
-async function getCityInfo(citySlug: string) {
+const getCityInfo = cache(async function getCityInfo(citySlug: string) {
   const now = new Date();
 
   // Get all distinct cities with future events
@@ -38,9 +40,9 @@ async function getCityInfo(citySlug: string) {
   );
 
   return match || null;
-}
+});
 
-async function getCityEvents(cityName: string) {
+const getCityEvents = cache(async function getCityEvents(cityName: string) {
   const now = new Date();
 
   const cityEvents = await db
@@ -60,12 +62,6 @@ async function getCityEvents(cityName: string) {
     .orderBy(events.eventDate);
 
   // Deduplicate: keep one event per artist+date, preferring non-package events
-  const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'suite',
-    'box seat', 'vinyl room', 'premium', 'platinum', 'hospitality', 'club level',
-    'logen-seat', 'payment plan', 'upsell', 'excluding concert ticket'];
-  const isPackage = (name: string) =>
-    packageKeywords.some(kw => name.toLowerCase().includes(kw));
-
   const groups = new Map<string, typeof cityEvents[0]>();
   for (const row of cityEvents) {
     const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
@@ -78,7 +74,7 @@ async function getCityEvents(cityName: string) {
     }
   }
   return Array.from(groups.values());
-}
+});
 
 export async function generateStaticParams() {
   const now = new Date();

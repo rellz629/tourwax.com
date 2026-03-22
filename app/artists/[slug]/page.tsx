@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues, newsArticles } from '@/db/schema';
 import { eq, gte, and, desc, ne, sql } from 'drizzle-orm';
@@ -12,6 +13,7 @@ import ShareButtons from '@/components/ShareButtons';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
+import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import type { Metadata } from 'next';
 
@@ -35,14 +37,14 @@ export async function generateStaticParams() {
   }));
 }
 
-async function getArtist(slug: string) {
+const getArtist = cache(async function getArtist(slug: string) {
   const artist = await db.query.artists.findFirst({
     where: eq(artists.slug, slug),
   });
 
   if (!artist) return null;
   return artist;
-}
+});
 
 interface TicketSource {
   source: string;
@@ -58,7 +60,7 @@ interface GroupedEvent {
   ticketSources: TicketSource[];
 }
 
-async function getArtistEvents(artistId: string): Promise<GroupedEvent[]> {
+const getArtistEvents = cache(async function getArtistEvents(artistId: string): Promise<GroupedEvent[]> {
   const now = new Date();
 
   const artistEvents = await db
@@ -76,13 +78,6 @@ async function getArtistEvents(artistId: string): Promise<GroupedEvent[]> {
 
   // Deduplicate: keep one event per date+city, preferring non-package events
   // Collect all ticket sources for each group
-  const packageKeywords = ['vip', 'package', 'upgrade', 'comfort seat', 'lounge',
-    'meet & greet', 'premium', 'platinum', 'suite', 'box seat', 'vinyl room',
-    'hospitality', 'excluding concert ticket', 'hot ticket', 'upsell',
-    'club level', 'logen-seat', 'accessible ticket', 'payment plan'];
-
-  const isPackage = (name: string) =>
-    packageKeywords.some(kw => name.toLowerCase().includes(kw));
 
   const groups = new Map<string, GroupedEvent>();
   for (const row of artistEvents) {
@@ -119,7 +114,7 @@ async function getArtistEvents(artistId: string): Promise<GroupedEvent[]> {
   }
 
   return Array.from(groups.values());
-}
+});
 
 async function getArtistNews(artistId: string) {
   const news = await db
