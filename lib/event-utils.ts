@@ -8,6 +8,7 @@ export const PACKAGE_KEYWORDS = [
   'soundcheck', 'vinyl room', 'hospitality', 'suite', 'box seat',
   'excluding concert ticket', 'hot ticket', 'upsell',
   'club level', 'logen-seat', 'accessible ticket', 'payment plan',
+  'tribute', 'tribute to', 'tribute band', 'live band tribute',
 ];
 
 export function isPackage(name: string): boolean {
