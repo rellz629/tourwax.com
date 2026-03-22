@@ -3,11 +3,14 @@ config({ path: '.env.local' });
 
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
 import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
+import { slugify } from '@/lib/slugify';
+import { nanoid } from 'nanoid';
+import type { FestivalLineup } from '@/lib/ticketmaster';
 import type { NewEvent } from '@/db/schema';
 
 function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null }[]): NewEvent[] {
@@ -84,8 +87,11 @@ async function main() {
   const allVenues: any[] = [];
   const updates: any = {};
 
+  let festivalLineups: FestivalLineup[] | undefined;
+
   if (tmData.status === 'fulfilled') {
-    const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo } = tmData.value;
+    const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo, festivalLineups: lineups } = tmData.value;
+    festivalLineups = lineups;
     const tmEventsWithAffiliate = tmEvents.map(e => ({
       ...e, artistId: artist.id,
       ticketUrl: e.ticketUrl ? getTicketmasterAffiliateUrl(e.ticketUrl) : e.ticketUrl,
@@ -131,6 +137,68 @@ async function main() {
         minPrice: events.minPrice, maxPrice: events.maxPrice, currency: events.currency, metadata: events.metadata, updatedAt: new Date() },
     });
     console.log(`  Stored ${dedupedEvents.length} events`);
+  }
+
+  // Process festival lineups
+  if (festivalLineups && festivalLineups.length > 0) {
+    console.log(`  🎪 Found ${festivalLineups.length} festival event(s), processing lineups...`);
+    let importedArtists = 0;
+    let importedEvents = 0;
+
+    for (const lineup of festivalLineups) {
+      const sourceEvent = dedupedEvents.find(e => e.externalId === lineup.eventId);
+      if (!sourceEvent) continue;
+
+      for (const attraction of lineup.attractions) {
+        const attrSlug = slugify(attraction.name);
+        const existing = await db.query.artists.findFirst({
+          where: or(eq(artists.ticketmasterId, attraction.id), eq(artists.slug, attrSlug)),
+        });
+
+        let attrArtistId: string;
+        if (existing) {
+          attrArtistId = existing.id;
+          if (!existing.ticketmasterId) {
+            await db.update(artists).set({ ticketmasterId: attraction.id, updatedAt: new Date() }).where(eq(artists.id, existing.id));
+          }
+        } else {
+          attrArtistId = nanoid();
+          try {
+            await db.insert(artists).values({
+              id: attrArtistId, slug: attrSlug, name: attraction.name,
+              imageUrl: attraction.imageUrl || null, genre: attraction.genre || null,
+              ticketmasterId: attraction.id, isActive: true,
+            });
+            importedArtists++;
+            console.log(`    🎤 Imported festival artist: ${attraction.name}`);
+          } catch (err: any) {
+            if (err.code === '23505') {
+              const bySlug = await db.query.artists.findFirst({ where: eq(artists.slug, attrSlug) });
+              if (bySlug) attrArtistId = bySlug.id; else continue;
+            } else continue;
+          }
+        }
+
+        const eventId = `tm-${lineup.eventId}-${attraction.id}`;
+        try {
+          await db.insert(events).values({
+            id: eventId, artistId: attrArtistId, venueId: sourceEvent.venueId,
+            name: sourceEvent.name, eventDate: sourceEvent.eventDate,
+            status: sourceEvent.status || 'scheduled', ticketUrl: sourceEvent.ticketUrl,
+            minPrice: sourceEvent.minPrice, maxPrice: sourceEvent.maxPrice,
+            currency: sourceEvent.currency, source: 'ticketmaster',
+            externalId: `${lineup.eventId}-${attraction.id}`, metadata: null,
+          }).onConflictDoUpdate({
+            target: events.id,
+            set: { name: sourceEvent.name, eventDate: sourceEvent.eventDate, ticketUrl: sourceEvent.ticketUrl, updatedAt: new Date() },
+          });
+          importedEvents++;
+        } catch { /* skip */ }
+      }
+    }
+    if (importedArtists > 0 || importedEvents > 0) {
+      console.log(`  🎪 Festival lineup: imported ${importedArtists} new artists, ${importedEvents} events`);
+    }
   }
 
   console.log('Done!');

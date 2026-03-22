@@ -1,4 +1,11 @@
 import type { Event as DBEvent, NewEvent, NewVenue } from '@/db/schema';
+import { isFestival } from './event-utils';
+
+export interface FestivalLineup {
+  eventId: string;
+  eventName: string;
+  attractions: Array<{ id: string; name: string; imageUrl?: string; genre?: string }>;
+}
 
 const BASE_URL = 'https://app.ticketmaster.com/discovery/v2';
 
@@ -26,7 +33,12 @@ interface TicketmasterEvent {
   url?: string;
   _embedded?: {
     venues?: TicketmasterVenue[];
-    attractions?: Array<{ id: string; name: string }>;
+    attractions?: Array<{
+      id: string;
+      name: string;
+      images?: Array<{ url: string; width?: number; height?: number }>;
+      classifications?: Array<{ genre?: { name?: string } }>;
+    }>;
   };
 }
 
@@ -68,6 +80,7 @@ export async function searchArtistEvents(artistName: string): Promise<{
     imageUrl?: string;
     genre?: string;
   };
+  festivalLineups?: FestivalLineup[];
 }> {
   if (!process.env.TICKETMASTER_API_KEY) {
     throw new Error('TICKETMASTER_API_KEY is not set');
@@ -106,6 +119,7 @@ export async function searchArtistEvents(artistName: string): Promise<{
   const events: NewEvent[] = [];
   const venues: NewVenue[] = [];
   const venueIds = new Set<string>();
+  const festivalLineups: FestivalLineup[] = [];
 
   const tmEvents = data._embedded?.events || [];
 
@@ -164,6 +178,29 @@ export async function searchArtistEvents(artistName: string): Promise<{
       externalId: event.id,
       metadata: null,
     });
+
+    // Extract festival lineup from attractions
+    if (isFestival(event.name)) {
+      const attractions = event._embedded?.attractions || [];
+      if (attractions.length > 1) {
+        festivalLineups.push({
+          eventId: event.id,
+          eventName: event.name,
+          attractions: attractions.map(attr => {
+            const images = attr.images || [];
+            const bestImage = images
+              .filter((img) => img.width && img.height)
+              .sort((a, b) => (b.width! * b.height!) - (a.width! * a.height!))[0];
+            return {
+              id: attr.id,
+              name: attr.name,
+              imageUrl: bestImage?.url || images[0]?.url,
+              genre: attr.classifications?.[0]?.genre?.name,
+            };
+          }),
+        });
+      }
+    }
   }
 
   return {
@@ -175,6 +212,7 @@ export async function searchArtistEvents(artistName: string): Promise<{
       imageUrl: artist.imageUrl,
       genre: artist.genre,
     },
+    festivalLineups: festivalLineups.length > 0 ? festivalLineups : undefined,
   };
 }
 

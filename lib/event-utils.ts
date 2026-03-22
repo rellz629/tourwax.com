@@ -15,3 +15,18 @@ export function isPackage(name: string): boolean {
   const lower = name.toLowerCase();
   return PACKAGE_KEYWORDS.some(kw => lower.includes(kw));
 }
+
+const FESTIVAL_KEYWORDS = [
+  'fest', 'festival', 'palooza', 'bonnaroo', 'coachella', 'glastonbury',
+  'lollapalooza', 'summerfest', 'firefly', 'governors ball', 'ultra',
+  'tomorrowland', 'primavera', 'reading & leeds', 'download festival',
+  'wireless', 'parklife', 'bestival', 'creamfields', 'sonar',
+  'roskilde', 'fuji rock', 'rock am ring', 'rock im park',
+  'wacken', 'hellfest', 'nova rock', 'hurricane festival',
+  'southside festival', 'splash!', 'melt!', 'frequency',
+];
+
+export function isFestival(name: string): boolean {
+  const lower = name.toLowerCase();
+  return FESTIVAL_KEYWORDS.some(kw => lower.includes(kw));
+}

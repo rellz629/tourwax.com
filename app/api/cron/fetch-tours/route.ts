@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
 import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
+import { slugify } from '@/lib/slugify';
+import { nanoid } from 'nanoid';
+import type { FestivalLineup } from '@/lib/ticketmaster';
 import type { NewEvent } from '@/db/schema';
 
 export const runtime = 'nodejs';
@@ -79,6 +82,96 @@ function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?
   return deduped;
 }
 
+async function processFestivalLineups(
+  lineups: FestivalLineup[],
+  sourceEvents: NewEvent[],
+) {
+  let importedArtists = 0;
+  let importedEvents = 0;
+
+  for (const lineup of lineups) {
+    const sourceEvent = sourceEvents.find(e => e.externalId === lineup.eventId);
+    if (!sourceEvent) continue;
+
+    for (const attraction of lineup.attractions) {
+      const slug = slugify(attraction.name);
+      const existing = await db.query.artists.findFirst({
+        where: or(
+          eq(artists.ticketmasterId, attraction.id),
+          eq(artists.slug, slug),
+        ),
+      });
+
+      let artistId: string;
+
+      if (existing) {
+        artistId = existing.id;
+        if (!existing.ticketmasterId) {
+          await db.update(artists)
+            .set({ ticketmasterId: attraction.id, updatedAt: new Date() })
+            .where(eq(artists.id, existing.id));
+        }
+      } else {
+        artistId = nanoid();
+        try {
+          await db.insert(artists).values({
+            id: artistId,
+            slug,
+            name: attraction.name,
+            imageUrl: attraction.imageUrl || null,
+            genre: attraction.genre || null,
+            ticketmasterId: attraction.id,
+            isActive: true,
+          });
+          importedArtists++;
+        } catch (err: any) {
+          if (err.code === '23505') {
+            const bySlug = await db.query.artists.findFirst({
+              where: eq(artists.slug, slug),
+            });
+            if (bySlug) artistId = bySlug.id;
+            else continue;
+          } else {
+            continue;
+          }
+        }
+      }
+
+      const eventId = `tm-${lineup.eventId}-${attraction.id}`;
+      try {
+        await db.insert(events).values({
+          id: eventId,
+          artistId,
+          venueId: sourceEvent.venueId,
+          name: sourceEvent.name,
+          eventDate: sourceEvent.eventDate,
+          status: sourceEvent.status || 'scheduled',
+          ticketUrl: sourceEvent.ticketUrl,
+          minPrice: sourceEvent.minPrice,
+          maxPrice: sourceEvent.maxPrice,
+          currency: sourceEvent.currency,
+          source: 'ticketmaster',
+          externalId: `${lineup.eventId}-${attraction.id}`,
+          metadata: null,
+        }).onConflictDoUpdate({
+          target: events.id,
+          set: {
+            name: sourceEvent.name,
+            eventDate: sourceEvent.eventDate,
+            ticketUrl: sourceEvent.ticketUrl,
+            updatedAt: new Date(),
+          },
+        });
+        importedEvents++;
+      } catch {
+        // Skip constraint errors
+      }
+    }
+  }
+
+  return { importedArtists, importedEvents };
+}
+
 async function fetchToursForArtist(artistId: string, artistName: string) {
   const [tmData, sgData] = await Promise.allSettled([
     ticketmaster.searchArtistEvents(artistName),
@@ -94,8 +187,11 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
     genre?: string;
   } = {};
 
+  let festivalLineups: FestivalLineup[] | undefined;
+
   if (tmData.status === 'fulfilled') {
-    const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo } = tmData.value;
+    const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo, festivalLineups: lineups } = tmData.value;
+    festivalLineups = lineups;
     const tmEventsWithAffiliate = tmEvents.map(e => ({
       ...e,
       artistId,
@@ -161,7 +257,14 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
       });
   }
 
-  return { events: dedupedEvents.length, venues: allVenues.length };
+  // Process festival lineups
+  let festivalEvents = 0;
+  if (festivalLineups && festivalLineups.length > 0) {
+    const result = await processFestivalLineups(festivalLineups, dedupedEvents);
+    festivalEvents = result.importedEvents;
+  }
+
+  return { events: dedupedEvents.length + festivalEvents, venues: allVenues.length };
 }
 
 async function processBatch<T, R>(

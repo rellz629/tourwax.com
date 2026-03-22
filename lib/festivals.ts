@@ -3,7 +3,7 @@ import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
 import { eq, gte, sql } from 'drizzle-orm';
 import { slugify } from './slugify';
-import { isPackage } from './event-utils';
+import { isPackage, isFestival } from './event-utils';
 import type { Artist, Event, Venue } from '@/db/schema';
 
 export const MIN_ARTISTS_FOR_FESTIVAL = 3;
@@ -114,14 +114,17 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
     }
   }
 
-  // Filter to groups with 3+ distinct artists
+  // Filter to groups with 3+ distinct artists, OR events whose name matches festival keywords
   const festivals: Festival[] = [];
 
   for (const group of groups.values()) {
-    if (group.eventsByArtist.size < MIN_ARTISTS_FOR_FESTIVAL) continue;
+    const eventNames = Array.from(group.eventsByArtist.values()).map(e => e.event.name);
+    const hasEnoughArtists = group.eventsByArtist.size >= MIN_ARTISTS_FOR_FESTIVAL;
+    const nameMatchesFestival = eventNames.some(name => isFestival(name));
+
+    if (!hasEnoughArtists && !nameMatchesFestival) continue;
 
     const entries = Array.from(group.eventsByArtist.values());
-    const eventNames = entries.map((e) => e.event.name);
 
     const formattedDate = new Date(group.date + 'T12:00:00').toLocaleDateString('en-US', {
       weekday: 'long',

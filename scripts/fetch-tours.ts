@@ -4,11 +4,14 @@ config({ path: '.env.local' });
 
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
 import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
+import { slugify } from '@/lib/slugify';
+import { nanoid } from 'nanoid';
+import type { FestivalLineup } from '@/lib/ticketmaster';
 import type { NewEvent } from '@/db/schema';
 
 // Deduplicate events: keep only the main event per city+date, filtering out package variants
@@ -85,6 +88,114 @@ function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?
   return deduped;
 }
 
+// Import festival lineup artists and create events for each
+async function processFestivalLineups(
+  lineups: FestivalLineup[],
+  sourceEvents: NewEvent[],
+  sourceVenues: { id: string; city?: string | null }[],
+) {
+  let importedArtists = 0;
+  let importedEvents = 0;
+
+  for (const lineup of lineups) {
+    // Find the matching event to get venue/date/url info
+    const sourceEvent = sourceEvents.find(e => e.externalId === lineup.eventId);
+    if (!sourceEvent) continue;
+
+    for (const attraction of lineup.attractions) {
+      // Check if artist already exists by ticketmasterId or slug
+      const slug = slugify(attraction.name);
+      const existing = await db.query.artists.findFirst({
+        where: or(
+          eq(artists.ticketmasterId, attraction.id),
+          eq(artists.slug, slug),
+        ),
+      });
+
+      let artistId: string;
+
+      if (existing) {
+        artistId = existing.id;
+        // Update ticketmasterId if missing
+        if (!existing.ticketmasterId) {
+          await db.update(artists)
+            .set({ ticketmasterId: attraction.id, updatedAt: new Date() })
+            .where(eq(artists.id, existing.id));
+        }
+      } else {
+        // Create new artist record
+        artistId = nanoid();
+        try {
+          await db.insert(artists).values({
+            id: artistId,
+            slug,
+            name: attraction.name,
+            imageUrl: attraction.imageUrl || null,
+            genre: attraction.genre || null,
+            ticketmasterId: attraction.id,
+            isActive: true,
+          });
+          importedArtists++;
+          console.log(`    🎤 Imported festival artist: ${attraction.name}`);
+        } catch (err: any) {
+          // Slug collision — artist likely exists under a slightly different name
+          if (err.code === '23505') {
+            const bySlug = await db.query.artists.findFirst({
+              where: eq(artists.slug, slug),
+            });
+            if (bySlug) {
+              artistId = bySlug.id;
+            } else {
+              continue;
+            }
+          } else {
+            console.error(`    ⚠️  Failed to import ${attraction.name}: ${err.message}`);
+            continue;
+          }
+        }
+      }
+
+      // Create event for this artist at the festival
+      const eventId = `tm-${lineup.eventId}-${attraction.id}`;
+      try {
+        await db.insert(events).values({
+          id: eventId,
+          artistId,
+          venueId: sourceEvent.venueId,
+          name: sourceEvent.name,
+          eventDate: sourceEvent.eventDate,
+          status: sourceEvent.status || 'scheduled',
+          ticketUrl: sourceEvent.ticketUrl,
+          minPrice: sourceEvent.minPrice,
+          maxPrice: sourceEvent.maxPrice,
+          currency: sourceEvent.currency,
+          source: 'ticketmaster',
+          externalId: `${lineup.eventId}-${attraction.id}`,
+          metadata: null,
+        }).onConflictDoUpdate({
+          target: events.id,
+          set: {
+            name: sourceEvent.name,
+            eventDate: sourceEvent.eventDate,
+            ticketUrl: sourceEvent.ticketUrl,
+            updatedAt: new Date(),
+          },
+        });
+        importedEvents++;
+      } catch (err: any) {
+        // Skip if it already exists or other constraint error
+        if (err.code !== '23505') {
+          console.error(`    ⚠️  Failed to create event for ${attraction.name}: ${err.message}`);
+        }
+      }
+    }
+  }
+
+  if (importedArtists > 0 || importedEvents > 0) {
+    console.log(`  🎪 Festival lineup: imported ${importedArtists} new artists, ${importedEvents} events`);
+  }
+}
+
 async function fetchToursForArtist(artistId: string, artistName: string) {
   console.log(`\n🎵 Fetching tours for: ${artistName}`);
 
@@ -104,9 +215,12 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
       genre?: string;
     } = {};
 
+    let festivalLineups: FestivalLineup[] | undefined;
+
     // Process Ticketmaster data
     if (tmData.status === 'fulfilled') {
-      const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo } = tmData.value;
+      const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo, festivalLineups: lineups } = tmData.value;
+      festivalLineups = lineups;
       // Apply affiliate tracking to Ticketmaster event URLs
       const tmEventsWithAffiliate = tmEvents.map(e => ({
         ...e,
@@ -189,6 +303,12 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
           },
         });
       console.log(`  ✓ Stored ${dedupedEvents.length} events`);
+    }
+
+    // Process festival lineups — import lineup artists and create their events
+    if (festivalLineups && festivalLineups.length > 0) {
+      console.log(`  🎪 Found ${festivalLineups.length} festival event(s), processing lineups...`);
+      await processFestivalLineups(festivalLineups, dedupedEvents, allVenues);
     }
 
   } catch (error) {
