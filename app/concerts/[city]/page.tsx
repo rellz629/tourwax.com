@@ -273,7 +273,7 @@ export default async function CityPage({ params }: Props) {
                             <h3 className="text-sm text-gray-600 mt-1">{row.event.name}</h3>
                             {row.venue && (
                               <div className="mt-2 text-sm text-gray-500 flex items-center gap-2">
-                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
@@ -314,7 +314,7 @@ export default async function CityPage({ params }: Props) {
                               Get Tickets
                             </a>
                           )}
-                          <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">
+                          <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">
                             via {row.event.source}
                           </span>
                         </div>
@@ -351,7 +351,7 @@ export default async function CityPage({ params }: Props) {
               <details key={i} className="group bg-white rounded-xl shadow-md border border-gray-100">
                 <summary className="cursor-pointer p-5 font-semibold text-gray-900 hover:text-orange-600 transition-colors list-none flex justify-between items-center">
                   {faq.question}
-                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </summary>

@@ -71,7 +71,7 @@ export default async function FestivalsPage() {
                       <span className="inline-block px-3 py-1 text-xs font-semibold text-orange-600 bg-orange-50 rounded-full">
                         {festival.artistCount} Artists
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-500">
                         {festival.formattedDate}
                       </span>
                     </div>

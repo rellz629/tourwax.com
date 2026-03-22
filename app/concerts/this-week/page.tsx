@@ -113,7 +113,7 @@ export default async function ThisWeekPage() {
                   <div className="h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
                   <h2 className="text-xl font-bold text-gray-900">{dayLabel}</h2>
                   <div className="h-px flex-1 bg-gray-200"></div>
-                  <span className="text-sm text-gray-400">{dayEvents.length} show{dayEvents.length === 1 ? '' : 's'}</span>
+                  <span className="text-sm text-gray-500">{dayEvents.length} show{dayEvents.length === 1 ? '' : 's'}</span>
                 </div>
                 <div className="space-y-4">
                   {dayEvents.map((row) => (

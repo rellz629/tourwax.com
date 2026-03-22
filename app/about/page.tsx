@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About TourWax - Live Music Tour Dates & Concert Discovery',
+  description: 'TourWax aggregates live music tour dates from Ticketmaster and SeatGeek, providing comprehensive concert listings, venue information, and artist news.',
+};
+
 export default function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -12,19 +19,19 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">What We Do</h2>
           <ul className="space-y-3 text-gray-700">
             <li className="flex items-start">
-              <span className="text-blue-600 mr-2">✓</span>
+              <span className="text-blue-600 mr-2" aria-hidden="true">✓</span>
               <span>Automatically track tour dates from major ticketing platforms</span>
             </li>
             <li className="flex items-start">
-              <span className="text-blue-600 mr-2">✓</span>
+              <span className="text-blue-600 mr-2" aria-hidden="true">✓</span>
               <span>Aggregate venue information including location and capacity</span>
             </li>
             <li className="flex items-start">
-              <span className="text-blue-600 mr-2">✓</span>
+              <span className="text-blue-600 mr-2" aria-hidden="true">✓</span>
               <span>Curate the latest news and updates for each artist</span>
             </li>
             <li className="flex items-start">
-              <span className="text-blue-600 mr-2">✓</span>
+              <span className="text-blue-600 mr-2" aria-hidden="true">✓</span>
               <span>Update everything automatically—no manual intervention needed</span>
             </li>
           </ul>

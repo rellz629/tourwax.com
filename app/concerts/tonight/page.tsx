@@ -111,7 +111,7 @@ export default async function TonightPage() {
                     ) : city}
                   </h2>
                   <div className="h-px flex-1 bg-gray-200"></div>
-                  <span className="text-sm text-gray-400">{cityEvents.length} show{cityEvents.length === 1 ? '' : 's'}</span>
+                  <span className="text-sm text-gray-500">{cityEvents.length} show{cityEvents.length === 1 ? '' : 's'}</span>
                 </div>
                 <div className="space-y-4">
                   {cityEvents.map((row) => (

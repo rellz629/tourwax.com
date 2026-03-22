@@ -18,6 +18,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
             {index > 0 && (
               <svg
                 className="w-4 h-4 text-gray-400"
+                aria-hidden="true"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -31,7 +32,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
               </svg>
             )}
             {index === items.length - 1 ? (
-              <span className="text-gray-900 font-medium">{item.name}</span>
+              <span className="text-gray-900 font-medium" aria-current="page">{item.name}</span>
             ) : (
               <Link
                 href={item.url}

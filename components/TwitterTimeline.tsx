@@ -78,7 +78,7 @@ export default function TwitterTimeline({ handle }: TwitterTimelineProps) {
             Follow on X
           </button>
           {hasError && (
-            <p className="mt-4 text-xs text-gray-400">
+            <p className="mt-4 text-xs text-gray-500">
               Twitter embed temporarily unavailable
             </p>
           )}

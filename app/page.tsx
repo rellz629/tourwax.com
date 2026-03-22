@@ -172,12 +172,12 @@ export default async function HomePage() {
             className="group inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-lg transition-colors"
           >
             View All
-            <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
         </div>
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {featuredArtists.map((artist) => (
             <Link
               key={artist.id}
@@ -222,7 +222,7 @@ export default async function HomePage() {
         {upcomingEvents.length === 0 ? (
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-orange-500" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
@@ -235,7 +235,7 @@ export default async function HomePage() {
                 <div className="flex items-center gap-3 mb-3">
                   <h3 className="text-lg font-bold whitespace-nowrap"><span className="gradient-text">{dayLabel}</span></h3>
                   <div className="h-px bg-gradient-to-r from-orange-200 to-transparent flex-1"></div>
-                  <span className="text-sm text-gray-400 whitespace-nowrap">{dayEvents.length} {dayEvents.length === 1 ? 'show' : 'shows'}</span>
+                  <span className="text-sm text-gray-500 whitespace-nowrap">{dayEvents.length} {dayEvents.length === 1 ? 'show' : 'shows'}</span>
                 </div>
                 <div className="bg-white rounded-xl shadow-md border border-gray-100 divide-y divide-gray-50">
                   {dayEvents.map((event) => (
@@ -249,12 +249,12 @@ export default async function HomePage() {
                           <span className="font-semibold text-gray-900 group-hover:text-orange-600 transition-colors truncate">
                             {event.artistName}
                           </span>
-                          <span className="text-gray-400 hidden sm:inline">&middot;</span>
+                          <span className="text-gray-500 hidden sm:inline">&middot;</span>
                           <span className="text-gray-500 text-sm truncate hidden sm:inline">{event.name}</span>
                         </div>
                         <p className="text-sm text-gray-500 sm:hidden truncate">{event.name}</p>
                         {(event.venueCity || event.venueState || event.venueCountry) && (
-                          <p className="text-sm text-gray-400 truncate">
+                          <p className="text-sm text-gray-500 truncate">
                             {event.venueCity ? (
                               <Link href={`/concerts/${slugify(event.venueCity)}`} className="hover:text-orange-600 transition-colors">{event.venueCity}</Link>
                             ) : null}
@@ -270,7 +270,7 @@ export default async function HomePage() {
                           timeZone: event.venueTimezone ?? 'UTC',
                         })}
                         {event.venueTimezone && (
-                          <span className="text-gray-400 ml-1">
+                          <span className="text-gray-500 ml-1">
                             {new Intl.DateTimeFormat('en-US', {
                               timeZone: event.venueTimezone,
                               timeZoneName: 'short',
@@ -288,7 +288,7 @@ export default async function HomePage() {
       </section>
 
       {/* Site Stats */}
-      <section className="mt-20 grid grid-cols-3 gap-6">
+      <section className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 text-center">
           <div className="text-3xl font-black gradient-text">{stats.artists.toLocaleString()}</div>
           <div className="text-sm text-gray-500 font-medium mt-1">Artists Tracked</div>
@@ -334,7 +334,7 @@ export default async function HomePage() {
               className="group inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-lg transition-colors"
             >
               All Cities
-              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>

@@ -454,7 +454,7 @@ export default async function ArtistPage({ params }: Props) {
                           {venue && (
                             <div className="text-sm text-gray-600 space-y-1">
                               <div className="flex items-center gap-2">
-                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
@@ -622,7 +622,7 @@ export default async function ArtistPage({ params }: Props) {
                           {article.source}
                         </span>
                       )}
-                      <span className="text-gray-400">
+                      <span className="text-gray-500">
                         {new Date(article.publishedAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -719,6 +719,7 @@ export default async function ArtistPage({ params }: Props) {
                 <span>{faq.question}</span>
                 <svg
                   className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-4"
+                  aria-hidden="true"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
