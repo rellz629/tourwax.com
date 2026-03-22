@@ -598,7 +598,7 @@ export default async function ArtistPage({ params }: Props) {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Follow on X</h3>
+                    <p className="font-bold text-lg">Follow on X</p>
                     <p className="text-blue-100 text-sm">@{twitterHandle}</p>
                   </div>
                 </div>
@@ -753,10 +753,10 @@ export default async function ArtistPage({ params }: Props) {
 
       {/* FAQ Section */}
       <div className="mt-16">
-        <h2 className="text-3xl font-bold mb-6">
+        <h2 id="faq-heading" className="text-3xl font-bold mb-6">
           Frequently Asked <span className="gradient-text">Questions</span>
         </h2>
-        <div className="space-y-3">
+        <div className="space-y-3" role="group" aria-labelledby="faq-heading">
           {faqs.map((faq, index) => (
             <details
               key={index}

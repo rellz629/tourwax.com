@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { marked } from 'marked';
+import { marked, Renderer } from 'marked';
 
 export interface BlogPost {
   slug: string;
@@ -18,6 +18,17 @@ export interface BlogPost {
 type BlogPostMeta = Omit<BlogPost, 'content'>;
 
 const BLOG_DIR = path.join(process.cwd(), 'content/blog');
+
+// Custom renderer to ensure accessibility in blog content
+const renderer = new Renderer();
+// Add alt="" to images missing alt text so they're treated as decorative
+const origImage = renderer.image.bind(renderer);
+renderer.image = function ({ href, title, text }) {
+  const alt = text || '';
+  const titleAttr = title ? ` title="${title}"` : '';
+  return `<img src="${href}" alt="${alt}"${titleAttr} loading="lazy" />`;
+};
+marked.use({ renderer });
 
 function getMarkdownFiles(): string[] {
   return fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith('.md'));

@@ -9,6 +9,7 @@ import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
+import ShowMoreEvents from '@/components/ShowMoreEvents';
 
 // Use Static Site Generation with ISR
 export const dynamic = 'force-static';
@@ -195,7 +196,7 @@ export default async function HomePage() {
                     sizes="(max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">
+                  <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold" role="img" aria-label={artist.name}>
                     {artist.name.charAt(0)}
                   </div>
                 )}
@@ -229,7 +230,7 @@ export default async function HomePage() {
             <p className="text-gray-500 text-lg">No upcoming events yet. Check back soon!</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <ShowMoreEvents initialCount={3}>
             {Array.from(groupEventsByDay(upcomingEvents)).map(([dayLabel, dayEvents]) => (
               <div key={dayLabel}>
                 <div className="flex items-center gap-3 mb-3">
@@ -283,7 +284,7 @@ export default async function HomePage() {
                 </div>
               </div>
             ))}
-          </div>
+          </ShowMoreEvents>
         )}
       </section>
 
