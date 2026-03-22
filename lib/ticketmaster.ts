@@ -40,6 +40,25 @@ interface TicketmasterResponse {
   };
 }
 
+// Convert a local date/time in a specific timezone to a UTC ISO string
+function localToUTC(localDate: string, localTime: string, timezone?: string | null): string {
+  if (!timezone) {
+    // No timezone info available — use noon UTC as a safe default
+    return `${localDate}T12:00:00Z`;
+  }
+
+  // Treat the local time as if it were UTC to get a reference point
+  const naive = new Date(`${localDate}T${localTime}Z`);
+
+  // Calculate the offset between UTC and the venue's timezone
+  const utcStr = naive.toLocaleString('en-US', { timeZone: 'UTC' });
+  const tzStr = naive.toLocaleString('en-US', { timeZone: timezone });
+  const offsetMs = new Date(utcStr).getTime() - new Date(tzStr).getTime();
+
+  // Shift by the offset: local time + offset = correct UTC
+  return new Date(naive.getTime() + offsetMs).toISOString();
+}
+
 export async function searchArtistEvents(artistName: string): Promise<{
   events: NewEvent[];
   venues: NewVenue[];
@@ -119,7 +138,11 @@ export async function searchArtistEvents(artistName: string): Promise<{
 
     const eventDateTime = event.dates.start.dateTime ||
       (event.dates.start.localDate ?
-        `${event.dates.start.localDate}T${event.dates.start.localTime || '20:00:00'}Z` :
+        localToUTC(
+          event.dates.start.localDate,
+          event.dates.start.localTime || '20:00:00',
+          venue?.timezone
+        ) :
         null);
 
     if (!eventDateTime) continue;

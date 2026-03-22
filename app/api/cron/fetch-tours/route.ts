@@ -17,21 +17,50 @@ const BATCH_SIZE = 5;
 function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null }[]): NewEvent[] {
   const groups = new Map<string, NewEvent[]>();
 
-  // Build venue-to-city lookup for cross-source matching
   const venueIdToCity = new Map<string, string>();
   for (const v of venueList) {
     if (v.city) venueIdToCity.set(v.id, v.city.toLowerCase());
   }
 
   for (const event of eventList) {
-    const dateKey = event.eventDate instanceof Date
-      ? event.eventDate.toISOString().slice(0, 10)
-      : new Date(event.eventDate).toISOString().slice(0, 10);
+    const eventDate = event.eventDate instanceof Date
+      ? event.eventDate
+      : new Date(event.eventDate);
+    const dateKey = eventDate.toISOString().slice(0, 10);
     const city = (event.venueId && venueIdToCity.get(event.venueId)) || 'unknown';
     const key = `${city}_${dateKey}`;
 
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(event);
+  }
+
+  // Merge groups on adjacent UTC dates that are likely the same concert
+  // (cross-source events where late-night local time crosses midnight in UTC)
+  const keys = Array.from(groups.keys());
+  for (const key of keys) {
+    const [city, dateStr] = key.split('_');
+    const prevDate = new Date(dateStr + 'T00:00:00Z');
+    prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+    const prevKey = `${city}_${prevDate.toISOString().slice(0, 10)}`;
+
+    if (groups.has(prevKey) && groups.has(key)) {
+      const prevGroup = groups.get(prevKey)!;
+      const curGroup = groups.get(key)!;
+
+      const shouldMerge = curGroup.some(cur =>
+        prevGroup.some(prev => {
+          if (cur.source === prev.source) return false;
+          const curTime = (cur.eventDate instanceof Date ? cur.eventDate : new Date(cur.eventDate)).getTime();
+          const prevTime = (prev.eventDate instanceof Date ? prev.eventDate : new Date(prev.eventDate)).getTime();
+          return Math.abs(curTime - prevTime) < 6 * 60 * 60 * 1000;
+        })
+      );
+
+      if (shouldMerge) {
+        prevGroup.push(...curGroup);
+        groups.delete(key);
+      }
+    }
   }
 
   const deduped: NewEvent[] = [];
@@ -40,7 +69,10 @@ function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?
       deduped.push(group[0]);
       continue;
     }
-    const mainEvent = group.find(e => !isPackage(e.name)) || group[0];
+    const mainEvent =
+      group.find(e => !isPackage(e.name) && e.source === 'ticketmaster') ||
+      group.find(e => !isPackage(e.name)) ||
+      group[0];
     deduped.push(mainEvent);
   }
 

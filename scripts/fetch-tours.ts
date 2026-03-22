@@ -12,25 +12,60 @@ import { isPackage } from '@/lib/event-utils';
 import type { NewEvent } from '@/db/schema';
 
 // Deduplicate events: keep only the main event per city+date, filtering out package variants
-function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null }[]): NewEvent[] {
+// Groups by city + date, and also catches events that span a UTC date boundary
+// (e.g., a 11 PM EDT event is Oct 2 UTC but should dedup with Oct 1 events in the same city)
+function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?: string | null; name?: string }[]): NewEvent[] {
   const groups = new Map<string, NewEvent[]>();
 
-  // Build venue-to-city lookup for cross-source matching
+  // Build venue lookups for cross-source matching
   const venueIdToCity = new Map<string, string>();
+  const venueIdToName = new Map<string, string>();
   for (const v of venueList) {
     if (v.city) venueIdToCity.set(v.id, v.city.toLowerCase());
+    if (v.name) venueIdToName.set(v.id, v.name.toLowerCase());
   }
 
   for (const event of eventList) {
-    // Group by city + calendar date (catches cross-source dupes for the same venue)
-    const dateKey = event.eventDate instanceof Date
-      ? event.eventDate.toISOString().slice(0, 10)
-      : new Date(event.eventDate).toISOString().slice(0, 10);
+    const eventDate = event.eventDate instanceof Date
+      ? event.eventDate
+      : new Date(event.eventDate);
+    const dateKey = eventDate.toISOString().slice(0, 10);
     const city = (event.venueId && venueIdToCity.get(event.venueId)) || 'unknown';
     const key = `${city}_${dateKey}`;
 
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(event);
+  }
+
+  // Second pass: merge groups that are likely the same event but ended up on adjacent
+  // UTC dates (e.g., late-night local time crossing midnight in UTC)
+  const keys = Array.from(groups.keys());
+  for (const key of keys) {
+    const [city, dateStr] = key.split('_');
+    const prevDate = new Date(dateStr + 'T00:00:00Z');
+    prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+    const prevKey = `${city}_${prevDate.toISOString().slice(0, 10)}`;
+
+    if (groups.has(prevKey) && groups.has(key)) {
+      const prevGroup = groups.get(prevKey)!;
+      const curGroup = groups.get(key)!;
+
+      // Check if adjacent-day events are actually the same concert
+      // (different sources, same city, times within 6 hours of each other)
+      const shouldMerge = curGroup.some(cur =>
+        prevGroup.some(prev => {
+          if (cur.source === prev.source) return false; // Same source won't duplicate
+          const curTime = (cur.eventDate instanceof Date ? cur.eventDate : new Date(cur.eventDate)).getTime();
+          const prevTime = (prev.eventDate instanceof Date ? prev.eventDate : new Date(prev.eventDate)).getTime();
+          return Math.abs(curTime - prevTime) < 6 * 60 * 60 * 1000; // Within 6 hours
+        })
+      );
+
+      if (shouldMerge) {
+        prevGroup.push(...curGroup);
+        groups.delete(key);
+      }
+    }
   }
 
   const deduped: NewEvent[] = [];
@@ -39,8 +74,11 @@ function deduplicateEvents(eventList: NewEvent[], venueList: { id: string; city?
       deduped.push(group[0]);
       continue;
     }
-    // Prefer the main event (non-package), or fallback to the first one
-    const mainEvent = group.find(e => !isPackage(e.name)) || group[0];
+    // Prefer the main event (non-package), then prefer ticketmaster as primary source
+    const mainEvent =
+      group.find(e => !isPackage(e.name) && e.source === 'ticketmaster') ||
+      group.find(e => !isPackage(e.name)) ||
+      group[0];
     deduped.push(mainEvent);
   }
 

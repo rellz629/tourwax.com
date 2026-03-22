@@ -79,12 +79,49 @@ const getArtistEvents = cache(async function getArtistEvents(artistId: string): 
   // Deduplicate: keep one event per date+city, preferring non-package events
   // Collect all ticket sources for each group
 
+  // Build a lookup from city+date to group key, also checking adjacent dates
+  // to catch cross-source events that land on different UTC dates
   const groups = new Map<string, GroupedEvent>();
+
+  function findGroupKey(city: string, eventDate: Date): string | null {
+    const dateKey = eventDate.toISOString().slice(0, 10);
+    const directKey = `${city}_${dateKey}`;
+    if (groups.has(directKey)) return directKey;
+
+    // Check adjacent date (previous day) for cross-source timezone mismatches
+    const prevDate = new Date(eventDate);
+    prevDate.setUTCDate(prevDate.getUTCDate() - 1);
+    const prevKey = `${city}_${prevDate.toISOString().slice(0, 10)}`;
+    if (groups.has(prevKey)) {
+      const existing = groups.get(prevKey)!;
+      const existingTime = new Date(existing.event.eventDate).getTime();
+      const curTime = eventDate.getTime();
+      // Only merge if within 6 hours (same concert, different UTC dates)
+      if (Math.abs(curTime - existingTime) < 6 * 60 * 60 * 1000) {
+        return prevKey;
+      }
+    }
+
+    // Check next day
+    const nextDate = new Date(eventDate);
+    nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+    const nextKey = `${city}_${nextDate.toISOString().slice(0, 10)}`;
+    if (groups.has(nextKey)) {
+      const existing = groups.get(nextKey)!;
+      const existingTime = new Date(existing.event.eventDate).getTime();
+      const curTime = eventDate.getTime();
+      if (Math.abs(curTime - existingTime) < 6 * 60 * 60 * 1000) {
+        return nextKey;
+      }
+    }
+
+    return null;
+  }
+
   for (const row of artistEvents) {
-    const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
+    const eventDate = new Date(row.event.eventDate);
+    const dateKey = eventDate.toISOString().slice(0, 10);
     const city = row.venue?.city || 'unknown';
-    const key = `${city}_${dateKey}`;
-    const existing = groups.get(key);
 
     const ticketSource: TicketSource = {
       source: row.event.source,
@@ -94,7 +131,11 @@ const getArtistEvents = cache(async function getArtistEvents(artistId: string): 
       currency: row.event.currency,
     };
 
+    const existingKey = findGroupKey(city, eventDate);
+    const existing = existingKey ? groups.get(existingKey) : null;
+
     if (!existing) {
+      const key = `${city}_${dateKey}`;
       groups.set(key, {
         event: row.event,
         venue: row.venue,
