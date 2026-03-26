@@ -80,6 +80,8 @@ export default function RootLayout({
                   <img
                     src="/logo.svg"
                     alt="TourWax"
+                    width={140}
+                    height={56}
                     className="h-14 w-auto transition-transform group-hover:scale-105"
                   />
                 </Link>
@@ -154,9 +156,9 @@ export default function RootLayout({
         <Analytics />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-SBN01WP17J"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

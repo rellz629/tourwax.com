@@ -7,7 +7,7 @@ import { artists, events, venues } from '@/db/schema';
 import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
-import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
+import { getTicketmasterAffiliateUrl, getSeatGeekAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import { nanoid } from 'nanoid';
@@ -255,13 +255,19 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
     // Process SeatGeek data
     if (sgData.status === 'fulfilled') {
       const { events: sgEvents, venues: sgVenues, seatgeekId, artistInfo } = sgData.value;
-      allEvents.push(...sgEvents.map(e => ({ ...e, artistId })));
+      // Apply affiliate tracking to SeatGeek event URLs
+      const sgEventsWithAffiliate = sgEvents.map(e => ({
+        ...e,
+        artistId,
+        ticketUrl: e.ticketUrl ? getSeatGeekAffiliateUrl(e.ticketUrl) : e.ticketUrl,
+      }));
+      allEvents.push(...sgEventsWithAffiliate);
       allVenues.push(...sgVenues);
       if (seatgeekId) updates.seatgeekId = seatgeekId.toString();
       // Only update image/genre from SeatGeek if we don't have it from Ticketmaster
       if (artistInfo?.imageUrl && !updates.imageUrl) updates.imageUrl = artistInfo.imageUrl;
       if (artistInfo?.genre && !updates.genre) updates.genre = artistInfo.genre;
-      console.log(`  ✓ SeatGeek: ${sgEvents.length} events`);
+      console.log(`  ✓ SeatGeek: ${sgEvents.length} events (with affiliate tracking)`);
     } else {
       console.log(`  ✗ SeatGeek: ${sgData.reason}`);
     }

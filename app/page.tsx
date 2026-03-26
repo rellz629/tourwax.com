@@ -244,16 +244,15 @@ export default async function HomePage() {
                 </div>
                 <div className="bg-white rounded-xl shadow-md border border-gray-100 divide-y divide-gray-50">
                   {dayEvents.map((event) => (
-                    <Link
+                    <div
                       key={event.id}
-                      href={`/artists/${event.artistSlug}`}
                       className="group flex items-center gap-4 px-4 py-3 hover:bg-gradient-to-r hover:from-orange-50 hover:to-transparent transition-colors first:rounded-t-xl last:rounded-b-xl"
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-baseline gap-2">
-                          <span className="font-semibold text-gray-900 group-hover:text-orange-600 transition-colors truncate">
+                          <Link href={`/artists/${event.artistSlug}`} className="font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate">
                             {event.artistName}
-                          </span>
+                          </Link>
                           <span className="text-gray-500 hidden sm:inline">&middot;</span>
                           <span className="text-gray-500 text-sm truncate hidden sm:inline">{event.name}</span>
                         </div>
@@ -283,7 +282,7 @@ export default async function HomePage() {
                           </span>
                         )}
                       </time>
-                    </Link>
+                    </div>
                   ))}
                 </div>
               </div>
