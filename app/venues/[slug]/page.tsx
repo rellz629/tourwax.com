@@ -28,19 +28,12 @@ interface VenueMatch {
 }
 
 const getVenueBySlug = cache(async function getVenueBySlug(venueSlug: string): Promise<VenueMatch | null> {
-  const now = new Date();
-
-  // Get all venues with future events
-  const venuesWithEvents = await db
-    .selectDistinct({
-      venue: venues,
-    })
-    .from(venues)
-    .innerJoin(events, eq(events.venueId, venues.id))
-    .where(gte(events.eventDate, now));
-
   // Find ALL matching venues by slug (same venue can have multiple DB records from different sources)
-  const matches = venuesWithEvents.filter(
+  const allVenues = await db
+    .select({ venue: venues })
+    .from(venues);
+
+  const matches = allVenues.filter(
     (row) => slugify(row.venue.name) === venueSlug
   );
 
@@ -89,7 +82,7 @@ const getVenueEvents = cache(async function getVenueEvents(venueIds: string[]) {
 export async function generateStaticParams() {
   const now = new Date();
 
-  // Get top 50 venues by event count
+  // Get all venues with upcoming events
   const topVenues = await db
     .select({
       venueName: venues.name,
@@ -98,8 +91,7 @@ export async function generateStaticParams() {
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now))
     .groupBy(venues.name)
-    .orderBy(sql`count(*) desc`)
-    .limit(50);
+    .orderBy(sql`count(*) desc`);
 
   return topVenues.map((row) => ({
     slug: slugify(row.venueName),

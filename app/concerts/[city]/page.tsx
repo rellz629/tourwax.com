@@ -22,19 +22,14 @@ interface Props {
 }
 
 const getCityInfo = cache(async function getCityInfo(citySlug: string) {
-  const now = new Date();
-
-  // Get all distinct cities with future events
+  // Find matching city by slug from all venues (not just those with future events)
   const allCities = await db
     .selectDistinct({
       city: venues.city,
       state: venues.state,
     })
-    .from(venues)
-    .innerJoin(events, eq(events.venueId, venues.id))
-    .where(gte(events.eventDate, now));
+    .from(venues);
 
-  // Find matching city by slug
   const match = allCities.find(
     (row) => row.city && slugify(row.city) === citySlug
   );
@@ -79,7 +74,7 @@ const getCityEvents = cache(async function getCityEvents(cityName: string) {
 export async function generateStaticParams() {
   const now = new Date();
 
-  // Get top 30 cities by event count
+  // Get all cities with upcoming events
   const topCities = await db
     .select({
       city: venues.city,
@@ -88,8 +83,7 @@ export async function generateStaticParams() {
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now))
     .groupBy(venues.city)
-    .orderBy(sql`count(*) desc`)
-    .limit(30);
+    .orderBy(sql`count(*) desc`);
 
   return topCities
     .filter((row) => row.city)

@@ -20,8 +20,7 @@ interface Props {
 
 export async function generateStaticParams() {
   const festivals = await getAllFestivals();
-  // Pre-build top 20 festivals by artist count
-  return festivals.slice(0, 20).map((f) => ({ slug: f.slug }));
+  return festivals.map((f) => ({ slug: f.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

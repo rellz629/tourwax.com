@@ -112,8 +112,7 @@ export async function generateStaticParams() {
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(and(isNotNull(venues.state), gte(events.eventDate, now)))
     .groupBy(venues.state)
-    .orderBy(sql`count(*) desc`)
-    .limit(30);
+    .orderBy(sql`count(*) desc`);
 
   return states
     .filter((row) => row.state)
