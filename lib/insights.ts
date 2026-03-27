@@ -97,6 +97,91 @@ export async function getMostTouredCities(): Promise<CityInsight[]> {
   return results;
 }
 
+export interface VenueInsight {
+  venueName: string;
+  venueSlug: string;
+  city: string | null;
+  state: string | null;
+  eventCount: number;
+  artistCount: number;
+  topArtists: string[];
+  rank: number;
+}
+
+export async function getTopConcertVenues(): Promise<VenueInsight[]> {
+  const now = new Date();
+
+  const rows = await db
+    .select({
+      venueName: venues.name,
+      city: venues.city,
+      state: venues.state,
+      eventName: events.name,
+      artistId: events.artistId,
+      artistName: artists.name,
+    })
+    .from(events)
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .innerJoin(artists, eq(events.artistId, artists.id))
+    .where(gte(events.eventDate, now));
+
+  const venueMap = new Map<string, {
+    venueName: string;
+    city: string | null;
+    state: string | null;
+    artistIds: Set<string>;
+    artistNames: Map<string, number>;
+    eventKeys: Set<string>;
+  }>();
+
+  for (const row of rows) {
+    if (isPackage(row.eventName)) continue;
+
+    const key = slugify(row.venueName);
+    let entry = venueMap.get(key);
+    if (!entry) {
+      entry = {
+        venueName: row.venueName,
+        city: row.city,
+        state: row.state,
+        artistIds: new Set(),
+        artistNames: new Map(),
+        eventKeys: new Set(),
+      };
+      venueMap.set(key, entry);
+    }
+
+    entry.eventKeys.add(`${row.artistId}_${row.eventName}`);
+    entry.artistIds.add(row.artistId);
+    const count = entry.artistNames.get(row.artistName) || 0;
+    entry.artistNames.set(row.artistName, count + 1);
+  }
+
+  const results: VenueInsight[] = Array.from(venueMap.values())
+    .map((entry) => {
+      const topArtists = Array.from(entry.artistNames.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([name]) => name);
+
+      return {
+        venueName: entry.venueName,
+        venueSlug: slugify(entry.venueName),
+        city: entry.city,
+        state: entry.state,
+        eventCount: entry.eventKeys.size,
+        artistCount: entry.artistIds.size,
+        topArtists,
+        rank: 0,
+      };
+    })
+    .sort((a, b) => b.eventCount - a.eventCount)
+    .slice(0, 50);
+
+  results.forEach((r, i) => { r.rank = i + 1; });
+  return results;
+}
+
 export async function getBusiestTouringArtists(): Promise<ArtistInsight[]> {
   const now = new Date();
 
