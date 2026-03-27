@@ -340,23 +340,35 @@ export default async function VenuePage({ params }: Props) {
           </div>
         )}
 
-        {/* More Venues in City */}
-        {venue.city && (
-          <section className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              More Venues in {venue.city}
-            </h2>
-            <p className="text-gray-600">
-              Looking for more concerts in {venue.city}?{' '}
-              <Link href={`/concerts/${slugify(venue.city)}`} className="text-orange-500 hover:text-orange-600 font-medium">
-                Browse all upcoming concerts in {venue.city}
-              </Link>
-              {venue.state && (
-                <> or <Link href={`/concerts/state/${slugify(venue.state)}`} className="text-orange-500 hover:text-orange-600 font-medium">all concerts in {venue.state}</Link></>
-              )}.
+        {/* About Venue Section */}
+        <section className="mt-16 max-w-4xl">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">About {venue.name}</h2>
+          <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
+            <p>
+              {venue.name} is a live music venue{locationLabel ? ` located in ${locationLabel}` : ''}.
+              {venue.capacity ? ` The venue has a capacity of ${venue.capacity.toLocaleString()}.` : ''}
+              {venueEvents.length > 0
+                ? ` There are currently ${venueEvents.length} upcoming event${venueEvents.length === 1 ? '' : 's'} scheduled at ${venue.name}, featuring artists like ${uniqueArtistNames.slice(0, 3).join(', ')}${uniqueArtistNames.length > 3 ? ' and more' : ''}.`
+                : ` Check back for upcoming shows at ${venue.name}.`
+              }
             </p>
-          </section>
-        )}
+            <p>
+              Compare ticket prices from Ticketmaster and SeatGeek to find the best deals on shows at {venue.name}.
+              {venue.city && (
+                <> Looking for more options? Browse{' '}
+                  <Link href={`/concerts/${slugify(venue.city)}`} className="text-orange-500 hover:text-orange-600 font-medium">
+                    all concerts in {venue.city}
+                  </Link>
+                  {venue.state && (
+                    <> or <Link href={`/concerts/state/${slugify(venue.state)}`} className="text-orange-500 hover:text-orange-600 font-medium">
+                      all concerts in {venue.state}
+                    </Link></>
+                  )}.
+                </>
+              )}
+            </p>
+          </div>
+        </section>
 
         {/* FAQ Section */}
         <section className="mt-16">

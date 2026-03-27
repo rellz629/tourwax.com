@@ -751,6 +751,37 @@ export default async function ArtistPage({ params }: Props) {
         </div>
       )}
 
+      {/* Tour Summary for SEO */}
+      <section className="mt-16 max-w-4xl">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">{artist.name} Tour {new Date().getFullYear()}</h2>
+        <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
+          {artistEvents.length > 0 ? (
+            <p>
+              {artist.name} has {artistEvents.length} upcoming concert{artistEvents.length === 1 ? '' : 's'} scheduled
+              {cities.length > 0 ? ` across ${cities.length} cities including ${cities.slice(0, 3).join(', ')}${cities.length > 3 ? ' and more' : ''}` : ''}.
+              {artistEvents[0].venue?.name ? ` The next show is at ${artistEvents[0].venue.name}${artistEvents[0].venue?.city ? ` in ${artistEvents[0].venue.city}` : ''} on ${new Date(artistEvents[0].event.eventDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}.` : ''}
+              {' '}Browse all tour dates above and compare ticket prices from Ticketmaster and SeatGeek.
+            </p>
+          ) : (
+            <p>
+              No upcoming {artist.name} tour dates have been announced yet. Check back regularly — we update tour schedules daily from Ticketmaster and SeatGeek.
+            </p>
+          )}
+          {artist.genre && (
+            <p>
+              Looking for more {artist.genre} concerts? Browse all{' '}
+              <Link href={`/tours/${slugify(normalizeGenre(artist.genre))}`} className="text-orange-500 hover:text-orange-600 font-medium">
+                {normalizeGenre(artist.genre)} tours
+              </Link>{' '}
+              or check out{' '}
+              <Link href="/concerts/tonight" className="text-orange-500 hover:text-orange-600 font-medium">concerts tonight</Link>{' '}
+              and{' '}
+              <Link href="/concerts/this-weekend" className="text-orange-500 hover:text-orange-600 font-medium">shows this weekend</Link>.
+            </p>
+          )}
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <div className="mt-16">
         <h2 id="faq-heading" className="text-3xl font-bold mb-6">

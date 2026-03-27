@@ -108,11 +108,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const genreArtists = await getGenreArtists(genreName);
+  const artistIds = genreArtists.map((a) => a.id);
+  const genreEvents = await getGenreEvents(artistIds);
 
   return generateGenreMetadata({
     genreName,
     genreSlug: slug,
     artistCount: genreArtists.length,
+    eventCount: genreEvents.length,
     artistNames: genreArtists.map((a) => a.name),
   });
 }
@@ -396,6 +399,50 @@ export default async function GenrePage({ params }: Props) {
             </p>
           </div>
         )}
+
+        {/* Top Cities for this Genre */}
+        {uniqueCities.length > 0 && (
+          <section className="mt-16">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-1 w-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+              <h2 className="text-3xl font-bold text-gray-900">Top Cities for {genreName}</h2>
+              <div className="h-1 flex-1 bg-gradient-to-r from-red-500 to-transparent rounded-full"></div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {uniqueCities.slice(0, 12).map((city) => (
+                <Link
+                  key={city}
+                  href={`/concerts/${slugify(city)}`}
+                  className="group bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5"
+                >
+                  <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">{city}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{genreName} shows</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SEO Content Section */}
+        <section className="mt-16 max-w-4xl">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{genreName} Concerts & Tours in {year}</h2>
+          <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
+            <p>
+              {genreArtists.length > 0 && allGenreEvents.length > 0
+                ? `There are ${genreArtists.length} ${genreName} artists currently on tour with ${allGenreEvents.length} upcoming shows across ${uniqueCities.length} cities. ${topArtistNames.length > 0 ? `Top touring ${genreName} artists include ${topArtistNames.join(', ')}.` : ''}`
+                : `Stay up to date with ${genreName} tour announcements and concert dates.`
+              }
+            </p>
+            <p>
+              TourWax tracks {genreName} tour dates from Ticketmaster and SeatGeek so you can compare ticket prices and find the best deals.
+              Browse individual artist pages for complete tour schedules, or check{' '}
+              <Link href="/concerts/tonight" className="text-orange-500 hover:text-orange-600 font-medium">concerts tonight</Link>{' '}
+              and{' '}
+              <Link href="/concerts/this-weekend" className="text-orange-500 hover:text-orange-600 font-medium">concerts this weekend</Link>{' '}
+              for last-minute {genreName} shows near you.
+            </p>
+          </div>
+        </section>
 
         {genreEvents.length === 0 && (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">

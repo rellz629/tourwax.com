@@ -321,21 +321,33 @@ export default async function CityPage({ params }: Props) {
           </div>
         )}
 
-        {/* More concerts in state */}
-        {cityInfo.state && (
-          <section className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              More Concerts in {cityInfo.state}
-            </h2>
-            <p className="text-gray-600">
-              Looking for more live music?{' '}
-              <Link href={`/concerts/state/${slugify(cityInfo.state)}`} className="text-orange-500 hover:text-orange-600 font-medium">
-                Browse all concerts in {cityInfo.state}
-              </Link>
-              {' '}or explore <Link href="/concerts" className="text-orange-500 hover:text-orange-600 font-medium">concerts in all cities</Link>.
+        {/* About Section */}
+        <section className="mt-16 max-w-4xl">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Live Music in {locationLabel}</h2>
+          <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
+            <p>
+              {cityEvents.length > 0
+                ? `There are ${cityEvents.length} upcoming concert${cityEvents.length === 1 ? '' : 's'} in ${locationLabel} featuring ${uniqueArtistNames.slice(0, 4).join(', ')}${uniqueArtistNames.length > 4 ? ` and ${uniqueArtistNames.length - 4} more artists` : ''}. Concerts in ${cityInfo.city} take place at venues including ${uniqueVenueNames.slice(0, 3).join(', ')}${uniqueVenueNames.length > 3 ? ' and more' : ''}.`
+                : `No concerts are currently scheduled in ${locationLabel}. Check back regularly — we update tour schedules daily.`
+              }
             </p>
-          </section>
-        )}
+            <p>
+              TourWax compares ticket prices from Ticketmaster and SeatGeek so you can find the best deals on concerts in {cityInfo.city}.
+              {cityInfo.state && (
+                <> Looking for more options? Browse{' '}
+                  <Link href={`/concerts/state/${slugify(cityInfo.state)}`} className="text-orange-500 hover:text-orange-600 font-medium">
+                    all concerts in {cityInfo.state}
+                  </Link>{' '}
+                  or explore{' '}
+                </>
+              )}
+              {!cityInfo.state && <> Explore{' '}</>}
+              <Link href="/concerts/tonight" className="text-orange-500 hover:text-orange-600 font-medium">concerts tonight</Link>{' '}
+              and{' '}
+              <Link href="/concerts/this-weekend" className="text-orange-500 hover:text-orange-600 font-medium">shows this weekend</Link>.
+            </p>
+          </div>
+        </section>
 
         {/* FAQ Section */}
         <section className="mt-16">
