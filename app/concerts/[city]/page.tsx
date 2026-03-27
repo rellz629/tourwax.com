@@ -37,6 +37,25 @@ const getCityInfo = cache(async function getCityInfo(citySlug: string) {
   return match || null;
 });
 
+const getNearbyCities = cache(async function getNearbyCities(cityName: string, state: string | null) {
+  if (!state) return [];
+  const now = new Date();
+
+  const cities = await db
+    .select({
+      city: venues.city,
+      eventCount: sql<number>`count(distinct ${events.id})`.as('eventCount'),
+    })
+    .from(venues)
+    .innerJoin(events, eq(events.venueId, venues.id))
+    .where(sql`${venues.state} = ${state} AND ${venues.city} != ${cityName} AND ${events.eventDate} >= ${now.toISOString()}`)
+    .groupBy(venues.city)
+    .orderBy(sql`count(distinct ${events.id}) desc`)
+    .limit(8);
+
+  return cities.filter((c) => c.city);
+});
+
 const getCityEvents = cache(async function getCityEvents(cityName: string) {
   const now = new Date();
 
@@ -47,6 +66,7 @@ const getCityEvents = cache(async function getCityEvents(cityName: string) {
       artistName: artists.name,
       artistSlug: artists.slug,
       artistImageUrl: artists.imageUrl,
+      artistGenre: artists.genre,
     })
     .from(events)
     .innerJoin(venues, eq(events.venueId, venues.id))
@@ -123,7 +143,10 @@ export default async function CityPage({ params }: Props) {
     notFound();
   }
 
-  const cityEvents = await getCityEvents(cityInfo.city);
+  const [cityEvents, nearbyCities] = await Promise.all([
+    getCityEvents(cityInfo.city),
+    getNearbyCities(cityInfo.city, cityInfo.state),
+  ]);
   const locationLabel = cityInfo.state
     ? `${cityInfo.city}, ${cityInfo.state}`
     : cityInfo.city;
@@ -172,6 +195,31 @@ export default async function CityPage({ params }: Props) {
   const uniqueArtistNames = [...new Set(cityEvents.map((e) => e.artistName))];
   const uniqueVenueNames = [...new Set(cityEvents.filter((e) => e.venue).map((e) => e.venue!.name))];
 
+  // Venue stats: name, slug, event count
+  const venueStats = Object.values(
+    cityEvents.reduce((acc, row) => {
+      if (!row.venue) return acc;
+      const name = row.venue.name;
+      if (!acc[name]) {
+        acc[name] = { name, slug: slugify(name), count: 0, address: row.venue.address };
+      }
+      acc[name].count++;
+      return acc;
+    }, {} as Record<string, { name: string; slug: string; count: number; address: string | null }>)
+  ).sort((a, b) => b.count - a.count);
+
+  // Genre breakdown from artists
+  const genreCounts = cityEvents.reduce((acc, row) => {
+    const genre = row.artistGenre || 'Other';
+    acc[genre] = (acc[genre] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const topGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  // Date range for content
+  const nextEventDate = cityEvents.length > 0 ? new Date(cityEvents[0].event.eventDate) : null;
+  const lastEventDate = cityEvents.length > 0 ? new Date(cityEvents[cityEvents.length - 1].event.eventDate) : null;
+
   const faqs = [
     {
       question: `How many concerts are coming to ${locationLabel} in ${year}?`,
@@ -192,6 +240,20 @@ export default async function CityPage({ params }: Props) {
     {
       question: `How do I find cheap concert tickets in ${cityInfo.city}?`,
       answer: `Compare ticket prices for ${cityInfo.city} concerts on TourWax. We show prices from Ticketmaster and SeatGeek so you can find the best deal. Prices often drop closer to the show date.`,
+    },
+    {
+      question: `Are there concerts in ${cityInfo.city} tonight or this weekend?`,
+      answer: `Check our concerts tonight and this weekend pages for last-minute shows in ${locationLabel}. This page is updated every 30 minutes with the latest schedules.`,
+    },
+    {
+      question: `Where can I find a live music calendar for ${cityInfo.city}?`,
+      answer: `This page is your ${cityInfo.city} live music calendar. We list all upcoming concerts, shows, and music events${uniqueVenueNames.length > 0 ? ` at venues like ${uniqueVenueNames.slice(0, 3).join(', ')}` : ''}. Bookmark it to stay up to date.`,
+    },
+    {
+      question: `What bands are coming to ${cityInfo.city} in ${year}?`,
+      answer: uniqueArtistNames.length > 0
+        ? `Bands and artists touring through ${cityInfo.city} in ${year} include ${uniqueArtistNames.slice(0, 8).join(', ')}${uniqueArtistNames.length > 8 ? `, and ${uniqueArtistNames.length - 8} more` : ''}. New tours are announced regularly.`
+        : `No tours have been announced for ${cityInfo.city} yet. Check back as new shows are added daily.`,
     },
   ];
 
@@ -321,18 +383,56 @@ export default async function CityPage({ params }: Props) {
           </div>
         )}
 
+        {/* Popular Venues Section */}
+        {venueStats.length > 0 && (
+          <section className="mt-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Concert Venues in {cityInfo.city}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {venueStats.slice(0, 8).map((venue) => (
+                <Link
+                  key={venue.slug}
+                  href={`/venues/${venue.slug}`}
+                  className="bg-white rounded-xl shadow-md border border-gray-100 p-5 hover:shadow-lg transition-shadow"
+                >
+                  <h3 className="font-semibold text-gray-900 hover:text-orange-600 transition-colors text-sm leading-tight mb-2">{venue.name}</h3>
+                  <p className="text-sm text-gray-500">{venue.count} upcoming event{venue.count === 1 ? '' : 's'}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Genre Breakdown */}
+        {topGenres.length > 1 && (
+          <section className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Music Genres in {cityInfo.city}</h2>
+            <div className="flex flex-wrap gap-3">
+              {topGenres.map(([genre, count]) => (
+                <span key={genre} className="bg-white rounded-full px-4 py-2 text-sm font-medium text-gray-700 border border-gray-200 shadow-sm">
+                  {genre} <span className="text-gray-400 ml-1">{count}</span>
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* About Section */}
         <section className="mt-16 max-w-4xl">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Live Music in {locationLabel}</h2>
           <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
             <p>
               {cityEvents.length > 0
-                ? `There are ${cityEvents.length} upcoming concert${cityEvents.length === 1 ? '' : 's'} in ${locationLabel} featuring ${uniqueArtistNames.slice(0, 4).join(', ')}${uniqueArtistNames.length > 4 ? ` and ${uniqueArtistNames.length - 4} more artists` : ''}. Concerts in ${cityInfo.city} take place at venues including ${uniqueVenueNames.slice(0, 3).join(', ')}${uniqueVenueNames.length > 3 ? ' and more' : ''}.`
+                ? `${locationLabel} has ${cityEvents.length} upcoming concert${cityEvents.length === 1 ? '' : 's'}${nextEventDate && lastEventDate ? ` from ${nextEventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} through ${lastEventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}` : ''}. Artists performing include ${uniqueArtistNames.slice(0, 6).join(', ')}${uniqueArtistNames.length > 6 ? ` and ${uniqueArtistNames.length - 6} more` : ''}.`
                 : `No concerts are currently scheduled in ${locationLabel}. Check back regularly — we update tour schedules daily.`
               }
             </p>
+            {uniqueVenueNames.length > 0 && (
+              <p>
+                {`Popular concert venues in ${cityInfo.city} include ${uniqueVenueNames.slice(0, 5).join(', ')}${uniqueVenueNames.length > 5 ? ` and ${uniqueVenueNames.length - 5} more` : ''}. From intimate clubs to large amphitheaters, ${cityInfo.city} offers live music for every taste.`}
+              </p>
+            )}
             <p>
-              TourWax compares ticket prices from Ticketmaster and SeatGeek so you can find the best deals on concerts in {cityInfo.city}.
+              TourWax compares ticket prices from Ticketmaster and SeatGeek so you can find the best deals on {cityInfo.city} concert tickets.
               {cityInfo.state && (
                 <> Looking for more options? Browse{' '}
                   <Link href={`/concerts/state/${slugify(cityInfo.state)}`} className="text-orange-500 hover:text-orange-600 font-medium">
@@ -342,12 +442,31 @@ export default async function CityPage({ params }: Props) {
                 </>
               )}
               {!cityInfo.state && <> Explore{' '}</>}
-              <Link href="/concerts/tonight" className="text-orange-500 hover:text-orange-600 font-medium">concerts tonight</Link>{' '}
-              and{' '}
-              <Link href="/concerts/this-weekend" className="text-orange-500 hover:text-orange-600 font-medium">shows this weekend</Link>.
+              <Link href="/concerts/tonight" className="text-orange-500 hover:text-orange-600 font-medium">concerts tonight</Link>,{' '}
+              <Link href="/concerts/this-weekend" className="text-orange-500 hover:text-orange-600 font-medium">shows this weekend</Link>, or{' '}
+              <Link href="/concerts/this-week" className="text-orange-500 hover:text-orange-600 font-medium">concerts this week</Link>.
             </p>
           </div>
         </section>
+
+        {/* Nearby Cities */}
+        {nearbyCities.length > 0 && cityInfo.state && (
+          <section className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">More Concerts in {cityInfo.state}</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {nearbyCities.map((c) => (
+                <Link
+                  key={c.city}
+                  href={`/concerts/${slugify(c.city!)}`}
+                  className="bg-white rounded-lg border border-gray-200 px-4 py-3 hover:border-orange-300 hover:shadow-sm transition-all"
+                >
+                  <span className="font-medium text-gray-900 text-sm">{c.city}</span>
+                  <span className="text-xs text-gray-500 ml-2">{c.eventCount} shows</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* FAQ Section */}
         <section className="mt-16">
