@@ -135,15 +135,26 @@ export default async function BusiestTouringArtistsPage() {
 
         <div className="mt-12 bg-white rounded-xl shadow-md p-8 border border-gray-100">
           <h2 className="text-lg font-bold text-gray-900 mb-2">More Insights</h2>
-          <p className="text-gray-600 mb-4">
-            See which cities are hosting the most concerts this year.
-          </p>
-          <Link
-            href="/insights/most-toured-cities"
-            className="text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
-          >
-            Most Toured Cities of 2026 →
-          </Link>
+          <div className="flex flex-wrap gap-4">
+            <Link
+              href="/insights/most-toured-cities"
+              className="text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+            >
+              Most Toured Cities →
+            </Link>
+            <Link
+              href="/insights/top-concert-venues"
+              className="text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+            >
+              Top Concert Venues →
+            </Link>
+            <Link
+              href="/insights/busiest-touring-months"
+              className="text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+            >
+              Busiest Touring Months →
+            </Link>
+          </div>
         </div>
       </div>
     </>

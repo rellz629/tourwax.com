@@ -152,6 +152,12 @@ export default async function TopConcertVenuesPage() {
             >
               Most Toured Cities &rarr;
             </Link>
+            <Link
+              href="/insights/busiest-touring-months"
+              className="text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+            >
+              Busiest Touring Months &rarr;
+            </Link>
           </div>
         </div>
       </div>

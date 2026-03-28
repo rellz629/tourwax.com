@@ -182,6 +182,101 @@ export async function getTopConcertVenues(): Promise<VenueInsight[]> {
   return results;
 }
 
+export interface MonthInsight {
+  month: string; // "January 2026"
+  monthKey: string; // "2026-01"
+  eventCount: number;
+  artistCount: number;
+  cityCount: number;
+  topArtists: string[];
+  topCities: string[];
+  rank: number;
+}
+
+export async function getBusiestTouringMonths(): Promise<MonthInsight[]> {
+  const now = new Date();
+
+  const rows = await db
+    .select({
+      eventDate: events.eventDate,
+      eventName: events.name,
+      artistId: events.artistId,
+      artistName: artists.name,
+      city: venues.city,
+    })
+    .from(events)
+    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .where(gte(events.eventDate, now));
+
+  const monthMap = new Map<string, {
+    month: string;
+    monthKey: string;
+    eventKeys: Set<string>;
+    artistIds: Set<string>;
+    artistNames: Map<string, number>;
+    cities: Map<string, number>;
+  }>();
+
+  for (const row of rows) {
+    if (isPackage(row.eventName)) continue;
+
+    const date = new Date(row.eventDate);
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const monthLabel = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    let entry = monthMap.get(monthKey);
+    if (!entry) {
+      entry = {
+        month: monthLabel,
+        monthKey,
+        eventKeys: new Set(),
+        artistIds: new Set(),
+        artistNames: new Map(),
+        cities: new Map(),
+      };
+      monthMap.set(monthKey, entry);
+    }
+
+    entry.eventKeys.add(`${row.artistId}_${row.eventName}_${monthKey}`);
+    entry.artistIds.add(row.artistId);
+    const artistCount = entry.artistNames.get(row.artistName) || 0;
+    entry.artistNames.set(row.artistName, artistCount + 1);
+    if (row.city) {
+      const cityCount = entry.cities.get(row.city) || 0;
+      entry.cities.set(row.city, cityCount + 1);
+    }
+  }
+
+  const results: MonthInsight[] = Array.from(monthMap.values())
+    .map((entry) => {
+      const topArtists = Array.from(entry.artistNames.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([name]) => name);
+
+      const topCities = Array.from(entry.cities.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([name]) => name);
+
+      return {
+        month: entry.month,
+        monthKey: entry.monthKey,
+        eventCount: entry.eventKeys.size,
+        artistCount: entry.artistIds.size,
+        cityCount: entry.cities.size,
+        topArtists,
+        topCities,
+        rank: 0,
+      };
+    })
+    .sort((a, b) => b.eventCount - a.eventCount);
+
+  results.forEach((r, i) => { r.rank = i + 1; });
+  return results;
+}
+
 export async function getBusiestTouringArtists(): Promise<ArtistInsight[]> {
   const now = new Date();
 
