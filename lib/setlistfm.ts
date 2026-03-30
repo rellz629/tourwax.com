@@ -115,7 +115,7 @@ export async function getArtistSetlists(artistName: string, limit: number = 3): 
       cityName: [s.venue.city.name, s.venue.city.state, s.venue.city.country.name]
         .filter(Boolean)
         .join(', '),
-      url: s.url,
+      url: s.url.startsWith('https://') ? s.url : `https://www.setlist.fm/setlist/${s.id}`,
       songs: extractSongs(s.sets.set || []),
     }));
   } catch {

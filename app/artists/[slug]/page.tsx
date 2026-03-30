@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues, newsArticles } from '@/db/schema';
-import { eq, gte, and, desc, ne, sql } from 'drizzle-orm';
+import { eq, gte, and, desc, ne, sql, inArray } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -209,7 +209,7 @@ async function getRelatedArtists(artistId: string, genre: string | null, artistC
     .from(events)
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(and(
-      sql`${events.artistId} IN ${relatedIds}`,
+      inArray(events.artistId, relatedIds),
       gte(events.eventDate, now),
     ));
 

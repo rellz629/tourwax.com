@@ -69,7 +69,7 @@ export function generateICalEvent(event: CalendarEvent): string {
   }
 
   if (event.ticketUrl) {
-    lines.push(`URL:${event.ticketUrl}`);
+    lines.push(`URL:${event.ticketUrl.replace(/[\r\n]/g, '')}`);
   }
 
   lines.push(
@@ -117,7 +117,7 @@ export function generateICalFile(calEvents: CalendarEvent[], title: string): str
     }
 
     if (event.ticketUrl) {
-      lines.push(`URL:${event.ticketUrl}`);
+      lines.push(`URL:${event.ticketUrl.replace(/[\r\n]/g, '')}`);
     }
 
     lines.push(

@@ -63,6 +63,7 @@ async function handleSingleEvent(eventId: string) {
     headers: {
       'Content-Type': 'text/calendar; charset=utf-8',
       'Content-Disposition': `attachment; filename="${filename}"`,
+      'Cache-Control': 'public, max-age=3600',
     },
   });
 }
@@ -111,6 +112,7 @@ async function handleArtistEvents(artistSlug: string) {
     headers: {
       'Content-Type': 'text/calendar; charset=utf-8',
       'Content-Disposition': `attachment; filename="${filename}"`,
+      'Cache-Control': 'public, max-age=3600',
     },
   });
 }
