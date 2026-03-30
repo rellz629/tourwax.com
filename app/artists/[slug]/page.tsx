@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues, newsArticles } from '@/db/schema';
-import { eq, gte, and, desc, ne, sql, inArray } from 'drizzle-orm';
+import { eq, gte, lt, and, desc, ne, sql, inArray } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -170,6 +170,133 @@ async function getArtistNews(artistId: string) {
   return news;
 }
 
+interface TourHistoryCity {
+  city: string;
+  state: string | null;
+  visitCount: number;
+  lastVisit: Date;
+}
+
+const getArtistTourHistory = cache(async function getArtistTourHistory(artistId: string): Promise<{
+  cities: TourHistoryCity[];
+  totalPastShows: number;
+  earliestShow: Date | null;
+}> {
+  const now = new Date();
+
+  const pastEvents = await db
+    .select({
+      city: venues.city,
+      state: venues.state,
+      eventDate: events.eventDate,
+    })
+    .from(events)
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .where(and(
+      eq(events.artistId, artistId),
+      lt(events.eventDate, now),
+    ))
+    .orderBy(desc(events.eventDate));
+
+  if (pastEvents.length === 0) {
+    return { cities: [], totalPastShows: 0, earliestShow: null };
+  }
+
+  // Group by city+state and count visits
+  const cityMap = new Map<string, TourHistoryCity>();
+  for (const row of pastEvents) {
+    if (!row.city) continue;
+    const key = `${row.city}_${row.state || ''}`;
+    const existing = cityMap.get(key);
+    if (!existing) {
+      cityMap.set(key, {
+        city: row.city,
+        state: row.state,
+        visitCount: 1,
+        lastVisit: new Date(row.eventDate),
+      });
+    } else {
+      existing.visitCount++;
+    }
+  }
+
+  const cities = Array.from(cityMap.values())
+    .sort((a, b) => b.visitCount - a.visitCount);
+
+  const earliestShow = pastEvents.length > 0
+    ? new Date(pastEvents[pastEvents.length - 1].eventDate)
+    : null;
+
+  return { cities, totalPastShows: pastEvents.length, earliestShow };
+});
+
+interface ArtistFestival {
+  name: string;
+  slug: string;
+  date: string;
+  venueName: string;
+  city: string | null;
+  state: string | null;
+  artistCount: number;
+}
+
+const getArtistFestivals = cache(async function getArtistFestivals(artistId: string): Promise<ArtistFestival[]> {
+  const now = new Date();
+
+  // Get this artist's upcoming events at venues where 3+ artists are playing on the same date
+  const artistEvents = await db
+    .select({
+      eventName: events.name,
+      eventDate: events.eventDate,
+      venueId: events.venueId,
+      venueName: venues.name,
+      venueCity: venues.city,
+      venueState: venues.state,
+    })
+    .from(events)
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .where(and(
+      eq(events.artistId, artistId),
+      gte(events.eventDate, now),
+    ));
+
+  if (artistEvents.length === 0) return [];
+
+  const festivals: ArtistFestival[] = [];
+
+  for (const ev of artistEvents) {
+    if (!ev.venueId) continue;
+    const dateKey = new Date(ev.eventDate).toISOString().slice(0, 10);
+
+    // Count how many distinct artists are playing at this venue on this date
+    const countResult = await db
+      .select({
+        count: sql<number>`count(distinct ${events.artistId})`,
+      })
+      .from(events)
+      .where(and(
+        eq(events.venueId, ev.venueId),
+        sql`${events.eventDate}::date = ${dateKey}`,
+      ));
+
+    const artistCount = countResult[0]?.count ?? 0;
+    if (artistCount >= 3) {
+      const slug = slugify(`${ev.venueName}-${dateKey}`);
+      festivals.push({
+        name: ev.eventName,
+        slug,
+        date: dateKey,
+        venueName: ev.venueName!,
+        city: ev.venueCity,
+        state: ev.venueState,
+        artistCount,
+      });
+    }
+  }
+
+  return festivals;
+});
+
 async function getRelatedArtists(artistId: string, genre: string | null, artistCities: string[]) {
   if (!genre) return [];
   const normalized = normalizeGenre(genre);
@@ -333,11 +460,13 @@ export default async function ArtistPage({ params }: Props) {
     notFound();
   }
 
-  // Fetch events and news first (related artists needs cities from events)
-  const [artistEvents, news, setlists] = await Promise.all([
+  // Fetch events, news, setlists, tour history, and festivals in parallel
+  const [artistEvents, news, setlists, tourHistory, artistFestivals] = await Promise.all([
     getArtistEvents(artist.id),
     getArtistNews(artist.id),
     getArtistSetlists(artist.name),
+    getArtistTourHistory(artist.id),
+    getArtistFestivals(artist.id),
   ]);
 
   // Extract cities for related artist matching
@@ -842,6 +971,92 @@ export default async function ArtistPage({ params }: Props) {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* Festival Appearances */}
+      {artistFestivals.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold mb-6">
+            Festival <span className="gradient-text">Appearances</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {artistFestivals.map((festival) => (
+              <Link
+                key={festival.slug}
+                href={`/festivals/${festival.slug}`}
+                className="group bg-white rounded-xl shadow-md hover:shadow-lg p-5 border border-gray-100 transition-all"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2">
+                      {festival.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 mt-1">{festival.venueName}</p>
+                    <p className="text-sm text-gray-500">
+                      {[festival.city, festival.state].filter(Boolean).join(', ')}
+                    </p>
+                    <time dateTime={festival.date} className="text-sm text-gray-500 mt-1 block">
+                      {new Date(festival.date + 'T12:00:00').toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </time>
+                  </div>
+                  <span className="inline-flex items-center px-2.5 py-1 bg-orange-50 text-orange-600 text-xs font-bold rounded-full flex-shrink-0">
+                    {festival.artistCount} artists
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tour History */}
+      {tourHistory.totalPastShows > 0 && (
+        <div className="mt-16">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <h2 className="text-3xl font-bold">
+              Tour <span className="gradient-text">History</span>
+            </h2>
+            <p className="text-sm text-gray-500">
+              {tourHistory.totalPastShows} past show{tourHistory.totalPastShows === 1 ? '' : 's'}
+              {tourHistory.earliestShow && (
+                <> since {tourHistory.earliestShow.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</>
+              )}
+            </p>
+          </div>
+          <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-gray-100">
+              {tourHistory.cities.slice(0, 12).map((item) => (
+                <Link
+                  key={`${item.city}_${item.state}`}
+                  href={`/concerts/${slugify(item.city)}`}
+                  className="bg-white p-4 hover:bg-orange-50 transition-colors group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-gray-900 group-hover:text-orange-600 transition-colors text-sm">
+                        {item.city}{item.state ? `, ${item.state}` : ''}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Last: {item.lastVisit.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <span className="text-lg font-bold text-orange-500">{item.visitCount}x</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+          {tourHistory.cities.length > 12 && (
+            <p className="text-sm text-gray-500 mt-3 text-center">
+              + {tourHistory.cities.length - 12} more cities visited
+            </p>
+          )}
         </div>
       )}
 

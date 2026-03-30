@@ -40,6 +40,11 @@ export default async function FestivalsPage() {
           <p className="text-xl text-gray-600">
             {festivals.length} upcoming festival{festivals.length === 1 ? '' : 's'} and multi-artist event{festivals.length === 1 ? '' : 's'}
           </p>
+          {festivals.length >= 2 && (
+            <div className="flex gap-3 mt-4">
+              <Link href="/festivals/compare" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2.5 rounded-lg transition-colors">Compare Lineups</Link>
+            </div>
+          )}
         </div>
 
         {festivals.length === 0 ? (
