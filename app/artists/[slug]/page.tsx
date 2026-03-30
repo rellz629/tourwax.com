@@ -165,7 +165,7 @@ async function getArtistNews(artistId: string) {
     .from(newsArticles)
     .where(eq(newsArticles.artistId, artistId))
     .orderBy(desc(newsArticles.publishedAt))
-    .limit(10);
+    .limit(3);
 
   return news;
 }
