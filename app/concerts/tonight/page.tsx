@@ -92,6 +92,7 @@ export default async function TonightPage() {
           <div className="flex gap-3 mt-4">
             <Link href="/concerts/this-weekend" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors">This Weekend</Link>
             <Link href="/concerts/this-week" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors">This Week</Link>
+            <Link href="/concerts/on-sale-today" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors">On Sale Today</Link>
           </div>
         </div>
 
@@ -134,11 +135,17 @@ export default async function TonightPage() {
                                 {row.venue.state && `, ${row.venue.state}`}
                               </p>
                             )}
+                            {(row.event.minPrice || row.event.maxPrice) && (
+                              <p className="text-sm font-semibold text-orange-600 mt-1">
+                                From ${row.event.minPrice || row.event.maxPrice}
+                                {row.event.maxPrice && row.event.minPrice && row.event.minPrice !== row.event.maxPrice && ` – $${row.event.maxPrice}`}
+                              </p>
+                            )}
                           </div>
                         </div>
                         {row.event.ticketUrl && (
                           <a href={getAffiliateUrl(row.event.ticketUrl, row.event.source)} target="_blank" rel="noopener noreferrer" className="btn-primary whitespace-nowrap">
-                            Get Tickets
+                            {row.event.minPrice ? `From $${row.event.minPrice}` : 'Get Tickets'}
                           </a>
                         )}
                       </div>

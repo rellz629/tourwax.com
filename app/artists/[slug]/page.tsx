@@ -15,6 +15,8 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
+import { getArtistSetlists } from '@/lib/setlistfm';
+import AddToCalendarButton from '@/components/AddToCalendarButton';
 import type { Metadata } from 'next';
 
 // Use Static Site Generation with ISR
@@ -168,7 +170,7 @@ async function getArtistNews(artistId: string) {
   return news;
 }
 
-async function getRelatedArtists(artistId: string, genre: string | null) {
+async function getRelatedArtists(artistId: string, genre: string | null, artistCities: string[]) {
   if (!genre) return [];
   const normalized = normalizeGenre(genre);
   const now = new Date();
@@ -190,9 +192,49 @@ async function getRelatedArtists(artistId: string, genre: string | null) {
     .orderBy(sql`count(${events.id}) desc`);
 
   // Filter by normalized genre in JS (same pattern as genre pages)
-  return allArtists
-    .filter((a) => normalizeGenre(a.genre) === normalized)
-    .slice(0, 6);
+  const sameGenre = allArtists
+    .filter((a) => normalizeGenre(a.genre) === normalized && a.eventCount > 0);
+
+  if (sameGenre.length === 0) return [];
+
+  // Get cities for related artists to find shared touring cities
+  const artistCitySet = new Set(artistCities.map(c => c.split(',')[0].trim().toLowerCase()));
+  const relatedIds = sameGenre.slice(0, 30).map(a => a.id);
+
+  const relatedEvents = await db
+    .select({
+      artistId: events.artistId,
+      city: venues.city,
+    })
+    .from(events)
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .where(and(
+      sql`${events.artistId} IN ${relatedIds}`,
+      gte(events.eventDate, now),
+    ));
+
+  // Build city set per artist
+  const artistCitiesMap = new Map<string, Set<string>>();
+  for (const row of relatedEvents) {
+    if (!row.city) continue;
+    if (!artistCitiesMap.has(row.artistId)) artistCitiesMap.set(row.artistId, new Set());
+    artistCitiesMap.get(row.artistId)!.add(row.city);
+  }
+
+  // Compute shared cities and sort by most shared cities first
+  const withSharedCities = sameGenre.slice(0, 30).map(a => {
+    const theirCities = artistCitiesMap.get(a.id) || new Set<string>();
+    const shared = Array.from(theirCities).filter(c => artistCitySet.has(c.toLowerCase()));
+    return { ...a, sharedCities: shared };
+  });
+
+  // Prioritize artists with shared cities, then by event count
+  withSharedCities.sort((a, b) => {
+    if (b.sharedCities.length !== a.sharedCities.length) return b.sharedCities.length - a.sharedCities.length;
+    return b.eventCount - a.eventCount;
+  });
+
+  return withSharedCities.slice(0, 6);
 }
 
 function generateArtistFAQs(
@@ -291,18 +333,21 @@ export default async function ArtistPage({ params }: Props) {
     notFound();
   }
 
-  // Then fetch events, news, and related artists using the artist ID
-  const [artistEvents, news, relatedArtists] = await Promise.all([
+  // Fetch events and news first (related artists needs cities from events)
+  const [artistEvents, news, setlists] = await Promise.all([
     getArtistEvents(artist.id),
     getArtistNews(artist.id),
-    getRelatedArtists(artist.id, artist.genre),
+    getArtistSetlists(artist.name),
   ]);
+
+  // Extract cities for related artist matching
+  const cities = extractCitiesFromEvents(artistEvents);
+  const relatedArtists = await getRelatedArtists(artist.id, artist.genre, cities);
 
   // Get Twitter handle for this artist
   const twitterHandle = ARTIST_TWITTER_HANDLES[artist.name];
 
-  // Extract cities and prepare FAQ data
-  const cities = extractCitiesFromEvents(artistEvents);
+  // Prepare FAQ data
   const nextEvent = artistEvents.length > 0
     ? { date: artistEvents[0].event.eventDate, venueName: artistEvents[0].venue?.name ?? null, city: artistEvents[0].venue?.city ?? null }
     : null;
@@ -431,6 +476,26 @@ export default async function ArtistPage({ params }: Props) {
                       <p className="text-gray-500 text-xs">Upcoming Shows</p>
                     </div>
                   </div>
+                  {(() => {
+                    const prices = artistEvents
+                      .flatMap(g => g.ticketSources)
+                      .map(ts => ts.minPrice)
+                      .filter((p): p is number => p !== null && p > 0);
+                    const lowestPrice = prices.length > 0 ? Math.min(...prices) : null;
+                    return lowestPrice ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                          <svg className="w-5 h-5 text-green-600" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900 text-lg">From ${lowestPrice}</p>
+                          <p className="text-gray-500 text-xs">Ticket Price</p>
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
                   {news.length > 0 && (
                     <div className="flex items-center gap-2">
                       <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
@@ -454,9 +519,23 @@ export default async function ArtistPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Tour Dates */}
         <div className="lg:col-span-2">
-          <h2 className="text-3xl font-bold mb-6">
-            Tour <span className="gradient-text">Dates</span>
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-3xl font-bold">
+              Tour <span className="gradient-text">Dates</span>
+            </h2>
+            {deduplicatedEvents.length > 0 && (
+              <a
+                href={`/api/calendar?artistSlug=${artist.slug}`}
+                download
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+              >
+                <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Export All Dates
+              </a>
+            )}
+          </div>
           {artistEvents.length === 0 ? (
             <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
               <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -532,6 +611,7 @@ export default async function ArtistPage({ params }: Props) {
                                 </span>
                               )}
                             </span>
+                            <AddToCalendarButton eventId={event.id} />
                           </div>
                         </div>
                       </div>
@@ -684,6 +764,64 @@ export default async function ArtistPage({ params }: Props) {
         </div>
       </div>
 
+      {/* Recent Setlists */}
+      {setlists.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold mb-6">
+            Recent <span className="gradient-text">Setlists</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {setlists.map((setlist) => (
+              <div key={setlist.id} className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+                <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                  <p className="font-bold text-gray-900 text-sm">{setlist.venueName}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{setlist.cityName}</p>
+                  <time dateTime={setlist.date} className="text-xs text-gray-400 mt-1 block">
+                    {new Date(setlist.date + 'T12:00:00').toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </time>
+                </div>
+                <ol className="p-5 space-y-1.5">
+                  {setlist.songs.map((song, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      {song.encore ? (
+                        <span className="text-xs font-bold text-orange-500 mt-0.5 w-6 text-right flex-shrink-0">E{song.encore}</span>
+                      ) : (
+                        <span className="text-xs text-gray-400 mt-0.5 w-6 text-right flex-shrink-0">{i + 1}</span>
+                      )}
+                      <span className={`${song.isTape ? 'text-gray-400 italic' : 'text-gray-700'}`}>
+                        {song.name}
+                        {song.isCover && song.coverArtist && (
+                          <span className="text-gray-400 text-xs ml-1">({song.coverArtist} cover)</span>
+                        )}
+                        {song.info && (
+                          <span className="text-gray-400 text-xs ml-1">({song.info})</span>
+                        )}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+                <div className="px-5 pb-4">
+                  <a
+                    href={setlist.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-orange-500 hover:text-orange-600 font-medium transition-colors"
+                  >
+                    View on setlist.fm
+                    <span className="sr-only">(opens in new tab)</span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Cities on This Tour */}
       {cities.length > 0 && (
         <div className="mt-16">
@@ -707,12 +845,13 @@ export default async function ArtistPage({ params }: Props) {
         </div>
       )}
 
-      {/* Related Artists */}
+      {/* Similar Artists On Tour */}
       {relatedArtists.length > 0 && (
         <div className="mt-16">
-          <h2 className="text-3xl font-bold mb-6">
-            Similar <span className="gradient-text">Artists</span>
+          <h2 className="text-3xl font-bold mb-2">
+            Similar Artists <span className="gradient-text">On Tour</span>
           </h2>
+          <p className="text-gray-500 mb-6">If you like {artist.name}, check out these {normalizeGenre(artist.genre)} artists currently touring</p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {relatedArtists.map((related) => (
               <Link
@@ -741,9 +880,13 @@ export default async function ArtistPage({ params }: Props) {
                   <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors text-sm line-clamp-1">
                     {related.name}
                   </h3>
-                  {related.eventCount > 0 && (
+                  {related.sharedCities.length > 0 ? (
+                    <p className="text-xs text-orange-600 font-medium mt-1 line-clamp-1">
+                      Also in {related.sharedCities.slice(0, 2).join(', ')}{related.sharedCities.length > 2 ? ` +${related.sharedCities.length - 2}` : ''}
+                    </p>
+                  ) : related.eventCount > 0 ? (
                     <p className="text-xs text-gray-500 mt-1">{related.eventCount} upcoming show{related.eventCount === 1 ? '' : 's'}</p>
-                  )}
+                  ) : null}
                 </div>
               </Link>
             ))}

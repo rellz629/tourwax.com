@@ -29,6 +29,18 @@ interface TicketmasterEvent {
     start: { localDate?: string; localTime?: string; dateTime?: string };
     status?: { code?: string };
   };
+  sales?: {
+    public?: {
+      startDateTime?: string;
+      endDateTime?: string;
+      startTBD?: boolean;
+    };
+    presales?: Array<{
+      name?: string;
+      startDateTime?: string;
+      endDateTime?: string;
+    }>;
+  };
   priceRanges?: Array<{ min?: number; max?: number; currency?: string }>;
   url?: string;
   _embedded?: {
@@ -163,6 +175,22 @@ export async function searchArtistEvents(artistName: string): Promise<{
 
     const priceRange = event.priceRanges?.[0];
 
+    // Build metadata with sales/presale info if available
+    const salesMetadata: Record<string, unknown> = {};
+    if (event.sales?.public?.startDateTime) {
+      salesMetadata.onsaleStart = event.sales.public.startDateTime;
+    }
+    if (event.sales?.public?.endDateTime) {
+      salesMetadata.onsaleEnd = event.sales.public.endDateTime;
+    }
+    if (event.sales?.presales && event.sales.presales.length > 0) {
+      salesMetadata.presales = event.sales.presales.map(p => ({
+        name: p.name,
+        startDateTime: p.startDateTime,
+        endDateTime: p.endDateTime,
+      }));
+    }
+
     events.push({
       id: `tm-${event.id}`,
       artistId: '', // Will be set by caller
@@ -176,7 +204,7 @@ export async function searchArtistEvents(artistName: string): Promise<{
       currency: priceRange?.currency || 'USD',
       source: 'ticketmaster',
       externalId: event.id,
-      metadata: null,
+      metadata: Object.keys(salesMetadata).length > 0 ? salesMetadata : null,
     });
 
     // Extract festival lineup from attractions

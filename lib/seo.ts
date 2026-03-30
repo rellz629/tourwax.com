@@ -26,7 +26,8 @@ export function generateArtistDescription(
   genre: string | null,
   eventCount: number,
   cities: string[],
-  nextEventDate?: Date | null
+  nextEventDate?: Date | null,
+  lowestPrice?: number | null
 ): string {
   const year = new Date().getFullYear();
   const genreText = genre ? ` ${genre}` : '';
@@ -39,11 +40,13 @@ export function generateArtistDescription(
     ? `Next show ${nextEventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}. `
     : '';
 
+  const priceText = lowestPrice ? ` Tickets from $${lowestPrice}.` : '';
+
   const cityText = cities.length > 0
     ? ` in ${cities.slice(0, 3).join(', ')}${cities.length > 3 ? ` & ${cities.length - 3} more cities` : ''}`
     : '';
 
-  return `${nextDateText}Buy ${artistName} tickets — ${eventCount} upcoming${genreText} show${eventCount === 1 ? '' : 's'}${cityText}. Compare Ticketmaster & SeatGeek prices. Full ${year} tour schedule & dates.`;
+  return `${nextDateText}Buy ${artistName} tickets — ${eventCount} upcoming${genreText} show${eventCount === 1 ? '' : 's'}${cityText}.${priceText} Compare Ticketmaster & SeatGeek prices. Full ${year} tour schedule & dates.`;
 }
 
 export function extractCitiesFromEvents(events: Array<{ event: Event; venue: Venue | null }>): string[] {
@@ -109,13 +112,19 @@ export function generateArtistMetadata(data: ArtistWithEvents) {
   const cities = extractCitiesFromEvents(events);
   const nextEventDate = events.length > 0 ? new Date(events[0].event.eventDate) : null;
 
+  const prices = events
+    .map(e => e.event.minPrice)
+    .filter((p): p is number => p !== null && p > 0);
+  const lowestPrice = prices.length > 0 ? Math.min(...prices) : null;
+
   const title = generateArtistTitle(artist.name, events.length, year);
   const description = generateArtistDescription(
     artist.name,
     artist.genre,
     events.length,
     cities,
-    nextEventDate
+    nextEventDate,
+    lowestPrice
   );
   const url = generateCanonicalUrl(`/artists/${artist.slug}`);
   const image = artist.imageUrl || `${SITE_URL}/og-default.jpg`;
@@ -616,6 +625,23 @@ export function generateStateMetadata(data: {
     ? `${data.eventCount} upcoming concert${data.eventCount === 1 ? '' : 's'} across ${data.cityCount} cities in ${data.stateName}.${artistText} Browse shows & buy tickets.`
     : `Find upcoming concerts in ${data.stateName} for ${year}. Browse shows by city and buy tickets.`;
   const url = generateCanonicalUrl(`/concerts/state/${data.stateSlug}`);
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: generateOpenGraphTags({ title, description, url }),
+    twitter: generateTwitterCardTags({ title, description }),
+  };
+}
+
+export function generateOnSaleMetadata(eventCount: number) {
+  const year = new Date().getFullYear();
+  const title = `Tickets On Sale Today ${year} - New Concert Tickets | ${SITE_NAME}`;
+  const description = eventCount > 0
+    ? `${eventCount} concert${eventCount === 1 ? '' : 's'} with tickets going on sale today. Be first to get tickets before they sell out.`
+    : `Find concerts with tickets going on sale today. Get early access to the best seats on ${SITE_NAME}.`;
+  const url = generateCanonicalUrl('/concerts/on-sale-today');
 
   return {
     title,
