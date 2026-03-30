@@ -106,9 +106,9 @@ export default async function ThisWeekendPage() {
             {weekendEvents.length} show{weekendEvents.length === 1 ? '' : 's'} this weekend
           </p>
           <div className="flex gap-3 mt-4">
-            <Link href="/concerts/tonight" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors">Tonight</Link>
-            <Link href="/concerts/this-week" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors">This Week</Link>
-            <Link href="/concerts/on-sale-today" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors">On Sale Today</Link>
+            <Link href="/concerts/tonight" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2.5 rounded-lg transition-colors">Tonight</Link>
+            <Link href="/concerts/this-week" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2.5 rounded-lg transition-colors">This Week</Link>
+            <Link href="/concerts/on-sale-today" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2.5 rounded-lg transition-colors">On Sale Today</Link>
           </div>
         </div>
 

@@ -519,7 +519,7 @@ export default async function ArtistPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Tour Dates */}
         <div className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <h2 className="text-3xl font-bold">
               Tour <span className="gradient-text">Dates</span>
             </h2>
@@ -527,7 +527,7 @@ export default async function ArtistPage({ params }: Props) {
               <a
                 href={`/api/calendar?artistSlug=${artist.slug}`}
                 download
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
               >
                 <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -776,7 +776,7 @@ export default async function ArtistPage({ params }: Props) {
                 <div className="p-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                   <p className="font-bold text-gray-900 text-sm">{setlist.venueName}</p>
                   <p className="text-xs text-gray-500 mt-0.5">{setlist.cityName}</p>
-                  <time dateTime={setlist.date} className="text-xs text-gray-400 mt-1 block">
+                  <time dateTime={setlist.date} className="text-xs text-gray-500 mt-1 block">
                     {new Date(setlist.date + 'T12:00:00').toLocaleDateString('en-US', {
                       weekday: 'long',
                       month: 'long',
@@ -785,13 +785,13 @@ export default async function ArtistPage({ params }: Props) {
                     })}
                   </time>
                 </div>
-                <ol className="p-5 space-y-1.5">
+                <ol className="p-5 space-y-1.5 max-h-96 overflow-y-auto">
                   {setlist.songs.map((song, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm">
+                    <li key={i} value={i + 1} className="flex items-start gap-2 text-sm">
                       {song.encore ? (
                         <span className="text-xs font-bold text-orange-500 mt-0.5 w-6 text-right flex-shrink-0">E{song.encore}</span>
                       ) : (
-                        <span className="text-xs text-gray-400 mt-0.5 w-6 text-right flex-shrink-0">{i + 1}</span>
+                        <span className="text-xs text-gray-500 mt-0.5 w-6 text-right flex-shrink-0">{i + 1}</span>
                       )}
                       <span className={`${song.isTape ? 'text-gray-400 italic' : 'text-gray-700'}`}>
                         {song.name}

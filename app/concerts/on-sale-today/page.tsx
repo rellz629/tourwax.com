@@ -162,9 +162,9 @@ export default async function OnSaleTodayPage() {
             {onSaleEvents.length} concert{onSaleEvents.length === 1 ? '' : 's'} with tickets going on sale today
           </p>
           <div className="flex gap-3 mt-4">
-            <Link href="/concerts/tonight" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors">Tonight</Link>
-            <Link href="/concerts/this-weekend" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors">This Weekend</Link>
-            <Link href="/concerts/this-week" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors">This Week</Link>
+            <Link href="/concerts/tonight" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2.5 rounded-lg transition-colors">Tonight</Link>
+            <Link href="/concerts/this-weekend" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2.5 rounded-lg transition-colors">This Weekend</Link>
+            <Link href="/concerts/this-week" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2.5 rounded-lg transition-colors">This Week</Link>
           </div>
         </div>
 
@@ -300,7 +300,7 @@ export default async function OnSaleTodayPage() {
                       </div>
                       {row.event.ticketUrl && (
                         <a href={getAffiliateUrl(row.event.ticketUrl, row.event.source)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-bold text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 whitespace-nowrap transition-colors">
-                          Set Reminder
+                          View Tickets
                           <span className="sr-only">(opens in new tab)</span>
                         </a>
                       )}
