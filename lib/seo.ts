@@ -652,6 +652,79 @@ export function generateOnSaleMetadata(eventCount: number) {
   };
 }
 
+export function generateTourHistoryMetadata(data: {
+  artistName: string;
+  slug: string;
+  totalShows: number;
+  cityCount: number;
+  years: number[];
+  imageUrl: string | null;
+}) {
+  const { artistName, slug, totalShows, cityCount, years, imageUrl } = data;
+  const yearRange = years.length > 1
+    ? `${years[years.length - 1]}-${years[0]}`
+    : years.length === 1 ? `${years[0]}` : '';
+
+  const title = totalShows > 0
+    ? `${artistName} Tour History - ${totalShows} Past Shows${yearRange ? ` (${yearRange})` : ''} | ${SITE_NAME}`
+    : `${artistName} Tour History & Past Concerts | ${SITE_NAME}`;
+
+  const description = totalShows > 0
+    ? `${artistName} has played ${totalShows} shows across ${cityCount} cities${yearRange ? ` from ${yearRange}` : ''}. Browse the complete concert archive with venues, dates, and cities visited.`
+    : `${artistName} tour history and past concert archive. Check back as tour dates are added regularly.`;
+
+  const url = generateCanonicalUrl(`/artists/${slug}/tour-history`);
+  const image = imageUrl || undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: generateOpenGraphTags({ title, description, url, image }),
+    twitter: generateTwitterCardTags({ title, description, image }),
+  };
+}
+
+export function generateEventPageMetadata(data: {
+  artistName: string;
+  artistSlug: string;
+  venueName: string | null;
+  city: string | null;
+  state: string | null;
+  eventDate: Date;
+  slug: string;
+  isPast: boolean;
+  imageUrl: string | null;
+  minPrice: number | null;
+}) {
+  const { artistName, venueName, city, state, eventDate, slug, isPast, imageUrl, minPrice } = data;
+  const year = eventDate.getFullYear();
+  const dateStr = eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const location = [city, state].filter(Boolean).join(', ');
+  const venueText = venueName ? ` at ${venueName}` : '';
+  const locationText = location ? ` in ${location}` : '';
+
+  const title = isPast
+    ? `${artistName}${venueText}${locationText} — ${dateStr} | ${SITE_NAME}`
+    : `${artistName} Tickets${venueText} ${dateStr} | ${SITE_NAME}`;
+
+  const priceText = minPrice ? ` Tickets from $${minPrice}.` : '';
+  const description = isPast
+    ? `${artistName} performed${venueText}${locationText} on ${dateStr}. Browse the full ${artistName} tour history and upcoming concert dates.`
+    : `Buy ${artistName} tickets for ${dateStr}${venueText}${locationText}.${priceText} Compare prices from Ticketmaster & SeatGeek.`;
+
+  const url = generateCanonicalUrl(`/events/${slug}`);
+  const image = imageUrl || undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: generateOpenGraphTags({ title, description, url, image }),
+    twitter: generateTwitterCardTags({ title, description, image }),
+  };
+}
+
 export function generateSearchMetadata(query: string | null) {
   const title = query
     ? `Search Results for "${query}" | ${SITE_NAME}`

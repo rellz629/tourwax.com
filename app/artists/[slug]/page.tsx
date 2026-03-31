@@ -1052,11 +1052,17 @@ export default async function ArtistPage({ params }: Props) {
               ))}
             </div>
           </div>
-          {tourHistory.cities.length > 12 && (
-            <p className="text-sm text-gray-500 mt-3 text-center">
-              + {tourHistory.cities.length - 12} more cities visited
-            </p>
-          )}
+          <div className="mt-4 text-center">
+            <Link
+              href={`/artists/${artist.slug}/tour-history`}
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+            >
+              View Full Tour History
+              <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </Link>
+          </div>
         </div>
       )}
 

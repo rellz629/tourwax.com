@@ -62,6 +62,7 @@ export const events = pgTable('events', {
   dateIdx: index('event_date_idx').on(table.eventDate),
   statusIdx: index('event_status_idx').on(table.status),
   sourceExternalIdx: index('event_source_external_idx').on(table.source, table.externalId),
+  artistDateIdx: index('event_artist_date_idx').on(table.artistId, table.eventDate),
 }));
 
 export const newsArticles = pgTable('news_articles', {
