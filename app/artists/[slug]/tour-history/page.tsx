@@ -255,11 +255,12 @@ export default async function TourHistoryPage({ params, searchParams }: Props) {
 
           {/* Year Filter */}
           {years.length > 1 && (
-            <div className="flex flex-wrap items-center gap-2 mb-8">
+            <nav aria-label="Filter by year" className="flex flex-wrap items-center gap-2 mb-8">
               <span className="text-sm font-semibold text-gray-700 mr-1">Filter by year:</span>
               <Link
                 href={`/artists/${artist.slug}/tour-history`}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                aria-current={!selectedYear ? 'page' : undefined}
+                className={`px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-lg text-sm font-medium transition-all ${
                   !selectedYear
                     ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-md'
                     : 'bg-white text-gray-700 border border-gray-200 hover:border-orange-300 hover:text-orange-600'
@@ -271,7 +272,8 @@ export default async function TourHistoryPage({ params, searchParams }: Props) {
                 <Link
                   key={year}
                   href={`/artists/${artist.slug}/tour-history?year=${year}`}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  aria-current={selectedYear === year ? 'page' : undefined}
+                  className={`px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-lg text-sm font-medium transition-all ${
                     selectedYear === year
                       ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-md'
                       : 'bg-white text-gray-700 border border-gray-200 hover:border-orange-300 hover:text-orange-600'
@@ -280,7 +282,7 @@ export default async function TourHistoryPage({ params, searchParams }: Props) {
                   {year}
                 </Link>
               ))}
-            </div>
+            </nav>
           )}
         </div>
 
@@ -319,7 +321,7 @@ export default async function TourHistoryPage({ params, searchParams }: Props) {
                     {yearEvents.map((event) => {
                       const evSlug = eventSlug(artist.name, event.venueName, event.eventDate);
                       return (
-                      <Link key={event.id} href={`/events/${evSlug}`} className="block p-4 md:p-5 hover:bg-gray-50 transition-colors group">
+                      <Link key={event.id} href={`/events/${evSlug}`} aria-label={`${event.venueName || event.name}, ${[event.city, event.state].filter(Boolean).join(', ')} — ${event.eventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`} className="block p-4 md:p-5 hover:bg-gray-50 transition-colors group">
                         <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
                           {/* Date */}
                           <time
@@ -327,7 +329,7 @@ export default async function TourHistoryPage({ params, searchParams }: Props) {
                             className="flex items-center gap-3 md:w-36 flex-shrink-0"
                           >
                             <div className="w-11 h-11 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex flex-col items-center justify-center flex-shrink-0">
-                              <span className="text-[10px] font-semibold uppercase text-gray-600">
+                              <span className="text-xs font-semibold uppercase text-gray-600">
                                 {event.eventDate.toLocaleDateString('en-US', { month: 'short' })}
                               </span>
                               <span className="text-sm font-bold text-gray-800">

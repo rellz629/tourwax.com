@@ -327,7 +327,7 @@ export default async function EventPage({ params }: Props) {
                 </span>
               </div>
               <div>
-                <h2 className="font-bold text-gray-900 text-lg">Date & Time</h2>
+                <p className="font-bold text-gray-900 text-lg">Date & Time</p>
                 <p className="text-gray-700">
                   <time dateTime={eventDate.toISOString()}>{formattedDate}</time>
                 </p>
@@ -344,7 +344,7 @@ export default async function EventPage({ params }: Props) {
                 </svg>
               </div>
               <div>
-                <h2 className="font-bold text-gray-900 text-lg">Venue</h2>
+                <p className="font-bold text-gray-900 text-lg">Venue</p>
                 {venue ? (
                   <>
                     <Link
@@ -366,7 +366,7 @@ export default async function EventPage({ params }: Props) {
                       </p>
                     )}
                     {venue.address && (
-                      <p className="text-gray-400 text-xs mt-0.5">{venue.address}</p>
+                      <p className="text-gray-500 text-xs mt-0.5">{venue.address}</p>
                     )}
                   </>
                 ) : (
@@ -379,7 +379,7 @@ export default async function EventPage({ params }: Props) {
           {/* Ticket Buttons */}
           {!isPast && allSources.length > 0 && (
             <div className="mt-8 pt-6 border-t border-gray-100">
-              <h2 className="font-bold text-gray-900 mb-3">Buy Tickets</h2>
+              <p className="font-bold text-gray-900 mb-3">Buy Tickets</p>
               <div className="flex flex-wrap gap-3">
                 {allSources.map((ts, i) => (
                   ts.ticketUrl && (
@@ -444,7 +444,7 @@ export default async function EventPage({ params }: Props) {
                             : 'bg-gradient-to-br from-orange-500 to-red-500 text-white'
                         }`}
                       >
-                        <span className="text-[10px] font-semibold uppercase">
+                        <span className="text-xs font-semibold uppercase">
                           {nearDate.toLocaleDateString('en-US', { month: 'short' })}
                         </span>
                         <span className="text-sm font-bold">
@@ -460,19 +460,22 @@ export default async function EventPage({ params }: Props) {
                         </p>
                       </div>
                       {nearIsPast && (
-                        <span className="text-xs text-gray-400 flex-shrink-0">Past</span>
+                        <span className="text-xs text-gray-500 flex-shrink-0">Past</span>
                       )}
                     </Link>
                   );
                 })}
               </div>
             </div>
-            <div className="mt-3 text-center">
+            <div className="mt-4 text-center">
               <Link
                 href={`/artists/${artist.slug}/tour-history`}
-                className="text-sm text-orange-500 hover:text-orange-600 font-semibold transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
               >
-                View full tour history
+                View Full Tour History
+                <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
               </Link>
             </div>
           </div>
