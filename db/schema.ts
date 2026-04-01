@@ -11,6 +11,7 @@ export const artists = pgTable('artists', {
   ticketmasterId: text('ticketmaster_id'),
   bandsintownId: text('bandsintown_id'),
   seatgeekId: text('seatgeek_id'),
+  musicbrainzId: text('musicbrainz_id'),
   isActive: boolean('is_active').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

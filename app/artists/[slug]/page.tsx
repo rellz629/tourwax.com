@@ -464,7 +464,7 @@ export default async function ArtistPage({ params }: Props) {
   const [artistEvents, news, setlists, tourHistory, artistFestivals] = await Promise.all([
     getArtistEvents(artist.id),
     getArtistNews(artist.id),
-    getArtistSetlists(artist.name),
+    getArtistSetlists(artist.name, 3, artist.musicbrainzId),
     getArtistTourHistory(artist.id),
     getArtistFestivals(artist.id),
   ]);

@@ -80,17 +80,22 @@ function extractSongs(sets: SetlistFmSet[]): SetlistSong[] {
   return songs;
 }
 
-export async function getArtistSetlists(artistName: string, limit: number = 3): Promise<Setlist[]> {
+export async function getArtistSetlists(artistName: string, limit: number = 3, musicbrainzId?: string | null): Promise<Setlist[]> {
   const apiKey = process.env.SETLISTFM_API_KEY;
   if (!apiKey) return [];
 
   try {
-    const params = new URLSearchParams({
-      artistName,
-      p: '1',
-    });
+    // Use MBID-based lookup when available (more reliable for special characters)
+    let url: string;
+    if (musicbrainzId) {
+      const params = new URLSearchParams({ p: '1' });
+      url = `${BASE_URL}/artist/${musicbrainzId}/setlists?${params}`;
+    } else {
+      const params = new URLSearchParams({ artistName, p: '1' });
+      url = `${BASE_URL}/search/setlists?${params}`;
+    }
 
-    const response = await fetch(`${BASE_URL}/search/setlists?${params}`, {
+    const response = await fetch(url, {
       headers: {
         'Accept': 'application/json',
         'x-api-key': apiKey,

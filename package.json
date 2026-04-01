@@ -15,6 +15,7 @@
     "fetch:tours": "dotenv -e .env.local -- tsx scripts/fetch-tours.ts",
     "fetch:news": "dotenv -e .env.local -- tsx scripts/fetch-news.ts",
     "fetch:bios": "dotenv -e .env.local -- tsx scripts/fetch-bios.ts",
+    "fetch:mbids": "dotenv -e .env.local -- tsx scripts/fetch-musicbrainz-ids.ts",
     "import:spotify": "dotenv -e .env.local -- tsx scripts/import-spotify-artists.ts",
     "import:ticketmaster": "dotenv -e .env.local -- tsx scripts/import-artists-with-events.ts",
     "import:csv": "dotenv -e .env.local -- tsx scripts/import-from-csv.ts",
