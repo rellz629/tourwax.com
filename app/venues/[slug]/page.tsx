@@ -111,6 +111,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const venueEvents = await getVenueEvents(match.allVenueIds);
   const artistNames = [...new Set(venueEvents.map((e) => e.artistName))];
+  const nextEventDate = venueEvents.length > 0 ? new Date(venueEvents[0].event.eventDate) : null;
 
   return generateVenueMetadata({
     venueName: match.venue.name,
@@ -119,6 +120,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     state: match.venue.state,
     eventCount: venueEvents.length,
     artistNames,
+    nextEventDate,
   });
 }
 

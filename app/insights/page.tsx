@@ -54,6 +54,16 @@ const INSIGHTS = [
       </svg>
     ),
   },
+  {
+    title: 'Rising Artists',
+    description: 'Which artists are ramping up their touring? See who announced the most new tour dates in the last 30 days.',
+    href: '/insights/rising-artists',
+    icon: (
+      <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+    ),
+  },
 ];
 
 export default function InsightsPage() {

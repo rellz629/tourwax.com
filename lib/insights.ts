@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
-import { eq, gte, sql } from 'drizzle-orm';
+import { and, eq, gte, sql } from 'drizzle-orm';
 import { slugify } from './slugify';
 import { isPackage } from './event-utils';
 
@@ -272,6 +272,116 @@ export async function getBusiestTouringMonths(): Promise<MonthInsight[]> {
       };
     })
     .sort((a, b) => b.eventCount - a.eventCount);
+
+  results.forEach((r, i) => { r.rank = i + 1; });
+  return results;
+}
+
+export interface RisingArtistInsight {
+  artistName: string;
+  artistSlug: string;
+  imageUrl: string | null;
+  genre: string | null;
+  newEventCount: number;
+  totalEventCount: number;
+  topCities: string[];
+  rank: number;
+}
+
+export async function getRisingArtists(): Promise<RisingArtistInsight[]> {
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  // Get all future events added in the last 30 days
+  const rows = await db
+    .select({
+      artistId: artists.id,
+      artistName: artists.name,
+      artistSlug: artists.slug,
+      imageUrl: artists.imageUrl,
+      genre: artists.genre,
+      eventName: events.name,
+      eventCreatedAt: events.createdAt,
+      city: venues.city,
+    })
+    .from(events)
+    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .where(and(gte(events.eventDate, now), gte(events.createdAt, thirtyDaysAgo)));
+
+  // Also get total future event counts per artist for context
+  const allFutureRows = await db
+    .select({
+      artistId: artists.id,
+      eventName: events.name,
+    })
+    .from(events)
+    .innerJoin(artists, eq(events.artistId, artists.id))
+    .where(gte(events.eventDate, now));
+
+  const totalCountMap = new Map<string, Set<string>>();
+  for (const row of allFutureRows) {
+    if (isPackage(row.eventName)) continue;
+    let keys = totalCountMap.get(row.artistId);
+    if (!keys) {
+      keys = new Set();
+      totalCountMap.set(row.artistId, keys);
+    }
+    keys.add(row.eventName);
+  }
+
+  const artistMap = new Map<string, {
+    name: string;
+    slug: string;
+    imageUrl: string | null;
+    genre: string | null;
+    newEventKeys: Set<string>;
+    cities: Map<string, number>;
+  }>();
+
+  for (const row of rows) {
+    if (isPackage(row.eventName)) continue;
+
+    let entry = artistMap.get(row.artistId);
+    if (!entry) {
+      entry = {
+        name: row.artistName,
+        slug: row.artistSlug,
+        imageUrl: row.imageUrl,
+        genre: row.genre,
+        newEventKeys: new Set(),
+        cities: new Map(),
+      };
+      artistMap.set(row.artistId, entry);
+    }
+
+    entry.newEventKeys.add(row.eventName);
+    if (row.city) {
+      const count = entry.cities.get(row.city) || 0;
+      entry.cities.set(row.city, count + 1);
+    }
+  }
+
+  const results: RisingArtistInsight[] = Array.from(artistMap.entries())
+    .map(([artistId, entry]) => {
+      const topCities = Array.from(entry.cities.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([name]) => name);
+
+      return {
+        artistName: entry.name,
+        artistSlug: entry.slug,
+        imageUrl: entry.imageUrl,
+        genre: entry.genre,
+        newEventCount: entry.newEventKeys.size,
+        totalEventCount: totalCountMap.get(artistId)?.size || 0,
+        topCities,
+        rank: 0,
+      };
+    })
+    .sort((a, b) => b.newEventCount - a.newEventCount)
+    .slice(0, 50);
 
   results.forEach((r, i) => { r.rank = i + 1; });
   return results;

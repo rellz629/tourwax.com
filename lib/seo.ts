@@ -162,7 +162,9 @@ export function generateCityDescription(
   cityName: string,
   state: string | null,
   eventCount: number,
-  artistNames: string[]
+  artistNames: string[],
+  venueNames?: string[],
+  nextEventDate?: Date | null
 ): string {
   const year = new Date().getFullYear();
   const location = state ? `${cityName}, ${state}` : cityName;
@@ -171,10 +173,18 @@ export function generateCityDescription(
     return `No concerts currently scheduled in ${location}. Check back for upcoming ${year} shows and ticket info.`;
   }
 
-  const topArtists = artistNames.slice(0, 4).join(', ');
-  const moreText = artistNames.length > 4 ? ` + ${artistNames.length - 4} more` : '';
+  const nextDateText = nextEventDate
+    ? `Next show ${nextEventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}. `
+    : '';
 
-  return `${eventCount} upcoming concert${eventCount === 1 ? '' : 's'} in ${location}: ${topArtists}${moreText}. Tonight, this weekend & beyond. Buy tickets — compare Ticketmaster & SeatGeek prices.`;
+  const topArtists = artistNames.slice(0, 3).join(', ');
+  const moreText = artistNames.length > 3 ? ` + ${artistNames.length - 3} more` : '';
+
+  const venueText = venueNames && venueNames.length > 0
+    ? ` at ${venueNames.slice(0, 2).join(' & ')}${venueNames.length > 2 ? ` + ${venueNames.length - 2} venues` : ''}`
+    : '';
+
+  return `${nextDateText}${eventCount} upcoming concert${eventCount === 1 ? '' : 's'} in ${location}: ${topArtists}${moreText}${venueText}. Compare Ticketmaster & SeatGeek prices.`;
 }
 
 export function generateCityMetadata(data: {
@@ -183,12 +193,14 @@ export function generateCityMetadata(data: {
   citySlug: string;
   eventCount: number;
   artistNames: string[];
+  venueNames?: string[];
+  nextEventDate?: Date | null;
 }) {
-  const { cityName, state, citySlug, eventCount, artistNames } = data;
+  const { cityName, state, citySlug, eventCount, artistNames, venueNames, nextEventDate } = data;
   const year = new Date().getFullYear();
 
   const title = generateCityTitle(cityName, state, eventCount, year);
-  const description = generateCityDescription(cityName, state, eventCount, artistNames);
+  const description = generateCityDescription(cityName, state, eventCount, artistNames, venueNames, nextEventDate);
   const url = generateCanonicalUrl(`/concerts/${citySlug}`);
 
   return {
@@ -316,7 +328,8 @@ export function generateVenueDescription(
   venueName: string,
   city: string | null,
   eventCount: number,
-  artistNames: string[]
+  artistNames: string[],
+  nextEventDate?: Date | null
 ): string {
   const year = new Date().getFullYear();
   const location = city ? ` in ${city}` : '';
@@ -325,10 +338,14 @@ export function generateVenueDescription(
     return `${venueName}${location} ${year} concert schedule coming soon. Check back for upcoming shows, events & tickets.`;
   }
 
+  const nextDateText = nextEventDate
+    ? `Next show ${nextEventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}. `
+    : '';
+
   const topArtists = artistNames.slice(0, 3).join(', ');
   const moreText = artistNames.length > 3 ? ` + ${artistNames.length - 3} more` : '';
 
-  return `${venueName}${location} ${year} concert schedule: ${topArtists}${moreText}. ${eventCount} upcoming event${eventCount === 1 ? '' : 's'}. Buy tickets — compare Ticketmaster & SeatGeek prices.`;
+  return `${nextDateText}${venueName}${location}: ${eventCount} upcoming concert${eventCount === 1 ? '' : 's'} featuring ${topArtists}${moreText}. Compare Ticketmaster & SeatGeek ticket prices.`;
 }
 
 export function generateVenueMetadata(data: {
@@ -338,12 +355,13 @@ export function generateVenueMetadata(data: {
   state: string | null;
   eventCount: number;
   artistNames: string[];
+  nextEventDate?: Date | null;
 }) {
-  const { venueName, venueSlug, city, state, eventCount, artistNames } = data;
+  const { venueName, venueSlug, city, state, eventCount, artistNames, nextEventDate } = data;
   const year = new Date().getFullYear();
 
   const title = generateVenueTitle(venueName, city, eventCount, year);
-  const description = generateVenueDescription(venueName, city, eventCount, artistNames);
+  const description = generateVenueDescription(venueName, city, eventCount, artistNames, nextEventDate);
   const url = generateCanonicalUrl(`/venues/${venueSlug}`);
 
   return {

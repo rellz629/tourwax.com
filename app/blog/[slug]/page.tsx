@@ -5,7 +5,7 @@ import { generateBlogPostMetadata, SITE_URL } from '@/lib/seo';
 import { generateBreadcrumbSchema, generateBlogPostingSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { getPostBySlug, getAllSlugs } from '@/lib/blog';
+import { getPostBySlug, getAllSlugs, getAllPosts } from '@/lib/blog';
 
 export const revalidate = 1800;
 
@@ -35,6 +35,13 @@ export default async function BlogPostPage({
   if (!post) {
     notFound();
   }
+
+  // Get related posts: same category first, then recent, excluding current
+  const allPosts = getAllPosts();
+  const relatedPosts = [
+    ...allPosts.filter((p) => p.slug !== post.slug && p.category === post.category),
+    ...allPosts.filter((p) => p.slug !== post.slug && p.category !== post.category),
+  ].slice(0, 3);
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },
@@ -102,6 +109,43 @@ export default async function BlogPostPage({
             ← Back to Blog
           </Link>
         </div>
+
+        {/* Related Posts */}
+        {relatedPosts.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">More from the Blog</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {relatedPosts.map((related) => (
+                <Link
+                  key={related.slug}
+                  href={`/blog/${related.slug}`}
+                  className="bg-white rounded-xl shadow-md border border-gray-100 p-5 hover:shadow-lg transition-shadow"
+                >
+                  <span className="inline-block px-2 py-0.5 text-xs font-semibold text-orange-600 bg-orange-50 rounded-full mb-2">
+                    {related.category}
+                  </span>
+                  <h3 className="font-semibold text-gray-900 text-sm leading-tight mb-2">{related.title}</h3>
+                  <p className="text-xs text-gray-500 line-clamp-2">{related.excerpt}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Explore More */}
+        <section className="mt-12 bg-white rounded-xl shadow-md border border-gray-100 p-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Explore TourWax</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Link href="/concerts/tonight" className="text-sm font-medium text-orange-500 hover:text-orange-600">Concerts Tonight</Link>
+            <Link href="/concerts/this-weekend" className="text-sm font-medium text-orange-500 hover:text-orange-600">This Weekend</Link>
+            <Link href="/festivals" className="text-sm font-medium text-orange-500 hover:text-orange-600">Festivals</Link>
+            <Link href="/insights" className="text-sm font-medium text-orange-500 hover:text-orange-600">Insights</Link>
+            <Link href="/artists" className="text-sm font-medium text-orange-500 hover:text-orange-600">Browse Artists</Link>
+            <Link href="/concerts" className="text-sm font-medium text-orange-500 hover:text-orange-600">Concerts by City</Link>
+            <Link href="/tours" className="text-sm font-medium text-orange-500 hover:text-orange-600">Tours by Genre</Link>
+            <Link href="/venues" className="text-sm font-medium text-orange-500 hover:text-orange-600">Venues</Link>
+          </div>
+        </section>
       </div>
     </>
   );

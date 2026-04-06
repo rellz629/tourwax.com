@@ -125,6 +125,12 @@ export default async function MostTouredCitiesPage() {
             >
               Busiest Touring Months →
             </Link>
+            <Link
+              href="/insights/rising-artists"
+              className="text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+            >
+              Rising Artists →
+            </Link>
           </div>
         </div>
       </div>

@@ -131,22 +131,27 @@ export function generateMusicEventSchema(
     };
   }
 
+  // URL for this event's detail page
+  schema.url = `${SITE_URL}/artists/${artist.slug}`;
+
   // Offers — always include so Google gets price/currency/validFrom
   const offer: Record<string, any> = {
     '@type': 'Offer',
     url: event.ticketUrl || `${SITE_URL}/artists/${artist.slug}`,
     availability: 'https://schema.org/InStock',
-    price: event.minPrice ?? 0,
     priceCurrency: event.currency || 'USD',
     validFrom: new Date(event.createdAt).toISOString(),
   };
 
   if (event.minPrice && event.maxPrice && event.minPrice !== event.maxPrice) {
-    offer.highPrice = event.maxPrice;
     offer.lowPrice = event.minPrice;
+    offer.highPrice = event.maxPrice;
+    offer.price = event.minPrice;
+  } else if (event.minPrice) {
+    offer.price = event.minPrice;
   }
 
-  schema.offers = offer;
+  schema.offers = [offer];
 
   return schema;
 }
@@ -387,11 +392,10 @@ export function generateFestivalEventSchema(festival: {
   events: Array<{ ticketUrl: string | null; minPrice: number | null; maxPrice: number | null; currency: string | null; source: string }>;
 }) {
   const eventDate = new Date(festival.date);
-  const isFestival = festival.artists.length >= 5;
 
   const schema: Record<string, any> = {
     '@context': 'https://schema.org',
-    '@type': isFestival ? 'Festival' : 'MusicEvent',
+    '@type': 'MusicEvent',
     name: festival.name,
     startDate: eventDate.toISOString(),
     eventStatus: 'https://schema.org/EventScheduled',
@@ -429,13 +433,13 @@ export function generateFestivalEventSchema(festival: {
   const priced = festival.events.filter((e) => e.minPrice);
   if (priced.length > 0) {
     const lowest = priced.reduce((min, e) => (e.minPrice! < min.minPrice! ? e : min), priced[0]);
-    schema.offers = {
+    schema.offers = [{
       '@type': 'Offer',
       url: lowest.ticketUrl || SITE_URL,
       availability: 'https://schema.org/InStock',
       price: lowest.minPrice,
       priceCurrency: lowest.currency || 'USD',
-    };
+    }];
   }
 
   return schema;
@@ -452,11 +456,6 @@ export function generateOrganizationSchema() {
       url: `${SITE_URL}/logo.svg`,
     },
     description: 'Discover upcoming concert tour dates, venues, and latest news for your favorite music artists.',
-    sameAs: [
-      // Add social media profiles here when available
-      // 'https://twitter.com/tourwax',
-      // 'https://www.facebook.com/tourwax',
-    ],
   };
 }
 

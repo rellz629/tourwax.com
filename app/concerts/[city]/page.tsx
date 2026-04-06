@@ -125,6 +125,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const cityEvents = await getCityEvents(cityInfo.city);
   const artistNames = [...new Set(cityEvents.map((e) => e.artistName))];
+  const venueNames = [...new Set(cityEvents.filter((e) => e.venue).map((e) => e.venue!.name))];
+  const nextEventDate = cityEvents.length > 0 ? new Date(cityEvents[0].event.eventDate) : null;
 
   return generateCityMetadata({
     cityName: cityInfo.city,
@@ -132,6 +134,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     citySlug,
     eventCount: cityEvents.length,
     artistNames,
+    venueNames,
+    nextEventDate,
   });
 }
 
@@ -220,6 +224,24 @@ export default async function CityPage({ params }: Props) {
   const nextEventDate = cityEvents.length > 0 ? new Date(cityEvents[0].event.eventDate) : null;
   const lastEventDate = cityEvents.length > 0 ? new Date(cityEvents[cityEvents.length - 1].event.eventDate) : null;
 
+  // Price range across all events
+  const prices = cityEvents
+    .map((e) => e.event.minPrice)
+    .filter((p): p is number => p !== null && p > 0);
+  const lowestPrice = prices.length > 0 ? Math.min(...prices) : null;
+  const highestPrice = prices.length > 0 ? Math.max(...prices) : null;
+
+  // Group events by month for calendar section
+  const eventsByMonth = cityEvents.reduce((acc, row) => {
+    const monthKey = new Date(row.event.eventDate).toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+    });
+    if (!acc[monthKey]) acc[monthKey] = [];
+    acc[monthKey].push(row);
+    return acc;
+  }, {} as Record<string, typeof cityEvents>);
+
   const faqs = [
     {
       question: `How many concerts are coming to ${locationLabel} in ${year}?`,
@@ -273,6 +295,55 @@ export default async function CityPage({ params }: Props) {
             {cityEvents.length} upcoming show{cityEvents.length === 1 ? '' : 's'}
           </p>
         </div>
+
+        {/* Quick Stats Bar */}
+        {cityEvents.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
+              <p className="text-2xl font-bold text-gray-900">{cityEvents.length}</p>
+              <p className="text-sm text-gray-500">Upcoming Shows</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
+              <p className="text-2xl font-bold text-gray-900">{uniqueVenueNames.length}</p>
+              <p className="text-sm text-gray-500">Venues</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
+              <p className="text-2xl font-bold text-gray-900">
+                {nextEventDate
+                  ? nextEventDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                  : '—'}
+              </p>
+              <p className="text-sm text-gray-500">Next Show</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
+              <p className="text-2xl font-bold text-gray-900">
+                {lowestPrice ? `$${lowestPrice}` : 'See listing'}
+              </p>
+              <p className="text-sm text-gray-500">Tickets From</p>
+            </div>
+          </div>
+        )}
+
+        {/* Monthly Calendar Breakdown */}
+        {Object.keys(eventsByMonth).length > 1 && (
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{cityInfo.city} Concert Calendar {year}</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {Object.entries(eventsByMonth).map(([month, monthEvents]) => {
+                const monthArtists = [...new Set(monthEvents.map((e) => e.artistName))];
+                return (
+                  <div key={month} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+                    <h3 className="font-semibold text-gray-900 text-sm">{month}</h3>
+                    <p className="text-2xl font-bold text-orange-500 my-1">{monthEvents.length}</p>
+                    <p className="text-xs text-gray-500">
+                      {monthArtists.slice(0, 2).join(', ')}{monthArtists.length > 2 ? ` +${monthArtists.length - 2}` : ''}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {cityEvents.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
@@ -429,6 +500,12 @@ export default async function CityPage({ params }: Props) {
             {uniqueVenueNames.length > 0 && (
               <p>
                 {`Popular concert venues in ${cityInfo.city} include ${uniqueVenueNames.slice(0, 5).join(', ')}${uniqueVenueNames.length > 5 ? ` and ${uniqueVenueNames.length - 5} more` : ''}. From intimate clubs to large amphitheaters, ${cityInfo.city} offers live music for every taste.`}
+              </p>
+            )}
+            {lowestPrice && (
+              <p>
+                Ticket prices for concerts in {cityInfo.city} start at ${lowestPrice}{highestPrice && highestPrice !== lowestPrice ? ` and go up to $${highestPrice}` : ''}.
+                Prices vary by artist, venue, and seat location.
               </p>
             )}
             <p>
