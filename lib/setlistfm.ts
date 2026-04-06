@@ -84,6 +84,9 @@ export async function getArtistSetlists(artistName: string, limit: number = 3, m
   const apiKey = process.env.SETLISTFM_API_KEY;
   if (!apiKey) return [];
 
+  // Skip during build to avoid rate-limiting 2,000+ artist pages — setlists populate on first ISR visit
+  if (process.env.IS_BUILDING === '1') return [];
+
   try {
     // Use MBID-based lookup when available (more reliable for special characters)
     let url: string;
@@ -100,10 +103,13 @@ export async function getArtistSetlists(artistName: string, limit: number = 3, m
         'Accept': 'application/json',
         'x-api-key': apiKey,
       },
-      next: { revalidate: 86400 }, // Cache for 24 hours
+      next: { revalidate: 259200 }, // Cache for 3 days — setlists don't change often
     });
 
-    if (!response.ok) return [];
+    if (!response.ok) {
+      console.warn(`Setlist.fm API returned ${response.status} for ${artistName}`);
+      return [];
+    }
 
     const data: SetlistFmResponse = await response.json();
     if (!data.setlist) return [];
