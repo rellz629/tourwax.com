@@ -40,3 +40,10 @@ next-env.d.ts
 
 # Drizzle
 drizzle/
+
+# Local reference files
+Screenshot*.png
+Vercel-Dash.png
+*.docx
+pagespeed-results.json
+Traffic Reports/
