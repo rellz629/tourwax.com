@@ -1,0 +1,86 @@
+---
+title: "Who Is Opening for Bruno Mars on the Romantic Tour 2026?"
+slug: "who-is-opening-for-bruno-mars-2026-tour"
+excerpt: "Anderson .Paak, Leon Thomas, Victoria Monet, and RAYE rotate as openers on Bruno Mars' massive 2026 Romantic stadium tour. Here's the full lineup by date."
+author: "TourWax Team"
+category: "Guide"
+featuredImage: null
+publishedAt: "2026-04-08"
+updatedAt: "2026-04-08"
+---
+
+Bruno Mars is taking his biggest tour yet across stadiums worldwide in 2026, and he's bringing serious talent along for the ride. The Romantic Tour features a rotating cast of openers that changes by leg — here's who you'll see at every stop.
+
+## The Opening Acts
+
+Bruno Mars has assembled a support lineup that reads like its own festival bill:
+
+- **Anderson .Paak (as DJ Pee .Wee)** — Mars' Silk Sonic partner takes on DJ duties at select dates, keeping the energy high before the headliner hits the stage
+- **Leon Thomas** — Grammy-winning R&B singer-songwriter, opening the spring North American dates
+- **Victoria Monet** — Grammy Best New Artist winner, handling the European leg
+- **RAYE** — British singer-songwriter riding a massive wave of critical acclaim, opening fall North American dates
+
+The opener rotation means the experience shifts depending on when you catch the tour. Spring shows lean into Leon Thomas' smooth R&B. Fall dates get RAYE's emotionally charged pop. And Anderson .Paak ties it all together with DJ sets across multiple legs.
+
+## Spring North American Dates (Leon Thomas Opening)
+
+The tour kicks off in Las Vegas and runs through late May across stadiums and football fields:
+
+| Date | City | Venue |
+|------|------|-------|
+| April 10–11 | Las Vegas, NV | Allegiant Stadium |
+| April 14–15 | Glendale, AZ | State Farm Stadium |
+| April 18–19 | Arlington, TX | Globe Life Field |
+| April 22 | Houston, TX | NRG Stadium |
+| April 25–26 | [Atlanta](/concerts/atlanta), GA | Bobby Dodd Stadium |
+| April 29 | [Charlotte](/concerts/charlotte), NC | Bank of America Stadium |
+| May 2–3 | Washington, DC | Northwest Stadium |
+| May 6 | [Nashville](/concerts/nashville), TN | Nissan Stadium |
+| May 9–10 | Detroit, MI | Ford Field |
+| May 13 | Minneapolis, MN | U.S. Bank Stadium |
+| May 16–17 | [Chicago](/concerts/chicago), IL | Soldier Field |
+| May 20 | Columbus, OH | Ohio Stadium |
+| May 23–28 | Toronto, ON | Rogers Stadium (5 nights) |
+
+DJ Pee .Wee (Anderson .Paak) and Leon Thomas are confirmed for the Las Vegas opening dates. Leon Thomas is expected across the spring leg.
+
+## Fall North American Dates (RAYE Opening)
+
+After a European run over the summer, Mars returns to North America with RAYE taking over as opener:
+
+| Date | City | Venue |
+|------|------|-------|
+| August 21–26 | East Rutherford, NJ | MetLife Stadium (5 nights) |
+| August 29 | [Pittsburgh](/concerts/pittsburgh), PA | Acrisure Stadium |
+| September 1–9 | [Philadelphia](/concerts/philadelphia), PA | Lincoln Financial Field (multi-night) |
+| September 5–9 | Foxborough, MA | Gillette Stadium (multi-night) |
+| September 9 | Indianapolis, IN | Lucas Oil Stadium |
+| September 12–16 | Tampa, FL | Raymond James Stadium (multi-night) |
+| September 16 | New Orleans, LA | Caesars Superdome |
+| September 19–23 | Miami Gardens, FL | Hard Rock Stadium (multi-night) |
+| September 23 | [San Antonio](/concerts/san-antonio), TX | Alamodome |
+| September 26–30 | Colorado Springs, CO | Falcon Stadium (multi-night) |
+| Sept 30–Oct 10 | Inglewood / Santa Clara, CA | SoFi Stadium & Levi's Stadium |
+| October 14–21 | Vancouver, BC | BC Place (multi-night) |
+
+DJ Pee .Wee and RAYE are confirmed for the East Rutherford dates.
+
+## The Scale of This Tour
+
+The Romantic Tour is one of the largest touring operations of 2026. Mars is playing multi-night stadium residencies in most markets — five nights at MetLife Stadium, five in Toronto, and multiple dates in Philadelphia, Tampa, and the Bay Area. The tour runs from April through December, wrapping with four nights in Mexico City.
+
+This approach — fewer cities, more nights per city — reflects Mars' draw as one of the top-grossing live acts in the world. If you're in a city that's on the list, you likely have multiple dates to choose from.
+
+## What to Expect
+
+Mars' live show is built around precision choreography, a tight band, and a catalog that spans "Just the Way You Are" through "That's What I Like" to Silk Sonic material. The Romantic Tour is expected to feature songs from across his career alongside new material.
+
+With openers like RAYE and Leon Thomas, expect the night to start strong well before Mars takes the stage.
+
+## How to Get Tickets
+
+Tickets are available via Ticketmaster and Live Nation. Given the multi-night format, later dates in each city run tend to have better availability. Check the [Bruno Mars page on TourWax](/artists/bruno-mars) for ticket links and updated dates.
+
+---
+
+Browse more [Pop tours](/tours/pop) or explore all [upcoming concerts](/concerts) on TourWax.
