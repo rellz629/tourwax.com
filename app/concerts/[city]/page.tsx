@@ -13,12 +13,15 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
+import Pagination from '@/components/Pagination';
 
-export const dynamic = 'force-static';
 export const revalidate = 1800;
+
+const EVENTS_PER_PAGE = 50;
 
 interface Props {
   params: Promise<{ city: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
 const getCityInfo = cache(async function getCityInfo(citySlug: string) {
@@ -139,18 +142,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default async function CityPage({ params }: Props) {
+export default async function CityPage({ params, searchParams }: Props) {
   const { city: citySlug } = await params;
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
   const cityInfo = await getCityInfo(citySlug);
 
   if (!cityInfo || !cityInfo.city) {
     notFound();
   }
 
-  const [cityEvents, nearbyCities] = await Promise.all([
+  const [allCityEvents, nearbyCities] = await Promise.all([
     getCityEvents(cityInfo.city),
     getNearbyCities(cityInfo.city, cityInfo.state),
   ]);
+
+  const totalPages = Math.ceil(allCityEvents.length / EVENTS_PER_PAGE);
+  const cityEvents = allCityEvents.slice(
+    (currentPage - 1) * EVENTS_PER_PAGE,
+    currentPage * EVENTS_PER_PAGE
+  );
   const locationLabel = cityInfo.state
     ? `${cityInfo.city}, ${cityInfo.state}`
     : cityInfo.city;
@@ -178,7 +189,7 @@ export default async function CityPage({ params }: Props) {
     cityInfo.city,
     cityInfo.state,
     citySlug,
-    cityEvents.slice(0, 50).map((row) => ({
+    allCityEvents.slice(0, 50).map((row) => ({
       event: row.event,
       artist: {
         name: row.artistName,
@@ -196,12 +207,12 @@ export default async function CityPage({ params }: Props) {
   ];
 
   const year = new Date().getFullYear();
-  const uniqueArtistNames = [...new Set(cityEvents.map((e) => e.artistName))];
-  const uniqueVenueNames = [...new Set(cityEvents.filter((e) => e.venue).map((e) => e.venue!.name))];
+  const uniqueArtistNames = [...new Set(allCityEvents.map((e) => e.artistName))];
+  const uniqueVenueNames = [...new Set(allCityEvents.filter((e) => e.venue).map((e) => e.venue!.name))];
 
   // Venue stats: name, slug, event count
   const venueStats = Object.values(
-    cityEvents.reduce((acc, row) => {
+    allCityEvents.reduce((acc, row) => {
       if (!row.venue) return acc;
       const name = row.venue.name;
       if (!acc[name]) {
@@ -213,7 +224,7 @@ export default async function CityPage({ params }: Props) {
   ).sort((a, b) => b.count - a.count);
 
   // Genre breakdown from artists
-  const genreCounts = cityEvents.reduce((acc, row) => {
+  const genreCounts = allCityEvents.reduce((acc, row) => {
     const genre = row.artistGenre || 'Other';
     acc[genre] = (acc[genre] || 0) + 1;
     return acc;
@@ -221,18 +232,18 @@ export default async function CityPage({ params }: Props) {
   const topGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
   // Date range for content
-  const nextEventDate = cityEvents.length > 0 ? new Date(cityEvents[0].event.eventDate) : null;
-  const lastEventDate = cityEvents.length > 0 ? new Date(cityEvents[cityEvents.length - 1].event.eventDate) : null;
+  const nextEventDate = allCityEvents.length > 0 ? new Date(allCityEvents[0].event.eventDate) : null;
+  const lastEventDate = allCityEvents.length > 0 ? new Date(allCityEvents[allCityEvents.length - 1].event.eventDate) : null;
 
   // Price range across all events
-  const prices = cityEvents
+  const prices = allCityEvents
     .map((e) => e.event.minPrice)
     .filter((p): p is number => p !== null && p > 0);
   const lowestPrice = prices.length > 0 ? Math.min(...prices) : null;
   const highestPrice = prices.length > 0 ? Math.max(...prices) : null;
 
   // Group events by month for calendar section
-  const eventsByMonth = cityEvents.reduce((acc, row) => {
+  const eventsByMonth = allCityEvents.reduce((acc, row) => {
     const monthKey = new Date(row.event.eventDate).toLocaleDateString('en-US', {
       month: 'long',
       year: 'numeric',
@@ -245,7 +256,7 @@ export default async function CityPage({ params }: Props) {
   const faqs = [
     {
       question: `How many concerts are coming to ${locationLabel} in ${year}?`,
-      answer: `There are currently ${cityEvents.length} upcoming concert${cityEvents.length === 1 ? '' : 's'} scheduled in ${locationLabel}. Check back regularly as new shows are added daily.`,
+      answer: `There are currently ${allCityEvents.length} upcoming concert${allCityEvents.length === 1 ? '' : 's'} scheduled in ${locationLabel}. Check back regularly as new shows are added daily.`,
     },
     {
       question: `What artists are performing in ${cityInfo.city} soon?`,
@@ -292,15 +303,19 @@ export default async function CityPage({ params }: Props) {
             Concerts in <span className="gradient-text">{locationLabel}</span>
           </h1>
           <p className="text-xl text-gray-600">
-            {cityEvents.length} upcoming show{cityEvents.length === 1 ? '' : 's'}
+            {allCityEvents.length > 0
+              ? `${allCityEvents.length} upcoming concert${allCityEvents.length === 1 ? '' : 's'} & shows`
+              : 'Upcoming concerts & shows'
+            }
+            {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
           </p>
         </div>
 
         {/* Quick Stats Bar */}
-        {cityEvents.length > 0 && (
+        {allCityEvents.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">{cityEvents.length}</p>
+              <p className="text-2xl font-bold text-gray-900">{allCityEvents.length}</p>
               <p className="text-sm text-gray-500">Upcoming Shows</p>
             </div>
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
@@ -454,12 +469,14 @@ export default async function CityPage({ params }: Props) {
           </div>
         )}
 
+        <Pagination currentPage={currentPage} totalPages={totalPages} basePath={`/concerts/${citySlug}`} />
+
         {/* Popular Venues Section */}
         {venueStats.length > 0 && (
           <section className="mt-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Concert Venues in {cityInfo.city}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {venueStats.slice(0, 8).map((venue) => (
+              {venueStats.slice(0, 12).map((venue) => (
                 <Link
                   key={venue.slug}
                   href={`/venues/${venue.slug}`}
@@ -492,8 +509,8 @@ export default async function CityPage({ params }: Props) {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Live Music in {locationLabel}</h2>
           <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
             <p>
-              {cityEvents.length > 0
-                ? `${locationLabel} has ${cityEvents.length} upcoming concert${cityEvents.length === 1 ? '' : 's'}${nextEventDate && lastEventDate ? ` from ${nextEventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} through ${lastEventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}` : ''}. Artists performing include ${uniqueArtistNames.slice(0, 6).join(', ')}${uniqueArtistNames.length > 6 ? ` and ${uniqueArtistNames.length - 6} more` : ''}.`
+              {allCityEvents.length > 0
+                ? `${locationLabel} has ${allCityEvents.length} upcoming concert${allCityEvents.length === 1 ? '' : 's'}${nextEventDate && lastEventDate ? ` from ${nextEventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} through ${lastEventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}` : ''}. Artists performing include ${uniqueArtistNames.slice(0, 6).join(', ')}${uniqueArtistNames.length > 6 ? ` and ${uniqueArtistNames.length - 6} more` : ''}.`
                 : `No concerts are currently scheduled in ${locationLabel}. Check back regularly — we update tour schedules daily.`
               }
             </p>

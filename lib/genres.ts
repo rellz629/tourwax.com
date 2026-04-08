@@ -6,9 +6,13 @@ export function normalizeGenre(genre: string | null): string {
   const map: Record<string, string> = {
     'Hip-Hop/Rap': 'Hip-Hop',
     'Dance/Electronic': 'Electronic',
+    'Dance': 'Electronic',
     'World': 'Latin',
     'Jazz': 'R&B',
     'Reggae': 'Latin',
+    'Chanson Francaise': 'Latin',
+    'Undefined': 'Other',
+    'undefined': 'Other',
   };
   return map[genre] || genre;
 }
@@ -38,6 +42,6 @@ export const GENRE_DESCRIPTIONS: Record<string, string> = {
   'Rock': 'Find Rock concert tour dates, tickets, and venue information. From classic rock legends to modern alternative acts, see who is touring near you.',
   'Country': 'Browse Country music tour dates and get tickets to upcoming concerts. From Nashville stars to rising acts, find Country shows and festival lineups.',
   'Electronic': 'Discover Electronic and dance music tour dates, festival appearances, and DJ sets. Find tickets for EDM concerts, club nights, and music festivals.',
-  'Latin': 'Find Latin music tour dates, concert tickets, and live show schedules. Discover upcoming reggaeton, salsa, bachata, and Latin pop concerts near you.',
+  'Latin': 'Find Latin music tour dates, reggaeton concerts, and live show tickets. Discover upcoming Latin pop, salsa, bachata, and reggaeton tours near you. Browse schedules for the biggest Latin artists on tour.',
   'Other': 'Browse tour dates and concert tickets across all music genres. Discover upcoming live shows and get tickets to concerts near you.',
 };

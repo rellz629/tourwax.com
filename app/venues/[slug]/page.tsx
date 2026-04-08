@@ -13,13 +13,16 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
+import Pagination from '@/components/Pagination';
 import type { Venue } from '@/db/schema';
 
-export const dynamic = 'force-static';
 export const revalidate = 1800;
+
+const EVENTS_PER_PAGE = 50;
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
 interface VenueMatch {
@@ -124,8 +127,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default async function VenuePage({ params }: Props) {
+export default async function VenuePage({ params, searchParams }: Props) {
   const { slug: venueSlug } = await params;
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
   const match = await getVenueBySlug(venueSlug);
 
   if (!match) {
@@ -133,7 +138,12 @@ export default async function VenuePage({ params }: Props) {
   }
 
   const { venue } = match;
-  const venueEvents = await getVenueEvents(match.allVenueIds);
+  const allVenueEvents = await getVenueEvents(match.allVenueIds);
+  const totalPages = Math.ceil(allVenueEvents.length / EVENTS_PER_PAGE);
+  const venueEvents = allVenueEvents.slice(
+    (currentPage - 1) * EVENTS_PER_PAGE,
+    currentPage * EVENTS_PER_PAGE
+  );
 
   const locationParts: string[] = [];
   if (venue.city) locationParts.push(venue.city);
@@ -164,7 +174,7 @@ export default async function VenuePage({ params }: Props) {
   const eventListSchema = generateVenueEventListSchema(
     venue,
     venueSlug,
-    venueEvents.slice(0, 50).map((row) => ({
+    allVenueEvents.slice(0, 50).map((row) => ({
       event: row.event,
       artist: {
         name: row.artistName,
@@ -182,17 +192,59 @@ export default async function VenuePage({ params }: Props) {
   ];
 
   const year = new Date().getFullYear();
-  const uniqueArtistNames = [...new Set(venueEvents.map((e) => e.artistName))];
+  const uniqueArtistNames = [...new Set(allVenueEvents.map((e) => e.artistName))];
+
+  // Venue stats for enrichment
+  const prices = allVenueEvents
+    .map((e) => e.event.minPrice)
+    .filter((p): p is number => p !== null && p > 0);
+  const lowestPrice = prices.length > 0 ? Math.min(...prices) : null;
+  const highestPrice = prices.length > 0 ? Math.max(...prices) : null;
+
+  // Monthly event breakdown
+  const eventsByMonth: Record<string, number> = {};
+  for (const row of allVenueEvents) {
+    const monthKey = new Date(row.event.eventDate).toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+    });
+    eventsByMonth[monthKey] = (eventsByMonth[monthKey] || 0) + 1;
+  }
+
+  // Genre breakdown from performing artists (deduplicated by artist)
+  const artistGenres = new Map<string, string>();
+  for (const row of allVenueEvents) {
+    // Get genre from the event metadata or artist data if available
+    if (!artistGenres.has(row.artistName)) {
+      artistGenres.set(row.artistName, '');
+    }
+  }
+
+  // Next/last event dates
+  const nextEventDate = allVenueEvents.length > 0 ? new Date(allVenueEvents[0].event.eventDate) : null;
+  const lastEventDate = allVenueEvents.length > 0 ? new Date(allVenueEvents[allVenueEvents.length - 1].event.eventDate) : null;
 
   const faqs = [
     {
-      question: `How many concerts are coming to ${venue.name}?`,
-      answer: `There are currently ${venueEvents.length} upcoming concert${venueEvents.length === 1 ? '' : 's'} scheduled at ${venue.name}${locationLabel ? ` in ${locationLabel}` : ''} for ${year}.`,
+      question: `What upcoming events are at ${venue.name}?`,
+      answer: allVenueEvents.length > 0
+        ? `There are ${allVenueEvents.length} upcoming event${allVenueEvents.length === 1 ? '' : 's'} on the ${venue.name} schedule${locationLabel ? ` in ${locationLabel}` : ''} for ${year}.${nextEventDate ? ` The next event is on ${nextEventDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.` : ''}`
+        : `There are currently no upcoming events scheduled at ${venue.name}. Check back for new show announcements.`,
+    },
+    {
+      question: `What concerts are at ${venue.name} this month?`,
+      answer: (() => {
+        const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        const thisMonthCount = eventsByMonth[currentMonth] || 0;
+        return thisMonthCount > 0
+          ? `There are ${thisMonthCount} concert${thisMonthCount === 1 ? '' : 's'} scheduled at ${venue.name} for ${currentMonth}. Browse the full schedule above to see all shows.`
+          : `There are no concerts scheduled at ${venue.name} for ${currentMonth}. Check the full schedule for upcoming months.`;
+      })(),
     },
     {
       question: `What artists are performing at ${venue.name}?`,
       answer: uniqueArtistNames.length > 0
-        ? `Artists with upcoming shows at ${venue.name} include ${uniqueArtistNames.slice(0, 5).join(', ')}${uniqueArtistNames.length > 5 ? `, and ${uniqueArtistNames.length - 5} more` : ''}.`
+        ? `Artists with upcoming shows at ${venue.name} include ${uniqueArtistNames.slice(0, 8).join(', ')}${uniqueArtistNames.length > 8 ? `, and ${uniqueArtistNames.length - 8} more` : ''}.`
         : `Check back for upcoming artist announcements at ${venue.name}.`,
     },
     {
@@ -202,8 +254,14 @@ export default async function VenuePage({ params }: Props) {
         : `${venue.name} is located${locationLabel ? ` in ${locationLabel}` : ''}.${venue.capacity ? ` The venue has a capacity of ${venue.capacity.toLocaleString()}.` : ''}`,
     },
     {
-      question: `How do I get tickets for shows at ${venue.name}?`,
-      answer: `Browse upcoming concerts at ${venue.name} on TourWax and click "Get Tickets" for any show. We compare prices from Ticketmaster and SeatGeek.`,
+      question: `How much are tickets for events at ${venue.name}?`,
+      answer: lowestPrice && highestPrice
+        ? `Ticket prices for upcoming events at ${venue.name} range from $${lowestPrice} to $${highestPrice}. Prices vary by show — compare prices from Ticketmaster and SeatGeek above.`
+        : `Ticket prices vary by event at ${venue.name}. Browse the schedule above and click "Get Tickets" to compare prices from Ticketmaster and SeatGeek.`,
+    },
+    {
+      question: `How do I get tickets for concerts at ${venue.name}?`,
+      answer: `Browse upcoming concerts at ${venue.name} on TourWax and click "Get Tickets" for any show. We compare prices from Ticketmaster and SeatGeek to help you find the best deals.`,
     },
   ];
 
@@ -238,9 +296,62 @@ export default async function VenuePage({ params }: Props) {
             )}
           </div>
           <p className="text-xl text-gray-600 mt-3">
-            {venueEvents.length} upcoming show{venueEvents.length === 1 ? '' : 's'}
+            {allVenueEvents.length > 0
+              ? `${allVenueEvents.length} upcoming show${allVenueEvents.length === 1 ? '' : 's'} & concerts`
+              : 'Shows, concerts & upcoming events'
+            }
+            {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
           </p>
         </div>
+
+        {/* Venue Stats */}
+        {allVenueEvents.length > 0 && (
+          <section className="mb-10">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="bg-white rounded-xl shadow-md border border-gray-100 p-5 text-center">
+                <p className="text-3xl font-black text-orange-600">{allVenueEvents.length}</p>
+                <p className="text-sm text-gray-500 mt-1">Upcoming Events</p>
+              </div>
+              <div className="bg-white rounded-xl shadow-md border border-gray-100 p-5 text-center">
+                <p className="text-3xl font-black text-orange-600">{uniqueArtistNames.length}</p>
+                <p className="text-sm text-gray-500 mt-1">Artists Performing</p>
+              </div>
+              {lowestPrice && (
+                <div className="bg-white rounded-xl shadow-md border border-gray-100 p-5 text-center">
+                  <p className="text-3xl font-black text-orange-600">${lowestPrice}</p>
+                  <p className="text-sm text-gray-500 mt-1">Lowest Ticket Price</p>
+                </div>
+              )}
+              {nextEventDate && lastEventDate && (
+                <div className="bg-white rounded-xl shadow-md border border-gray-100 p-5 text-center">
+                  <p className="text-3xl font-black text-orange-600">
+                    {Object.keys(eventsByMonth).length}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">Months with Shows</p>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Monthly Schedule Overview */}
+        {Object.keys(eventsByMonth).length > 1 && (
+          <section className="mb-10">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{venue.name} Concert Schedule by Month</h2>
+            <div className="flex flex-wrap gap-3">
+              {Object.entries(eventsByMonth).map(([month, count]) => (
+                <div key={month} className="bg-white rounded-lg shadow-sm border border-gray-100 px-4 py-2">
+                  <span className="font-semibold text-gray-900">{month}</span>
+                  <span className="text-gray-500 ml-2">{count} show{count === 1 ? '' : 's'}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Upcoming Shows & Events at {venue.name}
+        </h2>
 
         {venueEvents.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
@@ -342,22 +453,33 @@ export default async function VenuePage({ params }: Props) {
           </div>
         )}
 
+        <Pagination currentPage={currentPage} totalPages={totalPages} basePath={`/venues/${venueSlug}`} />
+
         {/* About Venue Section */}
         <section className="mt-16 max-w-4xl">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">About {venue.name}</h2>
           <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
             <p>
-              {venue.name} is a live music venue{locationLabel ? ` located in ${locationLabel}` : ''}.
-              {venue.capacity ? ` The venue has a capacity of ${venue.capacity.toLocaleString()}.` : ''}
-              {venueEvents.length > 0
-                ? ` There are currently ${venueEvents.length} upcoming event${venueEvents.length === 1 ? '' : 's'} scheduled at ${venue.name}, featuring artists like ${uniqueArtistNames.slice(0, 3).join(', ')}${uniqueArtistNames.length > 3 ? ' and more' : ''}.`
-                : ` Check back for upcoming shows at ${venue.name}.`
-              }
+              {venue.name} is a concert venue{locationLabel ? ` located in ${locationLabel}` : ''}.
+              {venue.capacity ? ` With a capacity of ${venue.capacity.toLocaleString()}, it is one of the popular live music destinations${venue.city ? ` in ${venue.city}` : ''}.` : ''}
+              {venue.address ? ` The venue is located at ${venue.address}.` : ''}
             </p>
+            {allVenueEvents.length > 0 && (
+              <p>
+                The {year} concert schedule at {venue.name} features {allVenueEvents.length} upcoming event{allVenueEvents.length === 1 ? '' : 's'} with {uniqueArtistNames.length} artist{uniqueArtistNames.length === 1 ? '' : 's'} performing, including {uniqueArtistNames.slice(0, 5).join(', ')}{uniqueArtistNames.length > 5 ? ` and ${uniqueArtistNames.length - 5} more` : ''}.
+                {nextEventDate && ` The next event is on ${nextEventDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}.`}
+                {lowestPrice && highestPrice && lowestPrice !== highestPrice
+                  ? ` Ticket prices range from $${lowestPrice} to $${highestPrice}.`
+                  : lowestPrice
+                    ? ` Tickets start at $${lowestPrice}.`
+                    : ''
+                }
+              </p>
+            )}
             <p>
-              Compare ticket prices from Ticketmaster and SeatGeek to find the best deals on shows at {venue.name}.
+              Compare ticket prices from Ticketmaster and SeatGeek to find the best deals on concerts at {venue.name}.
               {venue.city && (
-                <> Looking for more options? Browse{' '}
+                <> Looking for more events? Browse{' '}
                   <Link href={`/concerts/${slugify(venue.city)}`} className="text-orange-500 hover:text-orange-600 font-medium">
                     all concerts in {venue.city}
                   </Link>

@@ -394,24 +394,32 @@ function generateArtistFAQs(
     });
   }
 
-  // Q2: Ticket sources
+  // Q2: Is artist on tour / tour year
+  faqs.push({
+    question: `Is ${artistName} on tour in ${year}?`,
+    answer: eventCount > 0
+      ? `Yes, ${artistName} is currently on tour in ${year} with ${eventCount} concert${eventCount === 1 ? '' : 's'} scheduled. Browse all ${artistName} tour dates above to find shows near you.`
+      : `${artistName} does not have any ${year} tour dates announced yet. Check back regularly — new tour dates are added daily from Ticketmaster and SeatGeek.`,
+  });
+
+  // Q3: Ticket sources and prices
   faqs.push({
     question: `Where can I buy ${artistName} concert tickets?`,
     answer: `You can buy ${artistName} tickets through Ticketmaster and SeatGeek. TourWax compares prices from multiple ticket sources so you can find the best deal for each show.`,
   });
 
-  // Q3: Show count
+  // Q4: Show count
   if (eventCount > 0) {
     const cityText = cities.length > 0
       ? ` in cities including ${cities.slice(0, 5).join(', ')}${cities.length > 5 ? ', and more' : ''}`
       : '';
     faqs.push({
-      question: `How many upcoming ${artistName} shows are there?`,
-      answer: `${artistName} currently has ${eventCount} upcoming show${eventCount === 1 ? '' : 's'} scheduled${cityText}.`,
+      question: `How many upcoming ${artistName} concerts are there?`,
+      answer: `${artistName} currently has ${eventCount} upcoming concert${eventCount === 1 ? '' : 's'} scheduled${cityText}. All ${artistName} ${year} tour dates are listed above with ticket links.`,
     });
   }
 
-  // Q4: Genre
+  // Q5: Genre
   if (genre) {
     const normalized = normalizeGenre(genre);
     faqs.push({
@@ -420,13 +428,19 @@ function generateArtistFAQs(
     });
   }
 
-  // Q5: Tour cities
+  // Q6: Tour cities
   if (cities.length > 0) {
     faqs.push({
       question: `What cities is ${artistName} touring in ${year}?`,
       answer: `${artistName} has concerts scheduled in ${cities.join(', ')}. Visit the tour dates section above for full venue details and ticket links.`,
     });
   }
+
+  // Q7: How to get notified
+  faqs.push({
+    question: `How do I find out about new ${artistName} tour dates?`,
+    answer: `Bookmark this page to stay updated on ${artistName} tour announcements. TourWax updates tour dates daily from Ticketmaster and SeatGeek, so new shows appear here as soon as they are announced.`,
+  });
 
   return faqs;
 }
@@ -543,7 +557,7 @@ export default async function ArtistPage({ params }: Props) {
                 <h1 className="text-5xl md:text-6xl font-black mb-3">
                   <span className="gradient-text">{artist.name}</span>
                 </h1>
-                {artist.genre && (
+                {artist.genre && normalizeGenre(artist.genre) !== 'Other' && (
                   <div className="inline-flex items-center gap-2 mb-4">
                     <Link
                       href={`/tours/${genreSlug(normalizeGenre(artist.genre))}`}
@@ -650,7 +664,7 @@ export default async function ArtistPage({ params }: Props) {
         <div className="lg:col-span-2">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <h2 className="text-3xl font-bold">
-              Tour <span className="gradient-text">Dates</span>
+              {artist.name} Tour <span className="gradient-text">Dates</span>
             </h2>
             {deduplicatedEvents.length > 0 && (
               <a
@@ -1117,21 +1131,32 @@ export default async function ArtistPage({ params }: Props) {
 
       {/* Tour Summary for SEO */}
       <section className="mt-16 max-w-4xl">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">{artist.name} Tour {new Date().getFullYear()}</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">{artist.name} Tour & Concert Dates {new Date().getFullYear()}</h2>
         <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
           {artistEvents.length > 0 ? (
-            <p>
-              {artist.name} has {artistEvents.length} upcoming concert{artistEvents.length === 1 ? '' : 's'} scheduled
-              {cities.length > 0 ? ` across ${cities.length} cities including ${cities.slice(0, 3).join(', ')}${cities.length > 3 ? ' and more' : ''}` : ''}.
-              {artistEvents[0].venue?.name ? ` The next show is at ${artistEvents[0].venue.name}${artistEvents[0].venue?.city ? ` in ${artistEvents[0].venue.city}` : ''} on ${new Date(artistEvents[0].event.eventDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}.` : ''}
-              {' '}Browse all tour dates above and compare ticket prices from Ticketmaster and SeatGeek.
-            </p>
+            <>
+              <p>
+                The {artist.name} {new Date().getFullYear()} tour features {artistEvents.length} upcoming concert{artistEvents.length === 1 ? '' : 's'}
+                {cities.length > 0 ? ` across ${cities.length} cities including ${cities.slice(0, 4).join(', ')}${cities.length > 4 ? ' and more' : ''}` : ''}.
+                {artistEvents[0].venue?.name ? ` The next ${artist.name} concert is at ${artistEvents[0].venue.name}${artistEvents[0].venue?.city ? ` in ${artistEvents[0].venue.city}` : ''} on ${new Date(artistEvents[0].event.eventDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}.` : ''}
+              </p>
+              {(() => {
+                const allPrices = artistEvents.flatMap(e => e.ticketSources.map(ts => ts.minPrice).filter((p): p is number => p !== null && p > 0));
+                const lowest = allPrices.length > 0 ? Math.min(...allPrices) : null;
+                const highest = allPrices.length > 0 ? Math.max(...allPrices) : null;
+                return lowest ? (
+                  <p>
+                    {artist.name} ticket prices start at ${lowest}{highest && highest !== lowest ? ` and range up to $${highest}` : ''} depending on the venue and date. Compare prices from Ticketmaster and SeatGeek above to find the best deals on {artist.name} concert tickets.
+                  </p>
+                ) : null;
+              })()}
+            </>
           ) : (
             <p>
-              No upcoming {artist.name} tour dates have been announced yet. Check back regularly — we update tour schedules daily from Ticketmaster and SeatGeek.
+              No upcoming {artist.name} tour dates or concerts have been announced for {new Date().getFullYear()} yet. Check back regularly — we update {artist.name} tour schedules daily from Ticketmaster and SeatGeek.
             </p>
           )}
-          {artist.genre && (
+          {artist.genre && normalizeGenre(artist.genre) !== 'Other' && (
             <p>
               Looking for more {artist.genre} concerts? Browse all{' '}
               <Link href={`/tours/${slugify(normalizeGenre(artist.genre))}`} className="text-orange-500 hover:text-orange-600 font-medium">
