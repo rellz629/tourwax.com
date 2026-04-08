@@ -132,9 +132,13 @@ function formatOnsaleDate(metadata: Record<string, unknown> | null): string | nu
   }
 }
 
+const MAX_EVENTS = 50;
+
 export default async function OnSaleTodayPage() {
-  const onSaleEvents = await getOnSaleTodayEvents();
-  const comingSoonEvents = await getOnSaleThisWeekEvents();
+  const allOnSaleEvents = await getOnSaleTodayEvents();
+  const allComingSoonEvents = await getOnSaleThisWeekEvents();
+  const onSaleEvents = allOnSaleEvents.slice(0, MAX_EVENTS);
+  const comingSoonEvents = allComingSoonEvents.slice(0, MAX_EVENTS);
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },

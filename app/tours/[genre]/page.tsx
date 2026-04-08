@@ -14,12 +14,16 @@ import { getAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { normalizeGenre, genreSlug, GENRE_DESCRIPTIONS, GENRE_DISPLAY_NAMES } from '@/lib/genres';
 import { slugify } from '@/lib/slugify';
+import Pagination from '@/components/Pagination';
 
-export const dynamic = 'force-static';
 export const revalidate = 1800;
+
+const ARTISTS_PER_PAGE = 60;
+const EVENTS_PER_PAGE = 50;
 
 interface Props {
   params: Promise<{ genre: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
 function findGenreBySlug(slug: string, genreMap: Map<string, string>): string | null {
@@ -98,8 +102,10 @@ export async function generateStaticParams() {
   return Array.from(slugMap.keys()).map((slug) => ({ genre: slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { genre: slug } = await params;
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
   const slugMap = await buildGenreSlugMap();
   const genreName = findGenreBySlug(slug, slugMap);
 
@@ -111,17 +117,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const artistIds = genreArtists.map((a) => a.id);
   const genreEvents = await getGenreEvents(artistIds);
 
-  return generateGenreMetadata({
+  const meta = generateGenreMetadata({
     genreName,
     genreSlug: slug,
     artistCount: genreArtists.length,
     eventCount: genreEvents.length,
     artistNames: genreArtists.map((a) => a.name),
   });
+
+  if (currentPage > 1) {
+    meta.title = `${genreName} Tours ${new Date().getFullYear()} - Page ${currentPage}`;
+  }
+
+  return meta;
 }
 
-export default async function GenrePage({ params }: Props) {
+export default async function GenrePage({ params, searchParams }: Props) {
   const { genre: slug } = await params;
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
   const slugMap = await buildGenreSlugMap();
   const genreName = findGenreBySlug(slug, slugMap);
 
@@ -129,9 +143,16 @@ export default async function GenrePage({ params }: Props) {
     notFound();
   }
 
-  const genreArtists = await getGenreArtists(genreName);
-  const artistIds = genreArtists.map((a) => a.id);
+  const allGenreArtists = await getGenreArtists(genreName);
+  const artistIds = allGenreArtists.map((a) => a.id);
   const allGenreEvents = await getGenreEvents(artistIds);
+
+  // Paginate artists
+  const totalArtistPages = Math.ceil(allGenreArtists.length / ARTISTS_PER_PAGE);
+  const genreArtists = allGenreArtists.slice(
+    (currentPage - 1) * ARTISTS_PER_PAGE,
+    currentPage * ARTISTS_PER_PAGE
+  );
 
   // Count events per artist for display (use full list)
   const eventCountByArtist = new Map<string, number>();
@@ -140,9 +161,9 @@ export default async function GenrePage({ params }: Props) {
     eventCountByArtist.set(row.event.artistId, current + 1);
   }
 
-  // Limit displayed events to keep page size under Vercel's 19MB limit
-  const genreEvents = allGenreEvents.slice(0, 100);
-  const hasMore = allGenreEvents.length > 100;
+  // Show events only on page 1, limited to EVENTS_PER_PAGE
+  const genreEvents = currentPage === 1 ? allGenreEvents.slice(0, EVENTS_PER_PAGE) : [];
+  const hasMore = currentPage === 1 && allGenreEvents.length > EVENTS_PER_PAGE;
 
   // Group events by date
   const eventsByDate = genreEvents.reduce((acc, row) => {
@@ -186,18 +207,18 @@ export default async function GenrePage({ params }: Props) {
   ];
 
   const year = new Date().getFullYear();
-  const topArtistNames = genreArtists.slice(0, 5).map((a) => a.name);
-  const uniqueCities = [...new Set(genreEvents.filter((e) => e.venue?.city).map((e) => e.venue!.city!))];
+  const topArtistNames = allGenreArtists.slice(0, 5).map((a) => a.name);
+  const uniqueCities = [...new Set(allGenreEvents.filter((e) => e.venue?.city).map((e) => e.venue!.city!))];
 
   const faqs = [
     {
       question: `How many ${genreName} artists are currently on tour?`,
-      answer: `There are currently ${genreArtists.length} ${genreName} artist${genreArtists.length === 1 ? '' : 's'} on tour with ${allGenreEvents.length} upcoming show${allGenreEvents.length === 1 ? '' : 's'} in ${year}.`,
+      answer: `There are currently ${allGenreArtists.length} ${genreName} artist${allGenreArtists.length === 1 ? '' : 's'} on tour with ${allGenreEvents.length} upcoming show${allGenreEvents.length === 1 ? '' : 's'} in ${year}.`,
     },
     {
       question: `Which ${genreName} artists are touring in ${year}?`,
       answer: topArtistNames.length > 0
-        ? `${genreName} artists currently on tour include ${topArtistNames.join(', ')}${genreArtists.length > 5 ? `, and ${genreArtists.length - 5} more` : ''}.`
+        ? `${genreName} artists currently on tour include ${topArtistNames.join(', ')}${allGenreArtists.length > 5 ? `, and ${allGenreArtists.length - 5} more` : ''}.`
         : `Check back for upcoming ${genreName} tour announcements.`,
     },
     {
@@ -400,6 +421,8 @@ export default async function GenrePage({ params }: Props) {
           </div>
         )}
 
+        <Pagination currentPage={currentPage} totalPages={totalArtistPages} basePath={`/tours/${slug}`} />
+
         {/* Top Cities for this Genre */}
         {uniqueCities.length > 0 && (
           <section className="mt-16">
@@ -428,8 +451,8 @@ export default async function GenrePage({ params }: Props) {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">{genreName} Concerts & Tours in {year}</h2>
           <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
             <p>
-              {genreArtists.length > 0 && allGenreEvents.length > 0
-                ? `There are ${genreArtists.length} ${genreName} artists currently on tour with ${allGenreEvents.length} upcoming shows across ${uniqueCities.length} cities. ${topArtistNames.length > 0 ? `Top touring ${genreName} artists include ${topArtistNames.join(', ')}.` : ''}`
+              {allGenreArtists.length > 0 && allGenreEvents.length > 0
+                ? `There are ${allGenreArtists.length} ${genreName} artists currently on tour with ${allGenreEvents.length} upcoming shows across ${uniqueCities.length} cities. ${topArtistNames.length > 0 ? `Top touring ${genreName} artists include ${topArtistNames.join(', ')}.` : ''}`
                 : `Stay up to date with ${genreName} tour announcements and concert dates.`
               }
             </p>

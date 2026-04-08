@@ -127,6 +127,7 @@ export default function RootLayout({
                   <li><Link href="/concerts/this-weekend" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">This Weekend</Link></li>
                   <li><Link href="/concerts/this-week" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">This Week</Link></li>
                   <li><Link href="/insights" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Insights</Link></li>
+                  <li><Link href="/search" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Search</Link></li>
                 </ul>
               </div>
               <div>

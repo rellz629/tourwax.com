@@ -1,43 +1,56 @@
 import { db } from '@/db';
 import { artists } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
-import { SITE_NAME, generateCanonicalUrl } from '@/lib/seo';
+import { generateCanonicalUrl } from '@/lib/seo';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
+import Pagination from '@/components/Pagination';
 
-// Use Static Site Generation with ISR
-export const dynamic = 'force-static';
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: `Browse Artists on Tour ${new Date().getFullYear()} | Live Music Tour Dates - ${SITE_NAME}`,
-  description: 'Discover artists currently on tour. Find concert dates, tickets, and venues for Hip-Hop, Pop, Rock, Country, and more.',
-  alternates: {
-    canonical: generateCanonicalUrl('/artists'),
-  },
-  openGraph: {
-    title: `Browse Artists on Tour ${new Date().getFullYear()} | Live Music Tour Dates`,
-    description: 'Discover artists currently on tour. Find concert dates, tickets, and venues for Hip-Hop, Pop, Rock, Country, and more.',
-    url: generateCanonicalUrl('/artists'),
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: `Browse Artists on Tour ${new Date().getFullYear()} | Live Music Tour Dates`,
-    description: 'Discover artists currently on tour. Find concert dates, tickets, and venues for Hip-Hop, Pop, Rock, Country, and more.',
-  },
-};
+const ARTISTS_PER_PAGE = 60;
 
-export default async function ArtistsPage() {
-  const allArtists = await db
-    .select()
-    .from(artists)
-    .where(eq(artists.isActive, true))
-    .orderBy(artists.name);
+interface Props {
+  searchParams: Promise<{ page?: string }>;
+}
 
-  // Group by normalized genre
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+  const suffix = currentPage > 1 ? ` - Page ${currentPage}` : '';
+
+  return {
+    title: `Browse Artists on Tour ${new Date().getFullYear()}${suffix}`,
+    description: 'Discover artists currently on tour. Find concert dates, tickets, and venues for Hip-Hop, Pop, Rock, Country, and more.',
+    alternates: {
+      canonical: generateCanonicalUrl('/artists'),
+    },
+  };
+}
+
+export default async function ArtistsPage({ searchParams }: Props) {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+
+  const [allArtists, [{ count: totalCount }]] = await Promise.all([
+    db
+      .select()
+      .from(artists)
+      .where(eq(artists.isActive, true))
+      .orderBy(artists.name)
+      .limit(ARTISTS_PER_PAGE)
+      .offset((currentPage - 1) * ARTISTS_PER_PAGE),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(artists)
+      .where(eq(artists.isActive, true)),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / ARTISTS_PER_PAGE);
+
+  // Group current page artists by normalized genre
   const artistsByGenre = allArtists.reduce((acc, artist) => {
     const genre = normalizeGenre(artist.genre);
     if (!acc[genre]) acc[genre] = [];
@@ -54,7 +67,8 @@ export default async function ArtistsPage() {
           <span className="gradient-text">All Artists</span>
         </h1>
         <p className="text-xl text-gray-600">
-          Browse {allArtists.length} artists across {genres.length} genres
+          Browse {totalCount} artists across all genres
+          {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
         </p>
       </div>
 
@@ -101,6 +115,8 @@ export default async function ArtistsPage() {
           </div>
         </section>
       ))}
+
+      <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/artists" />
     </div>
   );
 }

@@ -115,7 +115,7 @@ export async function generateStaticParams() {
     .orderBy(sql`count(*) desc`);
 
   return states
-    .filter((row) => row.state)
+    .filter((row) => row.state && resolveStateName(slugify(row.state)))
     .map((row) => ({ state: slugify(row.state!) }));
 }
 

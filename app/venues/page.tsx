@@ -8,15 +8,29 @@ import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { slugify } from '@/lib/slugify';
+import Pagination from '@/components/Pagination';
 
-export const dynamic = 'force-static';
 export const revalidate = 1800;
 
-export async function generateMetadata(): Promise<Metadata> {
-  return generateVenuesIndexMetadata();
+const VENUES_PER_PAGE = 120;
+
+interface Props {
+  searchParams: Promise<{ page?: string }>;
 }
 
-export default async function VenuesPage() {
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+  const base = await generateVenuesIndexMetadata();
+  if (currentPage > 1) {
+    base.title = `Concert Venues ${new Date().getFullYear()} - Page ${currentPage}`;
+  }
+  return base;
+}
+
+export default async function VenuesPage({ searchParams }: Props) {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
   const now = new Date();
 
   const venuesWithCounts = await db
@@ -32,9 +46,16 @@ export default async function VenuesPage() {
     .groupBy(sql`lower(${venues.name})`)
     .orderBy(sql`count(*) desc`);
 
-  // Group venues by city
-  const venuesByCity = new Map<string, typeof venuesWithCounts>();
-  for (const row of venuesWithCounts) {
+  const totalVenues = venuesWithCounts.length;
+  const totalPages = Math.ceil(totalVenues / VENUES_PER_PAGE);
+  const paginatedVenues = venuesWithCounts.slice(
+    (currentPage - 1) * VENUES_PER_PAGE,
+    currentPage * VENUES_PER_PAGE
+  );
+
+  // Group paginated venues by city
+  const venuesByCity = new Map<string, typeof paginatedVenues>();
+  for (const row of paginatedVenues) {
     const cityKey = row.state ? `${row.city}, ${row.state}` : (row.city || 'Other');
     if (!venuesByCity.has(cityKey)) {
       venuesByCity.set(cityKey, []);
@@ -68,7 +89,8 @@ export default async function VenuesPage() {
             <span className="gradient-text">Concert Venues</span>
           </h1>
           <p className="text-xl text-gray-600">
-            Browse {venuesWithCounts.length} venues with upcoming shows
+            Browse {totalVenues} venues with upcoming shows
+            {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
           </p>
         </div>
 
@@ -126,6 +148,8 @@ export default async function VenuesPage() {
             ))}
           </div>
         )}
+
+        <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/venues" />
       </div>
     </>
   );

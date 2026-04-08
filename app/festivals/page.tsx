@@ -6,16 +6,29 @@ import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAllFestivals } from '@/lib/festivals';
 import { slugify } from '@/lib/slugify';
+import Pagination from '@/components/Pagination';
 
-export const dynamic = 'force-static';
 export const revalidate = 1800;
+
+const FESTIVALS_PER_PAGE = 60;
+
+interface Props {
+  searchParams: Promise<{ page?: string }>;
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   return generateFestivalsIndexMetadata();
 }
 
-export default async function FestivalsPage() {
-  const festivals = await getAllFestivals();
+export default async function FestivalsPage({ searchParams }: Props) {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+  const allFestivals = await getAllFestivals();
+  const totalPages = Math.ceil(allFestivals.length / FESTIVALS_PER_PAGE);
+  const festivals = allFestivals.slice(
+    (currentPage - 1) * FESTIVALS_PER_PAGE,
+    currentPage * FESTIVALS_PER_PAGE
+  );
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },
@@ -38,9 +51,10 @@ export default async function FestivalsPage() {
             <span className="gradient-text">Festivals & Multi-Artist Events</span>
           </h1>
           <p className="text-xl text-gray-600">
-            {festivals.length} upcoming festival{festivals.length === 1 ? '' : 's'} and multi-artist event{festivals.length === 1 ? '' : 's'}
+            {allFestivals.length} upcoming festival{allFestivals.length === 1 ? '' : 's'} and multi-artist event{allFestivals.length === 1 ? '' : 's'}
+            {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
           </p>
-          {festivals.length >= 2 && (
+          {allFestivals.length >= 2 && (
             <div className="flex gap-3 mt-4">
               <Link href="/festivals/compare" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2.5 rounded-lg transition-colors">Compare Lineups</Link>
             </div>
@@ -104,6 +118,8 @@ export default async function FestivalsPage() {
             })}
           </div>
         )}
+
+        <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/festivals" />
       </div>
     </>
   );
