@@ -13,33 +13,33 @@ updatedAt: "2026-04-08"
 
 ## The Support Lineup
 
-Bryan's opener roster tells you everything about where he sits in the music landscape right now. He's not stacking the bill with Nashville session players and radio country acts — he's pulling from indie rock, bluegrass, Americana, and alt-R&B. Several of these openers are headliner-level artists in their own right.
+Bryan's opener roster tells you everything about where he sits in the music landscape right now. He's not stacking the bill with Nashville session players and radio country acts. Instead, he's pulling from indie rock, bluegrass, Americana, and alt-R&B. Several of these openers are headliner-level artists in their own right.
 
-### Kings of Leon — Direct Support on Select Dates
+### Kings of Leon: Direct Support on Select Dates
 
 The Followill family needs no introduction. Kings of Leon are arena headliners who've sold tens of millions of records, and they're playing support on at least three dates: [Louisville](/concerts/louisville) (April 11), Lincoln (April 25), and the two-day Dover festival (September 18-19). That a band of their stature is opening for Zach Bryan says everything about his meteoric rise from SoundCloud uploads to selling out college football stadiums.
 
-### Alabama Shakes — Reunited and on the Road
+### Alabama Shakes: Reunited and on the Road
 
 Brittany Howard and company are back together, and their return to touring includes support slots on Bryan's summer and fall dates. They're confirmed for Eugene (July 25) and the Dover two-day festival (September 18-19). Alabama Shakes bring a raw, Southern-rock energy that's a natural fit for Bryan's crowd.
 
-### Caamp — Indie-Folk Support
+### Caamp: Indie-Folk Support
 
 The Columbus, Ohio indie-folk band joins the bill for the tour's opening night in [St. Louis](/concerts/st-louis) (March 7) and the [Charlotte](/concerts/charlotte) date (April 18). Caamp's warm, campfire songwriting slots in perfectly before Bryan's headlining set.
 
-### MJ Lenderman — Indie Rock's Rising Star
+### MJ Lenderman: Indie Rock's Rising Star
 
 One of the most critically acclaimed young guitarists in indie rock, MJ Lenderman is confirmed for the [San Diego](/concerts/san-diego) show on July 31. Lenderman's scrappy, Americana-adjacent guitar work makes him a smart pick for a stadium crowd that skews toward fans who discovered Bryan through the internet rather than country radio.
 
-### Dijon — R&B Meets Indie
+### Dijon: R&B Meets Indie
 
 Singer-songwriter Dijon brings a different texture to the lineup, confirmed for the Starkville, MS date on May 2. His emotionally raw R&B blends well with Bryan's own willingness to stretch beyond genre boundaries.
 
-### Trampled by Turtles — Bluegrass Energy
+### Trampled by Turtles: Bluegrass Energy
 
 The Minnesota bluegrass outfit joins the bill in [Tulsa](/concerts/tulsa) (April 4) and the two-night Toronto stand (September 21-22). Their high-energy string band sound is the kind of opener that gets a stadium crowd moving before Bryan ever takes the stage.
 
-### Gregory Alan Isakov — Singer-Songwriter Support
+### Gregory Alan Isakov: Singer-Songwriter Support
 
 The Colorado-based singer-songwriter is confirmed for the two-night Foxborough run at Gillette Stadium (October 2-3). Isakov's atmospheric folk is a fitting complement to Bryan's more reflective material.
 
@@ -85,15 +85,15 @@ J.R. Carroll appears on many of the first leg dates, including St. Louis, Tulsa,
 
 ## Playing College Football Stadiums
 
-One of the defining features of the With Heaven Tour is its venue selection. Bryan isn't routing through traditional concert amphitheaters or even standard arenas — he's playing college football stadiums. Tiger Stadium in Baton Rouge. Davis Wade Stadium in Starkville. Memorial Stadium in Lincoln. Jordan-Hare in Auburn. H.A. Chapman in Tulsa. These are 40,000-to-100,000-capacity venues in college towns across the South and Midwest, and Bryan is filling them.
+One of the defining features of the With Heaven Tour is its venue selection. Bryan isn't routing through traditional concert amphitheaters or even standard arenas. He's playing college football stadiums. Tiger Stadium in Baton Rouge. Davis Wade Stadium in Starkville. Memorial Stadium in Lincoln. Jordan-Hare in Auburn. H.A. Chapman in Tulsa. These are 40,000-to-100,000-capacity venues in college towns across the South and Midwest, and Bryan is filling them.
 
-It's a routing strategy that speaks directly to his fan base. Bryan's audience skews young, passionate about live music, and concentrated in the same regions where college football is a way of life. Playing these stadiums isn't just a capacity play — it's a cultural statement.
+It's a routing strategy that speaks directly to his fan base. Bryan's audience skews young, passionate about live music, and concentrated in the same regions where college football is a way of life. Playing these stadiums isn't just a capacity play; it's a cultural statement.
 
 ## Why This Tour Matters
 
 The With Heaven Tour is the clearest evidence yet that Zach Bryan has crossed from country star to full-blown cultural phenomenon. Three years ago he was playing clubs. Now he's booking Kings of Leon and Alabama Shakes as his opening acts and selling out NFL and college football stadiums coast to coast.
 
-The support bill is also worth watching on its own merits. Kings of Leon haven't played the support role in well over a decade. Alabama Shakes' return to live music is one of the most anticipated reunions of 2026. MJ Lenderman is in the middle of a breakout year. Any one of these acts would be a strong draw as an opener — having all of them rotating through the same tour is rare.
+The support bill is also worth watching on its own merits. Kings of Leon haven't played the support role in well over a decade. Alabama Shakes' return to live music is one of the most anticipated reunions of 2026. MJ Lenderman is in the middle of a breakout year. Any one of these acts would be a strong draw as an opener, and having all of them rotating through the same tour is rare.
 
 Check the [Zach Bryan page on TourWax](/artists/zach-bryan) for direct ticket links and updated show details as more openers are announced for the TBA dates.
 

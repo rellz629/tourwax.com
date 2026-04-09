@@ -59,7 +59,7 @@ export default async function BusiestTouringMonthsPage() {
           </h1>
           <p className="text-xl text-gray-600">
             {totalEvents.toLocaleString()} upcoming shows across {monthInsights.length} months
-            {peakMonth && <> — {peakMonth.month} leads with {peakMonth.eventCount.toLocaleString()} events</>}
+            {peakMonth && <>, with {peakMonth.month} leading at {peakMonth.eventCount.toLocaleString()} events</>}
           </p>
         </div>
 

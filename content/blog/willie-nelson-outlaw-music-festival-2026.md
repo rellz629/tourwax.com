@@ -34,22 +34,22 @@ The rotating lineup means no two dates are exactly the same, giving fans a reaso
 The festival hits three regions across the summer:
 
 ### Texas Kickoff (July)
-- **July 3** — Pavilion at Toyota Music Factory, Irving, TX
-- **July 4** — Fourth of July Picnic with special guest Billy Strings, Austin, TX
-- **July 5** — The Woodlands, TX
+- **July 3:** Pavilion at Toyota Music Factory, Irving, TX
+- **July 4:** Fourth of July Picnic with special guest Billy Strings, Austin, TX
+- **July 5:** The Woodlands, TX
 
 ### Midwest & Great Lakes (August)
-- **August 18** — Maryland Heights, MO
-- **August 19** — Mystic Lake Amphitheater, Shakopee, MN
-- **August 21** — Alpine Valley, East Troy, WI
-- **August 22** — Pine Knob, Clarkston, MI
-- **August 23** — Ruoff Music Center, Noblesville, IN
-- **August 25** — Credit Union 1 Amphitheatre, Tinley Park, IL
+- **August 18:** Maryland Heights, MO
+- **August 19:** Mystic Lake Amphitheater, Shakopee, MN
+- **August 21:** Alpine Valley, East Troy, WI
+- **August 22:** Pine Knob, Clarkston, MI
+- **August 23:** Ruoff Music Center, Noblesville, IN
+- **August 25:** Credit Union 1 Amphitheatre, Tinley Park, IL
 
 ### Northeast (Late August)
-- **August 28** — Northwell at Jones Beach Theater, Wantagh, NY
-- **August 29** — Bethel Woods Center for the Arts, Bethel, NY
-- **August 30** — Albany Med Health System at SPAC, Saratoga Springs, NY
+- **August 28:** Northwell at Jones Beach Theater, Wantagh, NY
+- **August 29:** Bethel Woods Center for the Arts, Bethel, NY
+- **August 30:** Albany Med Health System at SPAC, Saratoga Springs, NY
 
 ## What Makes This Tour Special
 

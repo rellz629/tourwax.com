@@ -9,16 +9,16 @@ publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---
 
-Bruno Mars is taking his biggest tour yet across stadiums worldwide in 2026, and he's bringing serious talent along for the ride. The Romantic Tour features a rotating cast of openers that changes by leg — here's who you'll see at every stop.
+Bruno Mars is taking his biggest tour yet across stadiums worldwide in 2026, and he's bringing serious talent along for the ride. The Romantic Tour features a rotating cast of openers that changes by leg, and here's who you'll see at every stop.
 
 ## The Opening Acts
 
 Bruno Mars has assembled a support lineup that reads like its own festival bill:
 
-- **Anderson .Paak (as DJ Pee .Wee)** — Mars' Silk Sonic partner takes on DJ duties at select dates, keeping the energy high before the headliner hits the stage
-- **Leon Thomas** — Grammy-winning R&B singer-songwriter, opening the spring North American dates
-- **Victoria Monet** — Grammy Best New Artist winner, handling the European leg
-- **RAYE** — British singer-songwriter riding a massive wave of critical acclaim, opening fall North American dates
+- **Anderson .Paak (as DJ Pee .Wee):** Mars' Silk Sonic partner takes on DJ duties at select dates, keeping the energy high before the headliner hits the stage
+- **Leon Thomas:** Grammy-winning R&B singer-songwriter, opening the spring North American dates
+- **Victoria Monet:** Grammy Best New Artist winner, handling the European leg
+- **RAYE:** British singer-songwriter riding a massive wave of critical acclaim, opening fall North American dates
 
 The opener rotation means the experience shifts depending on when you catch the tour. Spring shows lean into Leon Thomas' smooth R&B. Fall dates get RAYE's emotionally charged pop. And Anderson .Paak ties it all together with DJ sets across multiple legs.
 
@@ -67,9 +67,9 @@ DJ Pee .Wee and RAYE are confirmed for the East Rutherford dates.
 
 ## The Scale of This Tour
 
-The Romantic Tour is one of the largest touring operations of 2026. Mars is playing multi-night stadium residencies in most markets — five nights at MetLife Stadium, five in Toronto, and multiple dates in Philadelphia, Tampa, and the Bay Area. The tour runs from April through December, wrapping with four nights in Mexico City.
+The Romantic Tour is one of the largest touring operations of 2026. Mars is playing multi-night stadium residencies in most markets, including five nights at MetLife Stadium, five in Toronto, and multiple dates in Philadelphia, Tampa, and the Bay Area. The tour runs from April through December, wrapping with four nights in Mexico City.
 
-This approach — fewer cities, more nights per city — reflects Mars' draw as one of the top-grossing live acts in the world. If you're in a city that's on the list, you likely have multiple dates to choose from.
+This approach, fewer cities but more nights per city, reflects Mars' draw as one of the top-grossing live acts in the world. If you're in a city that's on the list, you likely have multiple dates to choose from.
 
 ## What to Expect
 

@@ -22,9 +22,9 @@ Adding Bone Thugs-N-Harmony as support makes this one of the most stacked [Hip-H
 The 26-city run covers the eastern U.S. and Canada before heading south and finishing out west:
 
 ### Late August
-- **August 27** — Darien Lake Amphitheater, Darien Center, NY
-- **August 29** — Hard Rock Live at Etess Arena, Atlantic City, NJ
-- **August 30** — The XFINITY Theatre, Hartford, CT
+- **August 27** - Darien Lake Amphitheater, Darien Center, NY
+- **August 29** - Hard Rock Live at Etess Arena, Atlantic City, NJ
+- **August 30** - The XFINITY Theatre, Hartford, CT
 
 ### September (Midwest, Northeast & Southeast)
 - Shakopee, MN

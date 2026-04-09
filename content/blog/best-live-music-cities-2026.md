@@ -89,14 +89,14 @@ Browse [concerts in Orange Beach](/concerts/orange-beach).
 
 ## How to Track Concerts in Your City
 
-1. **Browse by city** — Visit our [concerts page](/concerts) and find your city to see every upcoming show.
-2. **Check by state** — Browse [concerts by state](/concerts) to see what's happening across your region.
-3. **Follow artists** — Visit any [artist page](/artists) to see their full tour schedule and find shows near you.
-4. **Compare ticket prices** — TourWax shows prices from both Ticketmaster and SeatGeek so you can find the best deal.
+1. **Browse by city.** Visit our [concerts page](/concerts) and find your city to see every upcoming show.
+2. **Check by state.** Browse [concerts by state](/concerts) to see what's happening across your region.
+3. **Follow artists.** Visit any [artist page](/artists) to see their full tour schedule and find shows near you.
+4. **Compare ticket prices.** TourWax shows prices from both Ticketmaster and SeatGeek so you can find the best deal.
 
 ## Browse More
 
-- [Concerts tonight](/concerts/tonight) — Last-minute shows happening today
-- [Concerts this weekend](/concerts/this-weekend) — Plan your weekend
-- [All festivals](/festivals) — Multi-artist events and state fairs
-- [Browse by genre](/tours) — Find tours in your favorite genre
+- [Concerts tonight](/concerts/tonight): Last-minute shows happening today
+- [Concerts this weekend](/concerts/this-weekend): Plan your weekend
+- [All festivals](/festivals): Multi-artist events and state fairs
+- [Browse by genre](/tours): Find tours in your favorite genre

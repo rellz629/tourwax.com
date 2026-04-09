@@ -9,21 +9,21 @@ publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---
 
-Iron Maiden's Run for Your Lives World Tour is one of the most ambitious metal tours in years — a global trek that launched in May 2025 in Budapest and won't wrap until November 2026 in Yokohama, Japan. For the 2026 North American leg running August through September, the support lineup reads like a metal fan's dream: **Megadeth** on most dates and **Anthrax** joining for select outdoor and stadium shows.
+Iron Maiden's Run for Your Lives World Tour is one of the most ambitious metal tours in years, a global trek that launched in May 2025 in Budapest and won't wrap until November 2026 in Yokohama, Japan. For the 2026 North American leg running August through September, the support lineup reads like a metal fan's dream: **Megadeth** on most dates and **Anthrax** joining for select outdoor and stadium shows.
 
 Three of the "Big Four" thrash bands sharing a bill with the biggest act to come out of the New Wave of British Heavy Metal? This is arguably the most stacked metal touring package in decades.
 
 ## The North American Lineup
 
-### Iron Maiden — Headliner
+### Iron Maiden: Headliner
 
-[Iron Maiden](/artists/iron-maiden) need no introduction. Bruce Dickinson, Steve Harris, and company have been one of metal's defining live acts for over four decades. The Run for Your Lives Tour draws from their deep catalog — expect epic performances of classics spanning *The Number of the Beast*, *Powerslave*, *Seventh Son of a Seventh Son*, and beyond.
+[Iron Maiden](/artists/iron-maiden) need no introduction. Bruce Dickinson, Steve Harris, and company have been one of metal's defining live acts for over four decades. The Run for Your Lives Tour draws from their deep catalog, so expect epic performances of classics spanning *The Number of the Beast*, *Powerslave*, *Seventh Son of a Seventh Son*, and beyond.
 
-### Megadeth — Main Support
+### Megadeth: Main Support
 
-Dave Mustaine's thrash legends are confirmed as main support on the majority of North American dates. Megadeth bring their own massive catalog to the stage, from "Peace Sells" and "Symphony of Destruction" to material from across their career. Having Mustaine's band directly supporting Iron Maiden is a pairing that would have seemed impossible at points in metal's history — and that's exactly what makes it special.
+Dave Mustaine's thrash legends are confirmed as main support on the majority of North American dates. Megadeth bring their own massive catalog to the stage, from "Peace Sells" and "Symphony of Destruction" to material from across their career. Having Mustaine's band directly supporting Iron Maiden is a pairing that would have seemed impossible at points in metal's history, and that's exactly what makes it special.
 
-### Anthrax — Select Dates
+### Anthrax: Select Dates
 
 Anthrax round out the triple-header on select outdoor and stadium shows, including the Montreal and Los Angeles dates. Scott Ian and company are no strangers to sharing stages with metal royalty, and their high-energy sets are a perfect complement to Megadeth and Iron Maiden.
 
@@ -54,13 +54,13 @@ The North American leg features a mix of arenas, amphitheaters, and stadium show
 
 ## What Makes This Lineup Historic
 
-It's worth pausing on what this bill actually represents. Iron Maiden are the standard-bearers of the New Wave of British Heavy Metal. Megadeth and Anthrax are two of thrash metal's "Big Four" (alongside Metallica and Slayer). Putting three of these acts on the same stage in 2026 is the kind of lineup that festival organizers dream about — and here it's happening on a proper tour with multiple dates.
+It's worth pausing on what this bill actually represents. Iron Maiden are the standard-bearers of the New Wave of British Heavy Metal. Megadeth and Anthrax are two of thrash metal's "Big Four" (alongside Metallica and Slayer). Putting three of these acts on the same stage in 2026 is the kind of lineup that festival organizers dream about, and here it's happening on a proper tour with multiple dates.
 
 For fans who came up on 1980s metal, this is a bucket-list concert. For younger fans discovering these bands, it's a chance to see three all-time greats on a single ticket.
 
 ## Two-Night Stands and Venue Mix
 
-Iron Maiden are playing two nights in four markets — Toronto, Montreal, Harrison (New Jersey), and Los Angeles — a sign of just how strong demand is. The venue mix is notable too:
+Iron Maiden are playing two nights in four markets (Toronto, Montreal, Harrison, and Los Angeles), a sign of just how strong demand is. The venue mix is notable too:
 
 - **Arenas**: Scotiabank Arena (Toronto), TD Garden (Boston)
 - **Outdoor amphitheaters**: Parc Jean-Drapeau (Montreal), Jiffy Lube Live (Bristow), Mystic Lake Amphitheater (Prior Lake), Credit Union 1 Amphitheatre (Tinley Park), Truliant Amphitheater (Charlotte)
@@ -78,7 +78,7 @@ The North American dates are just one chapter of a massive global campaign. The 
 
 ## How to Get Tickets
 
-Tickets for most dates are available through Ticketmaster and venue box offices. Given the caliber of this lineup, several dates are expected to sell out — the two-night stands suggest that first shows in those markets moved quickly enough to justify adding a second.
+Tickets for most dates are available through Ticketmaster and venue box offices. Given the caliber of this lineup, several dates are expected to sell out. The two-night stands suggest that first shows in those markets moved quickly enough to justify adding a second.
 
 Visit the [Iron Maiden page on TourWax](/artists/iron-maiden) for direct ticket links and the latest tour updates.
 

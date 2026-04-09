@@ -15,15 +15,15 @@ The [Foo Fighters](/artists/foo-fighters) are heading out on a 12-date North Ame
 
 Three bands are splitting support duties across the tour, but Queens of the Stone Age are the clear co-headlining force on this run.
 
-### Queens of the Stone Age — Direct Support (11 of 12 dates)
+### Queens of the Stone Age: Direct Support (11 of 12 dates)
 
-Josh Homme and company are on every date except the September 12 stop in Fargo. That makes this essentially a Foo Fighters / QOTSA co-bill for the bulk of the tour — a pairing that goes back decades to Dave Grohl's drumming stint on *Songs for the Deaf*. If you're buying a ticket to any of these stadium shows, odds are strong you're getting both bands.
+Josh Homme and company are on every date except the September 12 stop in Fargo. That makes this essentially a Foo Fighters / QOTSA co-bill for the bulk of the tour, a pairing that goes back decades to Dave Grohl's drumming stint on *Songs for the Deaf*. If you're buying a ticket to any of these stadium shows, odds are strong you're getting both bands.
 
-### Mannequin Pussy — Select Dates
+### Mannequin Pussy: Select Dates
 
-The Philadelphia hardcore punk band joins the bill for at least three dates: [Toronto](/concerts/toronto) (August 4), Fargo (September 12), and Regina (September 15). In Fargo, they're the sole support act and the only opener on the bill — making that show the most unique date on the tour.
+The Philadelphia hardcore punk band joins the bill for at least three dates: [Toronto](/concerts/toronto) (August 4), Fargo (September 12), and Regina (September 15). In Fargo, they're the sole support act and the only opener on the bill, making that show the most unique date on the tour.
 
-### Gouge Away — Select Dates
+### Gouge Away: Select Dates
 
 The Fort Lauderdale post-hardcore group rounds out the lineup on at least two dates: [Vancouver](/concerts/vancouver) (September 20) and [Las Vegas](/concerts/las-vegas) (September 26). Both are late-tour shows on the Western Canada/Nevada swing.
 
@@ -46,13 +46,13 @@ The Fort Lauderdale post-hardcore group rounds out the lineup on at least two da
 
 ## A New Era: Ilan Rubin on Drums
 
-The Take Cover Tour marks the first Foo Fighters tour with drummer Ilan Rubin behind the kit. Rubin, best known for his decade-plus run with Nine Inch Nails, steps into one of the most watched drum seats in rock. The band's drumming history has always been central to their identity — Dave Grohl himself is one of rock's most celebrated drummers — so this is a transition fans will be paying close attention to.
+The Take Cover Tour marks the first Foo Fighters tour with drummer Ilan Rubin behind the kit. Rubin, best known for his decade-plus run with Nine Inch Nails, steps into one of the most watched drum seats in rock. The band's drumming history has always been central to their identity, and with Dave Grohl himself being one of rock's most celebrated drummers, this is a transition fans will be paying close attention to.
 
 ## What Makes This Tour Stand Out
 
 **The QOTSA pairing is a big deal.** Foo Fighters and Queens of the Stone Age share deep history. Dave Grohl played drums on QOTSA's landmark 2002 album *Songs for the Deaf*, and the bands have traded members and stages for over two decades. Seeing them together on a stadium bill is the kind of rock double-header that doesn't come around often.
 
-**The support acts are pulling from punk and hardcore.** Mannequin Pussy and Gouge Away aren't safe, radio-friendly openers — they're loud, physical bands that make sense for a Foo Fighters crowd that still values raw energy. Both acts are getting a massive platform on these stadium dates.
+**The support acts are pulling from punk and hardcore.** Mannequin Pussy and Gouge Away aren't safe, radio-friendly openers. They're loud, physical bands that make sense for a Foo Fighters crowd that still values raw energy. Both acts are getting a massive platform on these stadium dates.
 
 **Fargo is the outlier.** Every other date features Queens of the Stone Age. Fargo on September 12 is the only show where Mannequin Pussy is the sole support. If you're specifically going for QOTSA, double-check your date.
 

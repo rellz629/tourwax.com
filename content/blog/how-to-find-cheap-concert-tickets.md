@@ -33,7 +33,7 @@ Many artists play multiple nights in the same city. The first and last nights of
 
 ## Look Beyond the Big Venues
 
-Smaller venues almost always mean cheaper tickets. An artist playing a 2,000-capacity theater will charge less than the same artist at a 20,000-seat arena. Plus, the experience is often better — you're closer to the stage and the sound is more intimate.
+Smaller venues almost always mean cheaper tickets. An artist playing a 2,000-capacity theater will charge less than the same artist at a 20,000-seat arena. Plus, the experience is often better since you're closer to the stage and the sound is more intimate.
 
 Browse [concert venues](/venues) to find smaller rooms in your area. Many mid-size venues host touring acts at a fraction of arena prices.
 
@@ -43,7 +43,7 @@ Most major tours offer presale windows before general on-sale. Here's where to f
 
 - **Artist fan clubs and newsletters**: Sign up for mailing lists of artists you want to see
 - **Credit card presales**: American Express, Chase, and Citi all offer early access to select shows
-- **Venue presales**: Follow your local venues on social media — they often share codes for their presales
+- **Venue presales**: Follow your local venues on social media, as they often share codes for their presales
 - **Spotify and Live Nation**: Spotify sends presale codes to top listeners, and Live Nation has its own presale tier
 
 ## Consider Festival Passes
@@ -72,4 +72,4 @@ Browse [concerts by state](/concerts) to find nearby shows in less expensive mar
 
 ## The Bottom Line
 
-The best strategy is to plan ahead, compare prices, and stay flexible. Use tools like [TourWax](/) to track tour announcements early, compare ticket prices across platforms, and find shows at venues and dates that fit your budget. Live music is worth every penny — but there's no reason to overpay.
+The best strategy is to plan ahead, compare prices, and stay flexible. Use tools like [TourWax](/) to track tour announcements early, compare ticket prices across platforms, and find shows at venues and dates that fit your budget. Live music is worth every penny, but there's no reason to overpay.

@@ -9,11 +9,11 @@ publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---
 
-Morgan Wallen's Still the Problem Tour is the biggest country tour of 2026 — an 11-city, 22-date stadium run with a stacked rotating lineup that changes every night. If you're trying to figure out who's opening, the answer depends on which date you pick. Here's the full breakdown.
+Morgan Wallen's Still the Problem Tour is the biggest country tour of 2026: an 11-city, 22-date stadium run with a stacked rotating lineup that changes every night. If you're trying to figure out who's opening, the answer depends on which date you pick. Here's the full breakdown.
 
 ## How the Lineup Works
 
-Unlike most tours where the same openers play every show, [Morgan Wallen](/artists/morgan-wallen) has built a rotating support card. Most cities get two nights, and each night features a different headlining support act backed by two or three additional openers. That means fans in the same city can see completely different lineups depending on which night they attend — or catch both.
+Unlike most tours where the same openers play every show, [Morgan Wallen](/artists/morgan-wallen) has built a rotating support card. Most cities get two nights, and each night features a different headlining support act backed by two or three additional openers. That means fans in the same city can see completely different lineups depending on which night they attend, or catch both.
 
 The general pattern:
 
@@ -26,7 +26,7 @@ The general pattern:
 
 ### Brooks & Dunn
 
-The legendary duo of Kix Brooks and Ronnie Dunn — the best-selling country duo of all time — anchor the majority of Night 1 dates. They appear on eight of the 22 shows, making them the most frequent headlining support on the tour. Having Brooks & Dunn on a stadium bill is headline-level booking in its own right.
+The legendary duo of Kix Brooks and Ronnie Dunn, the best-selling country duo of all time, anchor the majority of Night 1 dates. They appear on eight of the 22 shows, making them the most frequent headlining support on the tour. Having Brooks & Dunn on a stadium bill is headline-level booking in its own right.
 
 ### Thomas Rhett
 
@@ -34,7 +34,7 @@ Thomas Rhett takes the main support slot on four dates, including the tour opene
 
 ### HARDY
 
-HARDY — the songwriter-turned-performer behind "Wait in the Truck" and "Beers On Me" — appears on the Minneapolis Night 2 date and the Ann Arbor closer. His country-rock energy makes him a natural fit for stadium crowds.
+HARDY, the songwriter-turned-performer behind "Wait in the Truck" and "Beers On Me," appears on the Minneapolis Night 2 date and the Ann Arbor closer. His country-rock energy makes him a natural fit for stadium crowds.
 
 ### Ella Langley
 
@@ -42,7 +42,7 @@ Ella Langley steps into the main support role on eight Night 2 dates across the 
 
 ### Gavin Adcock
 
-Gavin Adcock appears on the most dates of any opener — 16 of 22 shows — typically in the second-of-four slot. He's on nearly every bill through late June before Hudson Westbrook takes over for the July and August dates.
+Gavin Adcock appears on the most dates of any opener, 16 of 22 shows, typically in the second-of-four slot. He's on nearly every bill through late June before Hudson Westbrook takes over for the July and August dates.
 
 ### Flatland Cavalry
 
@@ -56,10 +56,10 @@ Hudson Westbrook picks up the mid-card slot starting with the Indianapolis Night
 
 The opening slot rotates between several up-and-comers:
 
-- **Vincent Mason** — early-tour dates (Minneapolis through [Denver](/concerts/denver))
-- **Zach John King** — mid-tour dates (Tuscaloosa through [Chicago](/concerts/chicago))
-- **Jason Scott & The High Heat** — Clemson and Baltimore dates
-- **Blake Whiten** — late-tour dates (Ann Arbor and Philadelphia)
+- **Vincent Mason**: early-tour dates (Minneapolis through [Denver](/concerts/denver))
+- **Zach John King**: mid-tour dates (Tuscaloosa through [Chicago](/concerts/chicago))
+- **Jason Scott & The High Heat**: Clemson and Baltimore dates
+- **Blake Whiten**: late-tour dates (Ann Arbor and Philadelphia)
 
 ## Full Tour Schedule with Openers
 
@@ -90,11 +90,11 @@ The opening slot rotates between several up-and-comers:
 
 ## College Football Stadiums on the Route
 
-Three stops on the Still the Problem Tour take Wallen into college football stadiums — a move that underlines just how big this tour is:
+Three stops on the Still the Problem Tour take Wallen into college football stadiums, a move that underlines just how big this tour is:
 
-- **Saban Field at Bryant-Denny Stadium** (Tuscaloosa, AL) — home of Alabama football, capacity 100,000+
-- **Ben Hill Griffin Stadium** (Gainesville, FL) — "The Swamp," home of the Florida Gators
-- **Michigan Stadium** (Ann Arbor, MI) — "The Big House," the largest stadium in the United States at 107,601 capacity
+- **Saban Field at Bryant-Denny Stadium** (Tuscaloosa, AL): home of Alabama football, capacity 100,000+
+- **Ben Hill Griffin Stadium** (Gainesville, FL): "The Swamp," home of the Florida Gators
+- **Michigan Stadium** (Ann Arbor, MI): "The Big House," the largest stadium in the United States at 107,601 capacity
 
 The Tuscaloosa date is the only single-night stop on the tour, and it features a hometown-friendly bill with Ella Langley (who is from Alabama) in the main support slot.
 
@@ -104,7 +104,7 @@ If your city has two dates, here's a rough guide:
 
 - **Want the legacy act?** Go Night 1 for Brooks & Dunn or Thomas Rhett.
 - **Want the newer sound?** Go Night 2 for Ella Langley or HARDY.
-- **Can't decide?** Both nights feature Wallen headlining a full stadium set, so you're not losing anything on the main event — just the undercard changes.
+- **Can't decide?** Both nights feature Wallen headlining a full stadium set, so you're not losing anything on the main event. Just the undercard changes.
 
 ## How to Get Tickets
 
