@@ -243,7 +243,11 @@ export function generateConcertsIndexMetadata() {
   };
 }
 
-export function generateGenreTitle(genreName: string, artistCount: number, year: number = new Date().getFullYear()): string {
+export function generateGenreTitle(genreName: string, artistCount: number, year: number = new Date().getFullYear(), topArtistNames?: string[]): string {
+  if (topArtistNames && topArtistNames.length >= 2) {
+    const featured = topArtistNames.slice(0, 2).join(', ');
+    return `${genreName} Tours ${year}: ${featured} & More`;
+  }
   return `${genreName} Tours ${year} - ${artistCount} Artists on Tour Now`;
 }
 
@@ -270,7 +274,7 @@ export function generateGenreMetadata(data: {
   const { genreName, genreSlug, artistCount, eventCount, artistNames } = data;
   const year = new Date().getFullYear();
 
-  const title = generateGenreTitle(genreName, artistCount, year);
+  const title = generateGenreTitle(genreName, artistCount, year, artistNames);
   const description = generateGenreDescription(genreName, artistCount, eventCount, artistNames);
   const url = generateCanonicalUrl(`/tours/${genreSlug}`);
 
@@ -316,11 +320,11 @@ export function generateToursIndexMetadata() {
 }
 
 export function generateVenueTitle(venueName: string, city: string | null, eventCount: number, year: number = new Date().getFullYear()): string {
-  const location = city ? ` in ${city}` : '';
+  const location = city ? `, ${city}` : '';
   if (eventCount > 0) {
-    return `${venueName} Shows & Upcoming Events ${year}${location} - Concert Schedule`;
+    return `${venueName}${location} ${year} Schedule: ${eventCount} Upcoming Shows & Tickets`;
   }
-  return `${venueName} Shows & Concert Schedule ${year}${location}`;
+  return `${venueName}${location}: ${year} Concert Schedule & Upcoming Events`;
 }
 
 export function generateVenueDescription(

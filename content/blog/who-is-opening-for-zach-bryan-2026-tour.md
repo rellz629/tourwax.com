@@ -1,12 +1,12 @@
 ---
-title: "Who Is Opening for Zach Bryan on the With Heaven Tour 2026?"
+title: "Who Is Opening for Zach Bryan 2026? Kings of Leon, Alabama Shakes & More"
 slug: "who-is-opening-for-zach-bryan-2026-tour"
-excerpt: "Kings of Leon, Alabama Shakes, Caamp, MJ Lenderman, Dijon, and more join Zach Bryan's massive 2026 With Heaven stadium tour. Here's who's opening at every date."
+excerpt: "Kings of Leon, Alabama Shakes, Caamp, MJ Lenderman, and Dijon rotate as openers on Zach Bryan's With Heaven stadium tour 2026. Full date-by-date opener lineup."
 author: "TourWax Team"
 category: "Guide"
 featuredImage: null
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-08"
+updatedAt: "2026-04-17"
 ---
 
 [Zach Bryan](/artists/zach-bryan) is taking the With Heaven on Tour across North America in 2026, and the support lineup is one of the most impressive bills any artist has assembled this year. Kings of Leon, Alabama Shakes, Caamp, MJ Lenderman, Trampled by Turtles, Gregory Alan Isakov, and Dijon are all rotating through stadium dates in support of Bryan's sixth album *With Heaven on Top*. Here's who's playing at every show.

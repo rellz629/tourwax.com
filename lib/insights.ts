@@ -387,6 +387,92 @@ export async function getRisingArtists(): Promise<RisingArtistInsight[]> {
   return results;
 }
 
+export interface AffordableCityInsight {
+  city: string;
+  state: string | null;
+  citySlug: string;
+  avgMinPrice: number;
+  eventCount: number;
+  topArtists: string[];
+  rank: number;
+}
+
+export async function getMostAffordableConcertCities(): Promise<AffordableCityInsight[]> {
+  const now = new Date();
+
+  const rows = await db
+    .select({
+      city: venues.city,
+      state: venues.state,
+      eventName: events.name,
+      artistName: artists.name,
+      minPrice: events.minPrice,
+    })
+    .from(events)
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .innerJoin(artists, eq(events.artistId, artists.id))
+    .where(and(gte(events.eventDate, now), sql`${events.minPrice} IS NOT NULL AND ${events.minPrice} > 0`));
+
+  const cityMap = new Map<string, {
+    city: string;
+    state: string | null;
+    prices: number[];
+    eventKeys: Set<string>;
+    artistNames: Map<string, number>;
+  }>();
+
+  for (const row of rows) {
+    if (!row.city || !row.minPrice) continue;
+    if (isPackage(row.eventName)) continue;
+
+    const key = row.city.toLowerCase();
+    let entry = cityMap.get(key);
+    if (!entry) {
+      entry = {
+        city: row.city,
+        state: row.state,
+        prices: [],
+        eventKeys: new Set(),
+        artistNames: new Map(),
+      };
+      cityMap.set(key, entry);
+    }
+
+    const eventKey = `${row.artistName}_${row.eventName}`;
+    if (!entry.eventKeys.has(eventKey)) {
+      entry.prices.push(row.minPrice);
+      entry.eventKeys.add(eventKey);
+    }
+    const count = entry.artistNames.get(row.artistName) || 0;
+    entry.artistNames.set(row.artistName, count + 1);
+  }
+
+  const results: AffordableCityInsight[] = Array.from(cityMap.values())
+    .filter((entry) => entry.eventKeys.size >= 3)
+    .map((entry) => {
+      const avgMinPrice = Math.round(entry.prices.reduce((a, b) => a + b, 0) / entry.prices.length);
+      const topArtists = Array.from(entry.artistNames.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([name]) => name);
+
+      return {
+        city: entry.city,
+        state: entry.state,
+        citySlug: slugify(entry.city),
+        avgMinPrice,
+        eventCount: entry.eventKeys.size,
+        topArtists,
+        rank: 0,
+      };
+    })
+    .sort((a, b) => a.avgMinPrice - b.avgMinPrice)
+    .slice(0, 50);
+
+  results.forEach((r, i) => { r.rank = i + 1; });
+  return results;
+}
+
 export async function getBusiestTouringArtists(): Promise<ArtistInsight[]> {
   const now = new Date();
 
