@@ -53,9 +53,11 @@ export function getAllPosts(): BlogPostMeta[] {
     };
   });
 
-  return posts.sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
+  const now = new Date();
+
+  return posts
+    .filter((p) => new Date(p.publishedAt) <= now)
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 }
 
 export function getPostBySlug(slug: string): BlogPost | null {
@@ -85,11 +87,18 @@ export function getPostBySlug(slug: string): BlogPost | null {
 }
 
 export function getAllSlugs(): string[] {
+  const now = new Date();
   const files = getMarkdownFiles();
 
-  return files.map((filename) => {
-    const raw = fs.readFileSync(path.join(BLOG_DIR, filename), 'utf-8');
-    const { data } = matter(raw);
-    return data.slug as string;
-  });
+  return files
+    .filter((filename) => {
+      const raw = fs.readFileSync(path.join(BLOG_DIR, filename), 'utf-8');
+      const { data } = matter(raw);
+      return new Date(data.publishedAt as string) <= now;
+    })
+    .map((filename) => {
+      const raw = fs.readFileSync(path.join(BLOG_DIR, filename), 'utf-8');
+      const { data } = matter(raw);
+      return data.slug as string;
+    });
 }
