@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, venues, eventArtists } from '@/db/schema';
 import { and, eq, gte, sql } from 'drizzle-orm';
 import { slugify } from './slugify';
 import { isPackage } from './event-utils';
@@ -32,12 +32,13 @@ export async function getMostTouredCities(): Promise<CityInsight[]> {
       city: venues.city,
       state: venues.state,
       eventName: events.name,
-      artistId: events.artistId,
+      artistId: eventArtists.artistId,
       artistName: artists.name,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .innerJoin(venues, eq(events.venueId, venues.id))
-    .innerJoin(artists, eq(events.artistId, artists.id))
     .where(gte(events.eventDate, now));
 
   // Group by city, dedup packages per artist+city
@@ -117,12 +118,13 @@ export async function getTopConcertVenues(): Promise<VenueInsight[]> {
       city: venues.city,
       state: venues.state,
       eventName: events.name,
-      artistId: events.artistId,
+      artistId: eventArtists.artistId,
       artistName: artists.name,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .innerJoin(venues, eq(events.venueId, venues.id))
-    .innerJoin(artists, eq(events.artistId, artists.id))
     .where(gte(events.eventDate, now));
 
   const venueMap = new Map<string, {
@@ -200,12 +202,13 @@ export async function getBusiestTouringMonths(): Promise<MonthInsight[]> {
     .select({
       eventDate: events.eventDate,
       eventName: events.name,
-      artistId: events.artistId,
+      artistId: eventArtists.artistId,
       artistName: artists.name,
       city: venues.city,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now));
 
@@ -305,18 +308,19 @@ export async function getRisingArtists(): Promise<RisingArtistInsight[]> {
       city: venues.city,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(and(gte(events.eventDate, now), gte(events.createdAt, thirtyDaysAgo)));
 
   // Also get total future event counts per artist for context
   const allFutureRows = await db
     .select({
-      artistId: artists.id,
+      artistId: eventArtists.artistId,
       eventName: events.name,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .where(gte(events.eventDate, now));
 
   const totalCountMap = new Map<string, Set<string>>();
@@ -409,8 +413,9 @@ export async function getMostAffordableConcertCities(): Promise<AffordableCityIn
       minPrice: events.minPrice,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .innerJoin(venues, eq(events.venueId, venues.id))
-    .innerJoin(artists, eq(events.artistId, artists.id))
     .where(and(gte(events.eventDate, now), sql`${events.minPrice} IS NOT NULL AND ${events.minPrice} > 0`));
 
   const cityMap = new Map<string, {
@@ -487,7 +492,8 @@ export async function getBusiestTouringArtists(): Promise<ArtistInsight[]> {
       city: venues.city,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now));
 

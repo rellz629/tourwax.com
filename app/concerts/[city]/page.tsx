@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, gte, sql } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -72,18 +72,18 @@ const getCityEvents = cache(async function getCityEvents(cityName: string) {
       artistGenre: artists.genre,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .innerJoin(venues, eq(events.venueId, venues.id))
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .where(
       sql`${venues.city} = ${cityName} AND ${events.eventDate} >= ${now.toISOString()}`
     )
     .orderBy(events.eventDate);
 
-  // Deduplicate: keep one event per artist+date, preferring non-package events
+  // Deduplicate: keep one row per event (joint-headliner shows have multiple artist rows)
   const groups = new Map<string, typeof cityEvents[0]>();
   for (const row of cityEvents) {
-    const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
-    const key = `${row.event.artistId}_${dateKey}`;
+    const key = row.event.id;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);

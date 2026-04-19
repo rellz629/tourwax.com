@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 config({ path: '.env.local' });
 
 import { db } from '@/db';
-import { artists, events } from '@/db/schema';
+import { artists, events, eventArtists } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 
 async function main() {
@@ -13,7 +13,8 @@ async function main() {
       eventCount: sql<number>`count(${events.id})`,
     })
     .from(artists)
-    .leftJoin(events, eq(artists.id, events.artistId))
+    .leftJoin(eventArtists, eq(eventArtists.artistId, artists.id))
+    .leftJoin(events, eq(events.id, eventArtists.eventId))
     .groupBy(artists.id, artists.name, artists.genre)
     .orderBy(sql`count(${events.id}) desc`);
 

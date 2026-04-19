@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
-import { eq, gte, sql } from 'drizzle-orm';
+import { artists, events, venues, eventArtists } from '@/db/schema';
+import { eq, gte, sql, inArray, and } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -55,23 +55,25 @@ async function getGenreEvents(artistIds: string[]) {
     .select({
       event: events,
       venue: venues,
+      artistId: eventArtists.artistId,
       artistName: artists.name,
       artistSlug: artists.slug,
       artistImageUrl: artists.imageUrl,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .leftJoin(venues, eq(events.venueId, venues.id))
-    .where(
-      sql`${events.artistId} IN ${artistIds} AND ${events.eventDate} >= ${now.toISOString()}`
-    )
+    .where(and(
+      inArray(eventArtists.artistId, artistIds),
+      gte(events.eventDate, now)
+    ))
     .orderBy(events.eventDate);
 
-  // Deduplicate: keep one event per artist+date, preferring non-package events
+  // Deduplicate: keep one event per event id, preferring non-package events
   const groups = new Map<string, typeof genreEvents[0]>();
   for (const row of genreEvents) {
-    const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
-    const key = `${row.event.artistId}_${dateKey}`;
+    const key = row.event.id;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);
@@ -157,8 +159,8 @@ export default async function GenrePage({ params, searchParams }: Props) {
   // Count events per artist for display (use full list)
   const eventCountByArtist = new Map<string, number>();
   for (const row of allGenreEvents) {
-    const current = eventCountByArtist.get(row.event.artistId) || 0;
-    eventCountByArtist.set(row.event.artistId, current + 1);
+    const current = eventCountByArtist.get(row.artistId) || 0;
+    eventCountByArtist.set(row.artistId, current + 1);
   }
 
   // Show events only on page 1, limited to EVENTS_PER_PAGE

@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, gte, and, sql } from 'drizzle-orm';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -32,7 +32,8 @@ async function getOnSaleTodayEvents() {
       artistImageUrl: artists.imageUrl,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(
       gte(events.eventDate, now),
@@ -45,7 +46,7 @@ async function getOnSaleTodayEvents() {
   // Deduplicate
   const groups = new Map<string, typeof results[0]>();
   for (const row of results) {
-    const key = `${row.event.artistId}_${row.venue?.city || 'none'}`;
+    const key = row.event.id;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);
@@ -75,7 +76,8 @@ async function getOnSaleThisWeekEvents() {
       artistImageUrl: artists.imageUrl,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(
       gte(events.eventDate, now),
@@ -88,7 +90,7 @@ async function getOnSaleThisWeekEvents() {
   // Deduplicate
   const groups = new Map<string, typeof results[0]>();
   for (const row of results) {
-    const key = `${row.event.artistId}_${row.venue?.city || 'none'}`;
+    const key = row.event.id;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);

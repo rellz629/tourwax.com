@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { artists, events, venues, newsArticles } from '@/db/schema';
+import { artists, events, eventArtists, venues, newsArticles } from '@/db/schema';
 import { eq, gte, and, desc } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -34,9 +34,10 @@ async function getArtistEvents(artistId: string) {
       venue: venues,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(
-      eq(events.artistId, artistId),
+      eq(eventArtists.artistId, artistId),
       gte(events.eventDate, now)
     ))
     .orderBy(events.eventDate);

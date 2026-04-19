@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 config({ path: '.env.local' });
 
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
@@ -106,7 +106,7 @@ async function main() {
     const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo, festivalLineups: lineups } = tmData.value;
     festivalLineups = lineups;
     const tmEventsWithAffiliate = tmEvents.map(e => ({
-      ...e, artistId: artist.id,
+      ...e,
       ticketUrl: e.ticketUrl ? getTicketmasterAffiliateUrl(e.ticketUrl) : e.ticketUrl,
     }));
     allEvents.push(...tmEventsWithAffiliate);
@@ -119,7 +119,7 @@ async function main() {
 
   if (sgData.status === 'fulfilled') {
     const { events: sgEvents, venues: sgVenues, seatgeekId, artistInfo } = sgData.value;
-    allEvents.push(...sgEvents.map(e => ({ ...e, artistId: artist.id })));
+    allEvents.push(...sgEvents.map(e => ({ ...e })));
     allVenues.push(...sgVenues);
     if (seatgeekId) updates.seatgeekId = seatgeekId.toString();
     if (artistInfo?.imageUrl && !updates.imageUrl) updates.imageUrl = artistInfo.imageUrl;
@@ -150,6 +150,11 @@ async function main() {
         minPrice: events.minPrice, maxPrice: events.maxPrice, currency: events.currency, metadata: events.metadata, updatedAt: new Date() },
     });
     console.log(`  Stored ${dedupedEvents.length} events`);
+
+    // Upsert event_artists junction rows for this artist
+    await db.insert(eventArtists)
+      .values(dedupedEvents.map(e => ({ eventId: e.id, artistId: artist.id })))
+      .onConflictDoNothing();
   }
 
   // Process festival lineups
@@ -195,7 +200,7 @@ async function main() {
         const eventId = `tm-${lineup.eventId}-${attraction.id}`;
         try {
           await db.insert(events).values({
-            id: eventId, artistId: attrArtistId, venueId: sourceEvent.venueId,
+            id: eventId, venueId: sourceEvent.venueId,
             name: sourceEvent.name, eventDate: sourceEvent.eventDate,
             status: sourceEvent.status || 'scheduled', ticketUrl: sourceEvent.ticketUrl,
             minPrice: sourceEvent.minPrice, maxPrice: sourceEvent.maxPrice,
@@ -205,6 +210,9 @@ async function main() {
             target: events.id,
             set: { name: sourceEvent.name, eventDate: sourceEvent.eventDate, ticketUrl: sourceEvent.ticketUrl, updatedAt: new Date() },
           });
+          await db.insert(eventArtists)
+            .values({ eventId, artistId: attrArtistId })
+            .onConflictDoNothing();
           importedEvents++;
         } catch { /* skip */ }
       }

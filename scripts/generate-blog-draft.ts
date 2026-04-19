@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 config({ path: '.env.local' });
 
 import { db } from '@/db';
-import { artists, events, venues, newsArticles } from '@/db/schema';
+import { artists, events, venues, newsArticles, eventArtists } from '@/db/schema';
 import { eq, gte, asc, desc, and } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';
@@ -93,8 +93,9 @@ async function generateDraft() {
       state: venues.state,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .leftJoin(venues, eq(events.venueId, venues.id))
-    .where(and(eq(events.artistId, artist.id), gte(events.eventDate, now)))
+    .where(and(eq(eventArtists.artistId, artist.id), gte(events.eventDate, now)))
     .orderBy(asc(events.eventDate));
 
   // Get recent news

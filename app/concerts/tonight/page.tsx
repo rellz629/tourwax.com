@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, gte, lte, and, isNotNull } from 'drizzle-orm';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -29,7 +29,8 @@ async function getTonightEvents() {
       artistImageUrl: artists.imageUrl,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(gte(events.eventDate, now), lte(events.eventDate, endOfDay)))
     .orderBy(events.eventDate);
@@ -37,7 +38,7 @@ async function getTonightEvents() {
   // Deduplicate
   const groups = new Map<string, typeof results[0]>();
   for (const row of results) {
-    const key = `${row.event.artistId}_${row.venue?.city || 'none'}`;
+    const key = row.event.id;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);

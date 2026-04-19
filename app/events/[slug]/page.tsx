@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, venues, eventArtists } from '@/db/schema';
 import { eq, and, sql, gte, lt } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -36,7 +36,8 @@ export async function generateStaticParams() {
       eventDate: events.eventDate,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(lt(events.eventDate, now));
 
@@ -86,7 +87,8 @@ const getEventBySlug = cache(async function getEventBySlug(slug: string): Promis
       venue: venues,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(
       gte(events.eventDate, date),
@@ -141,10 +143,11 @@ const getNearbyEvents = cache(async function getNearbyEvents(
       artistSlug: artists.slug,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(
-      eq(events.artistId, artistId),
+      eq(eventArtists.artistId, artistId),
       gte(events.eventDate, start),
       lt(events.eventDate, end),
       sql`${events.id} != ${eventId}`,

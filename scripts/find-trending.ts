@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 config({ path: '.env.local' });
 
 import { db } from '@/db';
-import { artists, events, newsArticles } from '@/db/schema';
+import { artists, events, newsArticles, eventArtists } from '@/db/schema';
 import { eq, gte, and, desc, count } from 'drizzle-orm';
 import Parser from 'rss-parser';
 
@@ -103,7 +103,8 @@ async function findTrending() {
     const [eventResult] = await db
       .select({ count: count() })
       .from(events)
-      .where(and(eq(events.artistId, artistId), gte(events.eventDate, now)));
+      .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+      .where(and(eq(eventArtists.artistId, artistId), gte(events.eventDate, now)));
 
     const eventCount = eventResult?.count || 0;
     const newsCount = recentNews.find(r => r.artistId === artistId)?.articleCount || 0;

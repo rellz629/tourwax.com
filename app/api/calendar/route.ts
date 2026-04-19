@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { events, venues, artists } from '@/db/schema';
+import { events, venues, artists, eventArtists } from '@/db/schema';
 import { eq, gte, and } from 'drizzle-orm';
 import { generateICalEvent, generateICalFile } from '@/lib/ical';
 import { getAffiliateUrl } from '@/lib/affiliate';
@@ -32,7 +32,8 @@ async function handleSingleEvent(eventId: string) {
     })
     .from(events)
     .leftJoin(venues, eq(events.venueId, venues.id))
-    .leftJoin(artists, eq(events.artistId, artists.id))
+    .leftJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .leftJoin(artists, eq(artists.id, eventArtists.artistId))
     .where(eq(events.id, eventId))
     .limit(1);
 
@@ -84,9 +85,10 @@ async function handleArtistEvents(artistSlug: string) {
       venue: venues,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(
-      eq(events.artistId, artist.id),
+      eq(eventArtists.artistId, artist.id),
       gte(events.eventDate, now)
     ))
     .orderBy(events.eventDate);

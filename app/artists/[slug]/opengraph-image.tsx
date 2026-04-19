@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { db } from '@/db';
-import { artists, events } from '@/db/schema';
+import { artists, events, eventArtists } from '@/db/schema';
 import { eq, gte, and } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
@@ -30,7 +30,8 @@ export default async function OGImage({ params }: { params: Promise<{ slug: stri
   const eventCount = await db
     .select()
     .from(events)
-    .where(and(eq(events.artistId, artist.id), gte(events.eventDate, now)));
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .where(and(eq(eventArtists.artistId, artist.id), gte(events.eventDate, now)));
 
   return new ImageResponse(
     (

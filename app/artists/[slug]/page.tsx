@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { db } from '@/db';
-import { artists, events, venues, newsArticles } from '@/db/schema';
+import { artists, events, eventArtists, venues, newsArticles } from '@/db/schema';
 import { eq, gte, lt, and, desc, ne, sql, inArray } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -71,9 +71,10 @@ const getArtistEvents = cache(async function getArtistEvents(artistId: string): 
       venue: venues,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(
-      eq(events.artistId, artistId),
+      eq(eventArtists.artistId, artistId),
       gte(events.eventDate, now)
     ))
     .orderBy(events.eventDate);
@@ -191,9 +192,10 @@ const getArtistTourHistory = cache(async function getArtistTourHistory(artistId:
       eventDate: events.eventDate,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(and(
-      eq(events.artistId, artistId),
+      eq(eventArtists.artistId, artistId),
       lt(events.eventDate, now),
     ))
     .orderBy(desc(events.eventDate));
@@ -254,9 +256,10 @@ const getArtistFestivals = cache(async function getArtistFestivals(artistId: str
       venueState: venues.state,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(and(
-      eq(events.artistId, artistId),
+      eq(eventArtists.artistId, artistId),
       gte(events.eventDate, now),
     ));
 
@@ -271,9 +274,10 @@ const getArtistFestivals = cache(async function getArtistFestivals(artistId: str
     // Count how many distinct artists are playing at this venue on this date
     const countResult = await db
       .select({
-        count: sql<number>`count(distinct ${events.artistId})`,
+        count: sql<number>`count(distinct ${eventArtists.artistId})`,
       })
       .from(events)
+      .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
       .where(and(
         eq(events.venueId, ev.venueId),
         sql`${events.eventDate}::date = ${dateKey}`,
@@ -313,7 +317,8 @@ async function getRelatedArtists(artistId: string, genre: string | null, artistC
       eventCount: sql<number>`count(${events.id})`.as('event_count'),
     })
     .from(artists)
-    .leftJoin(events, and(eq(events.artistId, artists.id), gte(events.eventDate, now)))
+    .leftJoin(eventArtists, eq(eventArtists.artistId, artists.id))
+    .leftJoin(events, and(eq(events.id, eventArtists.eventId), gte(events.eventDate, now)))
     .where(and(eq(artists.isActive, true), ne(artists.id, artistId)))
     .groupBy(artists.id)
     .orderBy(sql`count(${events.id}) desc`);
@@ -330,13 +335,14 @@ async function getRelatedArtists(artistId: string, genre: string | null, artistC
 
   const relatedEvents = await db
     .select({
-      artistId: events.artistId,
+      artistId: eventArtists.artistId,
       city: venues.city,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(and(
-      inArray(events.artistId, relatedIds),
+      inArray(eventArtists.artistId, relatedIds),
       gte(events.eventDate, now),
     ));
 

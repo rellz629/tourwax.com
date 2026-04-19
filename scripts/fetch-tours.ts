@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 config({ path: '.env.local' });
 
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
@@ -175,7 +175,6 @@ async function processFestivalLineups(
       try {
         await db.insert(events).values({
           id: eventId,
-          artistId,
           venueId: sourceEvent.venueId,
           name: sourceEvent.name,
           eventDate: sourceEvent.eventDate,
@@ -196,6 +195,9 @@ async function processFestivalLineups(
             updatedAt: new Date(),
           },
         });
+        await db.insert(eventArtists)
+          .values({ eventId, artistId })
+          .onConflictDoNothing();
         importedEvents++;
       } catch (err: any) {
         // Skip if it already exists or other constraint error
@@ -239,7 +241,6 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
       // Apply affiliate tracking to Ticketmaster event URLs
       const tmEventsWithAffiliate = tmEvents.map(e => ({
         ...e,
-        artistId,
         ticketUrl: e.ticketUrl ? getTicketmasterAffiliateUrl(e.ticketUrl) : e.ticketUrl,
       }));
       allEvents.push(...tmEventsWithAffiliate);
@@ -258,7 +259,6 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
       // Apply affiliate tracking to SeatGeek event URLs
       const sgEventsWithAffiliate = sgEvents.map(e => ({
         ...e,
-        artistId,
         ticketUrl: e.ticketUrl ? getSeatGeekAffiliateUrl(e.ticketUrl) : e.ticketUrl,
       }));
       allEvents.push(...sgEventsWithAffiliate);
@@ -324,6 +324,11 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
           },
         });
       console.log(`  ✓ Stored ${dedupedEvents.length} events`);
+
+      // Upsert event_artists junction rows for this artist
+      await db.insert(eventArtists)
+        .values(dedupedEvents.map(e => ({ eventId: e.id, artistId })))
+        .onConflictDoNothing();
     }
 
     // Process festival lineups — import lineup artists and create their events

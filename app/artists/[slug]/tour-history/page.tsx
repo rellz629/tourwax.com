@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, lt, and, desc, sql } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -67,9 +67,10 @@ const getPastEvents = cache(async function getPastEvents(artistId: string): Prom
       venueCountry: venues.country,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(
-      eq(events.artistId, artistId),
+      eq(eventArtists.artistId, artistId),
       lt(events.eventDate, now),
     ))
     .orderBy(desc(events.eventDate));
@@ -111,8 +112,9 @@ const getAvailableYears = cache(async function getAvailableYears(artistId: strin
       year: sql<number>`EXTRACT(YEAR FROM ${events.eventDate})`.as('year'),
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .where(and(
-      eq(events.artistId, artistId),
+      eq(eventArtists.artistId, artistId),
       lt(events.eventDate, now),
     ))
     .groupBy(sql`EXTRACT(YEAR FROM ${events.eventDate})`)

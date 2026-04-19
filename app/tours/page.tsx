@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { artists, events } from '@/db/schema';
+import { artists, events, eventArtists } from '@/db/schema';
 import { eq, gte, sql } from 'drizzle-orm';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -30,12 +30,13 @@ export default async function ToursPage() {
   // Count future events per artist
   const eventCounts = await db
     .select({
-      artistId: events.artistId,
+      artistId: eventArtists.artistId,
       count: sql<number>`count(*)::int`,
     })
-    .from(events)
+    .from(eventArtists)
+    .innerJoin(events, eq(events.id, eventArtists.eventId))
     .where(gte(events.eventDate, now))
-    .groupBy(events.artistId);
+    .groupBy(eventArtists.artistId);
 
   const eventCountMap = new Map(eventCounts.map((r) => [r.artistId, r.count]));
 

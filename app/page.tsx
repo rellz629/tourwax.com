@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, venues, eventArtists } from '@/db/schema';
 import { eq, desc, gte, lte, and, sql, isNotNull } from 'drizzle-orm';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -29,7 +29,8 @@ async function getFeaturedArtistsWithUpcomingEvents() {
       eventCount: sql<number>`count(${events.id})::int`,
     })
     .from(artists)
-    .innerJoin(events, eq(artists.id, events.artistId))
+    .innerJoin(eventArtists, eq(eventArtists.artistId, artists.id))
+    .innerJoin(events, eq(events.id, eventArtists.eventId))
     .where(and(
       eq(artists.isActive, true),
       gte(events.eventDate, now)
@@ -60,7 +61,8 @@ async function getUpcomingEvents() {
       venueTimezone: venues.timezone,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(
       gte(events.eventDate, now),
@@ -68,11 +70,10 @@ async function getUpcomingEvents() {
     ))
     .orderBy(events.eventDate);
 
-  // Deduplicate: keep one event per artist+city+date, preferring non-package events
+  // Deduplicate: keep one event per event id, preferring non-package events
   const groups = new Map<string, typeof upcomingEvents[0]>();
   for (const e of upcomingEvents) {
-    const dateKey = new Date(e.eventDate).toISOString().slice(0, 10);
-    const key = `${e.artistId}_${e.venueCity || 'none'}_${dateKey}`;
+    const key = e.id;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, e);

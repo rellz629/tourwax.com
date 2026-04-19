@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
@@ -141,7 +141,6 @@ async function processFestivalLineups(
       try {
         await db.insert(events).values({
           id: eventId,
-          artistId,
           venueId: sourceEvent.venueId,
           name: sourceEvent.name,
           eventDate: sourceEvent.eventDate,
@@ -162,6 +161,7 @@ async function processFestivalLineups(
             updatedAt: new Date(),
           },
         });
+        await db.insert(eventArtists).values({ eventId, artistId }).onConflictDoNothing();
         importedEvents++;
       } catch {
         // Skip constraint errors
@@ -194,7 +194,6 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
     festivalLineups = lineups;
     const tmEventsWithAffiliate = tmEvents.map(e => ({
       ...e,
-      artistId,
       ticketUrl: e.ticketUrl ? getTicketmasterAffiliateUrl(e.ticketUrl) : e.ticketUrl,
     }));
     allEvents.push(...tmEventsWithAffiliate);
@@ -206,7 +205,7 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
 
   if (sgData.status === 'fulfilled') {
     const { events: sgEvents, venues: sgVenues, seatgeekId, artistInfo } = sgData.value;
-    allEvents.push(...sgEvents.map(e => ({ ...e, artistId })));
+    allEvents.push(...sgEvents.map(e => ({ ...e })));
     allVenues.push(...sgVenues);
     if (seatgeekId) updates.seatgeekId = seatgeekId.toString();
     if (artistInfo?.imageUrl && !updates.imageUrl) updates.imageUrl = artistInfo.imageUrl;
@@ -255,6 +254,9 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
           updatedAt: new Date(),
         },
       });
+    await db.insert(eventArtists)
+      .values(dedupedEvents.map(e => ({ eventId: e.id, artistId })))
+      .onConflictDoNothing();
   }
 
   // Process festival lineups

@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, gte, lte, and } from 'drizzle-orm';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -41,15 +41,15 @@ async function getWeekendEvents() {
       artistImageUrl: artists.imageUrl,
     })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .leftJoin(venues, eq(events.venueId, venues.id))
     .where(and(gte(events.eventDate, start), lte(events.eventDate, end)))
     .orderBy(events.eventDate);
 
   const groups = new Map<string, typeof results[0]>();
   for (const row of results) {
-    const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
-    const key = `${row.event.artistId}_${row.venue?.city || 'none'}_${dateKey}`;
+    const key = row.event.id;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);

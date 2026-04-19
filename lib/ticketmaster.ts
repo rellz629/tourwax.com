@@ -193,7 +193,6 @@ export async function searchArtistEvents(artistName: string): Promise<{
 
     events.push({
       id: `tm-${event.id}`,
-      artistId: '', // Will be set by caller
       venueId: venueId || null,
       name: event.name,
       eventDate: new Date(eventDateTime),

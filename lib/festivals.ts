@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, venues, eventArtists } from '@/db/schema';
 import { eq, gte, sql } from 'drizzle-orm';
 import { slugify } from './slugify';
 import { isPackage, isFestival } from './event-utils';
@@ -76,8 +76,9 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
       artist: artists,
     })
     .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .innerJoin(venues, eq(events.venueId, venues.id))
-    .innerJoin(artists, eq(events.artistId, artists.id))
     .where(gte(events.eventDate, now))
     .orderBy(events.eventDate);
 

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, varchar, boolean, jsonb, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer, varchar, boolean, jsonb, index, primaryKey } from 'drizzle-orm/pg-core';
 
 export const artists = pgTable('artists', {
   id: text('id').primaryKey(),
@@ -44,7 +44,6 @@ export const venues = pgTable('venues', {
 
 export const events = pgTable('events', {
   id: text('id').primaryKey(),
-  artistId: text('artist_id').notNull().references(() => artists.id, { onDelete: 'cascade' }),
   venueId: text('venue_id').references(() => venues.id, { onDelete: 'set null' }),
   name: varchar('name', { length: 255 }).notNull(),
   eventDate: timestamp('event_date').notNull(),
@@ -59,11 +58,18 @@ export const events = pgTable('events', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => ({
-  artistIdx: index('event_artist_idx').on(table.artistId),
   dateIdx: index('event_date_idx').on(table.eventDate),
   statusIdx: index('event_status_idx').on(table.status),
   sourceExternalIdx: index('event_source_external_idx').on(table.source, table.externalId),
-  artistDateIdx: index('event_artist_date_idx').on(table.artistId, table.eventDate),
+}));
+
+export const eventArtists = pgTable('event_artists', {
+  eventId: text('event_id').notNull().references(() => events.id, { onDelete: 'cascade' }),
+  artistId: text('artist_id').notNull().references(() => artists.id, { onDelete: 'cascade' }),
+}, (table) => ({
+  pk: primaryKey({ columns: [table.eventId, table.artistId] }),
+  artistIdx: index('event_artists_artist_idx').on(table.artistId),
+  eventIdx: index('event_artists_event_idx').on(table.eventId),
 }));
 
 export const newsArticles = pgTable('news_articles', {
@@ -102,6 +108,8 @@ export type Venue = typeof venues.$inferSelect;
 export type NewVenue = typeof venues.$inferInsert;
 export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;
+export type EventArtist = typeof eventArtists.$inferSelect;
+export type NewEventArtist = typeof eventArtists.$inferInsert;
 export type NewsArticle = typeof newsArticles.$inferSelect;
 export type NewNewsArticle = typeof newsArticles.$inferInsert;
 export type Tweet = typeof tweets.$inferSelect;

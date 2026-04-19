@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { db } from '@/db';
-import { artists, events, venues } from '@/db/schema';
+import { artists, events, venues, eventArtists } from '@/db/schema';
 import { eq, gte, sql, and, isNotNull } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -82,7 +82,8 @@ const getStateData = cache(async function getStateData(stateSlug: string) {
   const stateArtists = await db
     .selectDistinct({ name: artists.name })
     .from(artists)
-    .innerJoin(events, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.artistId, artists.id))
+    .innerJoin(events, eq(events.id, eventArtists.eventId))
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(
       sql`${venues.state} = ${match.state} AND ${events.eventDate} >= ${now.toISOString()}`

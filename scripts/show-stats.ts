@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 config({ path: '.env.local' });
 
 import { db } from '@/db';
-import { artists, events, venues, newsArticles } from '@/db/schema';
+import { artists, events, venues, newsArticles, eventArtists } from '@/db/schema';
 import { eq, isNotNull, sql } from 'drizzle-orm';
 
 async function showStats() {
@@ -53,8 +53,8 @@ async function showStats() {
 
   // Artists with events
   const artistsWithEvents = await db.select({
-    count: sql<number>`count(distinct ${events.artistId})`
-  }).from(events);
+    count: sql<number>`count(distinct ${eventArtists.artistId})`
+  }).from(eventArtists);
   console.log(`   └─ Artists with events: ${artistsWithEvents[0].count}`);
 
   // Total news articles
@@ -73,7 +73,8 @@ async function showStats() {
     eventCount: sql<number>`count(${events.id})`,
   })
     .from(events)
-    .innerJoin(artists, eq(events.artistId, artists.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .groupBy(artists.id, artists.name)
     .orderBy(sql`count(${events.id}) desc`)
     .limit(10);
