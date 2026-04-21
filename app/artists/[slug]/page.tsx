@@ -12,7 +12,7 @@ import { normalizeGenre, genreSlug } from '@/lib/genres';
 import ShareButtons from '@/components/ShareButtons';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { getAffiliateUrl } from '@/lib/affiliate';
+import { getAffiliateUrl, getVividSeatsSearchUrl, getStubHubSearchUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import { getArtistSetlists } from '@/lib/setlistfm';
@@ -204,14 +204,20 @@ const getArtistTourHistory = cache(async function getArtistTourHistory(artistId:
     return { cities: [], totalPastShows: 0, earliestShow: null };
   }
 
-  // Group by city+state and count visits
+  // Deduplicate by city+date first (same event from multiple sources counts once)
+  const seenShows = new Set<string>();
   const cityMap = new Map<string, TourHistoryCity>();
   for (const row of pastEvents) {
     if (!row.city) continue;
-    const key = `${row.city}_${row.state || ''}`;
-    const existing = cityMap.get(key);
+    const dateKey = new Date(row.eventDate).toISOString().slice(0, 10);
+    const showKey = `${row.city}_${row.state || ''}_${dateKey}`;
+    if (seenShows.has(showKey)) continue;
+    seenShows.add(showKey);
+
+    const cityKey = `${row.city}_${row.state || ''}`;
+    const existing = cityMap.get(cityKey);
     if (!existing) {
-      cityMap.set(key, {
+      cityMap.set(cityKey, {
         city: row.city,
         state: row.state,
         visitCount: 1,
@@ -229,7 +235,7 @@ const getArtistTourHistory = cache(async function getArtistTourHistory(artistId:
     ? new Date(pastEvents[pastEvents.length - 1].eventDate)
     : null;
 
-  return { cities, totalPastShows: pastEvents.length, earliestShow };
+  return { cities, totalPastShows: seenShows.size, earliestShow };
 });
 
 interface ArtistFestival {
@@ -672,18 +678,34 @@ export default async function ArtistPage({ params }: Props) {
             <h2 className="text-3xl font-bold">
               {artist.name} Tour <span className="gradient-text">Dates</span>
             </h2>
-            {deduplicatedEvents.length > 0 && (
-              <a
-                href={`/api/calendar?artistSlug=${artist.slug}`}
-                download
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/artists/${artist.slug}/tour-history`}
                 className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
               >
                 <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Export All Dates
-              </a>
-            )}
+                Tour History
+                {tourHistory.totalPastShows > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-600 text-xs font-bold rounded-full">
+                    {tourHistory.totalPastShows}
+                  </span>
+                )}
+              </Link>
+              {deduplicatedEvents.length > 0 && (
+                <a
+                  href={`/api/calendar?artistSlug=${artist.slug}`}
+                  download
+                  className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                >
+                  <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Export All Dates
+                </a>
+              )}
+            </div>
           </div>
           {artistEvents.length === 0 ? (
             <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
@@ -804,6 +826,29 @@ export default async function ArtistPage({ params }: Props) {
                           </a>
                         )
                       )}
+                      {/* Resale ticket sources */}
+                      <div className="flex gap-2 w-full md:w-auto">
+                        <a
+                          href={getVividSeatsSearchUrl(artist.name)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 whitespace-nowrap transition-colors w-full md:w-auto"
+                        >
+                          Vivid Seats
+                          <span className="text-gray-400 font-normal">resale</span>
+                          <span className="sr-only">(opens in new tab)</span>
+                        </a>
+                        <a
+                          href={getStubHubSearchUrl(artist.name)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 whitespace-nowrap transition-colors w-full md:w-auto"
+                        >
+                          StubHub
+                          <span className="text-gray-400 font-normal">resale</span>
+                          <span className="sr-only">(opens in new tab)</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>

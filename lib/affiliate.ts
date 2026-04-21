@@ -1,5 +1,8 @@
 /**
  * Affiliate tracking configuration and utilities
+ *
+ * Face-value sources (Ticketmaster, SeatGeek): event URLs stored in DB, wrapped at render time.
+ * Resale sources (Vivid Seats, StubHub): no event URLs in DB — generate artist search URLs instead.
  */
 
 export const AFFILIATE_CONFIG = {
@@ -15,57 +18,68 @@ export const AFFILIATE_CONFIG = {
     advertiserId: '20501',
     trackingDomain: 'seatgeek.pxf.io',
   },
+  // TODO: Replace with real IDs once Vivid Seats Creator Program is approved
+  // Program is via Impact Radius — format matches SeatGeek pattern
+  vividseats: {
+    affiliateId: 'VIVIDSEATS_AFFILIATE_ID',
+    creativeId: 'VIVIDSEATS_CREATIVE_ID',
+    trackingDomain: 'vividseats.sjv.io',
+  },
+  // TODO: Replace with real IDs once StubHub affiliate is approved
+  // StubHub uses CJ Affiliate (Commission Junction)
+  stubhub: {
+    affiliateId: 'STUBHUB_AFFILIATE_ID',
+    advertiserId: 'STUBHUB_ADVERTISER_ID',
+    trackingDomain: 'www.anrdoezrs.net',
+  },
 } as const;
 
-/**
- * Wraps a Ticketmaster URL with affiliate tracking
- * @param url - Original Ticketmaster event URL
- * @returns Affiliate-tracked URL via Impact Radius
- */
 export function getTicketmasterAffiliateUrl(url: string): string {
   if (!url) return url;
-
-  // Only apply to Ticketmaster URLs
-  if (!url.includes('ticketmaster.com')) {
-    return url;
-  }
+  if (!url.includes('ticketmaster.com')) return url;
 
   const { affiliateId, campaignId, creativeId, trackingDomain } = AFFILIATE_CONFIG.ticketmaster;
-
-  // URL-encode the destination
-  const encodedUrl = encodeURIComponent(url);
-
-  // Build affiliate tracking URL
-  return `https://${trackingDomain}/c/${affiliateId}/${campaignId}/${creativeId}?u=${encodedUrl}`;
+  return `https://${trackingDomain}/c/${affiliateId}/${campaignId}/${creativeId}?u=${encodeURIComponent(url)}`;
 }
 
-/**
- * Wraps a SeatGeek URL with affiliate tracking
- * @param url - Original SeatGeek event URL
- * @returns Affiliate-tracked URL via Impact Radius
- */
 export function getSeatGeekAffiliateUrl(url: string): string {
   if (!url) return url;
-
-  // Only apply to SeatGeek URLs
-  if (!url.includes('seatgeek.com')) {
-    return url;
-  }
+  if (!url.includes('seatgeek.com')) return url;
 
   const { affiliateId, creativeId, advertiserId, trackingDomain } = AFFILIATE_CONFIG.seatgeek;
-
-  // URL-encode the destination
-  const encodedUrl = encodeURIComponent(url);
-
-  // Build affiliate tracking URL
-  return `https://${trackingDomain}/c/${affiliateId}/${creativeId}/${advertiserId}?u=${encodedUrl}`;
+  return `https://${trackingDomain}/c/${affiliateId}/${creativeId}/${advertiserId}?u=${encodeURIComponent(url)}`;
 }
 
 /**
- * Gets the appropriate affiliate URL based on event source
- * @param url - Original ticket URL
- * @param source - Event source (ticketmaster, seatgeek, etc.)
- * @returns Affiliate-tracked URL if applicable, original URL otherwise
+ * Generates a Vivid Seats search URL for an artist + optional date.
+ * Wraps with affiliate tracking once IDs are configured.
+ */
+export function getVividSeatsSearchUrl(artistName: string): string {
+  const searchUrl = `https://www.vividseats.com/search?searchTerm=${encodeURIComponent(artistName)}`;
+  const { affiliateId, creativeId, trackingDomain } = AFFILIATE_CONFIG.vividseats;
+
+  // Skip affiliate wrapping until real IDs are set
+  if (affiliateId.startsWith('VIVIDSEATS')) return searchUrl;
+
+  return `https://${trackingDomain}/c/${affiliateId}/${creativeId}?u=${encodeURIComponent(searchUrl)}`;
+}
+
+/**
+ * Generates a StubHub search URL for an artist.
+ * Wraps with CJ Affiliate tracking once IDs are configured.
+ */
+export function getStubHubSearchUrl(artistName: string): string {
+  const searchUrl = `https://www.stubhub.com/secure/search#q=${encodeURIComponent(artistName)}`;
+  const { affiliateId, advertiserId, trackingDomain } = AFFILIATE_CONFIG.stubhub;
+
+  // Skip affiliate wrapping until real IDs are set
+  if (affiliateId.startsWith('STUBHUB')) return searchUrl;
+
+  return `https://${trackingDomain}/click-${affiliateId}-${advertiserId}?url=${encodeURIComponent(searchUrl)}`;
+}
+
+/**
+ * Gets the appropriate affiliate URL for a stored event source.
  */
 export function getAffiliateUrl(url: string, source: string): string {
   if (!url) return url;

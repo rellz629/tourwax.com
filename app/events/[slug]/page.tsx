@@ -11,7 +11,7 @@ import { normalizeGenre, genreSlug } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
-import { getAffiliateUrl } from '@/lib/affiliate';
+import { getAffiliateUrl, getVividSeatsSearchUrl, getStubHubSearchUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify, eventSlug, parseDateFromEventSlug } from '@/lib/slugify';
 import type { Metadata } from 'next';
@@ -380,34 +380,59 @@ export default async function EventPage({ params }: Props) {
           </div>
 
           {/* Ticket Buttons */}
-          {!isPast && allSources.length > 0 && (
+          {!isPast && (
             <div className="mt-8 pt-6 border-t border-gray-100">
-              <p className="font-bold text-gray-900 mb-3">Buy Tickets</p>
+              {allSources.length > 0 && (
+                <>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Face Value</p>
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {allSources.map((ts, i) => (
+                      ts.ticketUrl && (
+                        <a
+                          key={i}
+                          href={getAffiliateUrl(ts.ticketUrl, ts.source)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-sm text-white transition-all shadow-md hover:shadow-lg ${
+                            ts.source.toLowerCase() === 'seatgeek'
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
+                              : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
+                          }`}
+                        >
+                          {ts.minPrice ? (
+                            <span>From ${ts.minPrice}</span>
+                          ) : (
+                            <span>Get Tickets</span>
+                          )}
+                          <span className="text-white/80">—</span>
+                          <span className="capitalize">{ts.source}</span>
+                          <span className="sr-only">(opens in new tab)</span>
+                        </a>
+                      )
+                    ))}
+                  </div>
+                </>
+              )}
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Resale</p>
               <div className="flex flex-wrap gap-3">
-                {allSources.map((ts, i) => (
-                  ts.ticketUrl && (
-                    <a
-                      key={i}
-                      href={getAffiliateUrl(ts.ticketUrl, ts.source)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-sm text-white transition-all shadow-md hover:shadow-lg ${
-                        ts.source.toLowerCase() === 'seatgeek'
-                          ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
-                          : 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
-                      }`}
-                    >
-                      {ts.minPrice ? (
-                        <span>From ${ts.minPrice}</span>
-                      ) : (
-                        <span>Get Tickets</span>
-                      )}
-                      <span className="text-white/80">—</span>
-                      <span className="capitalize">{ts.source}</span>
-                      <span className="sr-only">(opens in new tab)</span>
-                    </a>
-                  )
-                ))}
+                <a
+                  href={getVividSeatsSearchUrl(artist.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  Search Vivid Seats
+                  <span className="sr-only">(opens in new tab)</span>
+                </a>
+                <a
+                  href={getStubHubSearchUrl(artist.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  Search StubHub
+                  <span className="sr-only">(opens in new tab)</span>
+                </a>
               </div>
             </div>
           )}
