@@ -4,7 +4,7 @@ slug: "who-is-opening-for-eric-church-2026-tour"
 excerpt: "Ella Langley, Ashley McBryde, 49 Winchester, Caylee Hammack, and more rotate as openers on Eric Church's 2026 Free the Machine Tour. Here's who plays each date."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Eric_Church_2012_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---

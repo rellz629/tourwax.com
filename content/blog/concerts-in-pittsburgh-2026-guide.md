@@ -4,7 +4,7 @@ slug: "concerts-in-pittsburgh-2026-guide"
 excerpt: "Your complete guide to concerts in Pittsburgh in 2026. Discover the best venues from PPG Paints Arena to Stage AE, upcoming shows, and how to find the best ticket deals."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Ascending_the_Duquesne_Incline.jpg/1280px-Ascending_the_Duquesne_Incline.jpg"
 publishedAt: "2026-04-23"
 updatedAt: "2026-04-23"
 ---

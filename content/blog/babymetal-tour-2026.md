@@ -4,7 +4,7 @@ slug: "babymetal-tour-2026"
 excerpt: "BABYMETAL is bringing their 2026 World Tour to North America with 20 dates across the U.S. and Canada. Halestorm and Violent Vira join as support. Here's the full list of dates, venues, and ticket info."
 author: "TourWax Team"
 category: "Tour Announcement"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Babymetal_performing_at_AFAS_Live_in_Amsterdam_13_May_2025.jpg/1280px-Babymetal_performing_at_AFAS_Live_in_Amsterdam_13_May_2025.jpg"
 publishedAt: "2026-04-06"
 updatedAt: "2026-04-06"
 ---
@@ -69,3 +69,7 @@ The 2026 tour hits 18 cities including [Denver](/concerts/denver), [Chicago](/co
 ---
 
 Browse more [Metal tours](/tours/metal) or explore all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=WIKqgE4BwAY

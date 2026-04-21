@@ -4,7 +4,7 @@ slug: "who-is-opening-for-noah-kahan-2026-tour"
 excerpt: "Noah Kahan's Great Divide Tour runs June through August 2026 across North American stadiums and ballparks, with Gigi Perez and Annabelle Dinda opening all headlining dates."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Noah_Kahan_at_Glastonbury_Festival_2025_04_%28cropped%29.jpg/1280px-Noah_Kahan_at_Glastonbury_Festival_2025_04_%28cropped%29.jpg"
 publishedAt: "2026-04-20"
 updatedAt: "2026-04-20"
 ---
@@ -77,3 +77,7 @@ Tickets for all North American dates are available now through Ticketmaster and 
 ---
 
 Browse more [upcoming concerts](/concerts) or explore [concerts in Boston](/concerts/boston), [concerts in Chicago](/concerts/chicago), and [concerts in Philadelphia](/concerts/philadelphia) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=JKrDdsgXuso

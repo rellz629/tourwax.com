@@ -4,7 +4,7 @@ slug: "usher-chris-brown-rb-tour-2026"
 excerpt: "Usher and Chris Brown are hitting the road together for a 33-date stadium tour across North America. Here's the full schedule, every city, and when tickets go on sale."
 author: "TourWax Team"
 category: "Tour Announcement"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Usher_Cannes_2016_retusche.jpg"
 publishedAt: "2026-04-17"
 updatedAt: "2026-04-17"
 ---
@@ -86,3 +86,7 @@ Between them, you're looking at a setlist that could include "Yeah!", "Confessio
 Stadium shows at this level move fast, especially in markets like Los Angeles, New York, Atlanta, and Chicago. Multi-night stands in cities like Detroit, Washington DC, East Rutherford, Toronto, Las Vegas, and Atlanta signal strong demand already built in. If this tour is coming to your city, it's worth setting a reminder for the April 21 pre-sale rather than waiting for general on-sale.
 
 Check the [Usher page](/artists/usher) and [Chris Brown page](/artists/chris-brown) on TourWax for direct ticket links. For more [R&B tours](/tours/r-and-b) happening this year, browse our full listings.
+
+## Watch
+
+https://www.youtube.com/watch?v=GxBSyx85Kp8

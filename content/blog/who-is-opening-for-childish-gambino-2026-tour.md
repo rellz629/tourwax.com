@@ -4,7 +4,7 @@ slug: "who-is-opening-for-childish-gambino-2026-tour"
 excerpt: "Amaarae, Fousheé, and Teezo Touchdown are among the openers joining Childish Gambino's final Bando Stone tour dates in 2026. Here's the full lineup by date."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Donald_Glover_TIFF_2015.jpg/1280px-Donald_Glover_TIFF_2015.jpg"
 publishedAt: "2026-04-17"
 updatedAt: "2026-04-17"
 ---
@@ -52,3 +52,7 @@ Tickets for Childish Gambino 2026 shows are available through Ticketmaster and S
 ---
 
 Browse more [Hip-Hop tours](/tours/hip-hop) or check all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=VYOjWnS4cMY

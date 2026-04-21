@@ -4,7 +4,7 @@ slug: "casino-concert-guide-2026"
 excerpt: "The best casino and resort concert venues in America, from Hard Rock Live and Mohegan Sun to WinStar and Yaamava. Full 2026 schedules, venue details, and tips for catching a show."
 author: "TourWax Team"
 category: "Venue Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Caesars_Palace_Casino_%287980362756%29.jpg/1280px-Caesars_Palace_Casino_%287980362756%29.jpg"
 publishedAt: "2026-04-09"
 updatedAt: "2026-04-09"
 ---

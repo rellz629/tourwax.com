@@ -4,7 +4,7 @@ slug: "who-is-opening-for-the-chicks-2026-tour"
 excerpt: "Everything you need to know about The Chicks' 2026 tour opening acts, from Tim McGraw stadium shows with Lady A to headline casino dates and festival appearances."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Dixie_Chicks_in_Austin%2C_Texas.jpg"
 publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---

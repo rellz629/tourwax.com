@@ -57,6 +57,14 @@ export default function config(phase: string): NextConfig {
           protocol: 'https',
           hostname: '**.scdn.co',
         },
+        {
+          protocol: 'https',
+          hostname: 'upload.wikimedia.org',
+        },
+        {
+          protocol: 'https',
+          hostname: 'images.unsplash.com',
+        },
       ],
     },
   };

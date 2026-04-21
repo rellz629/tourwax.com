@@ -30,6 +30,15 @@ renderer.image = function ({ href, title, text }) {
 };
 marked.use({ renderer });
 
+// Convert standalone YouTube links (whole paragraph) into embedded players
+function processYouTubeEmbeds(html: string): string {
+  return html.replace(
+    /<p><a[^>]+href="https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?(?:[^"]*&)?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})[^"]*"[^>]*>[^<]*<\/a><\/p>/gi,
+    (_, videoId) =>
+      `<div class="youtube-embed shadow-md"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`
+  );
+}
+
 function getMarkdownFiles(): string[] {
   return fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith('.md'));
 }
@@ -82,7 +91,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     featuredImage: (data.featuredImage as string) || null,
     publishedAt: data.publishedAt as string,
     updatedAt: data.updatedAt as string,
-    content: marked(content) as string,
+    content: processYouTubeEmbeds(marked(content) as string),
   };
 }
 

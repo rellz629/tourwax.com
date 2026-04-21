@@ -4,7 +4,7 @@ slug: "latin-reggaeton-tours-2026"
 excerpt: "The biggest Latin and reggaeton tours hitting the road in 2026, from Romeo Santos and Bad Bunny's stadium runs to Peso Pluma, Fuerza Regida, and Shakira. Full dates, cities, and ticket links."
 author: "TourWax Team"
 category: "Tour Roundup"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Bad_Bunny_2019_by_Glenn_Francis_%28cropped%29.jpg/1280px-Bad_Bunny_2019_by_Glenn_Francis_%28cropped%29.jpg"
 publishedAt: "2026-04-09"
 updatedAt: "2026-04-09"
 ---
@@ -134,3 +134,7 @@ Si estás buscando conciertos latinos cerca de ti, TourWax tiene la información
 ---
 
 Browse all [Latin tours](/tours/latin) or explore [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=TmKh7lAwnBI

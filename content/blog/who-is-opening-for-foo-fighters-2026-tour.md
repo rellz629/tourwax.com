@@ -4,7 +4,7 @@ slug: "who-is-opening-for-foo-fighters-2026-tour"
 excerpt: "Queens of the Stone Age, Mannequin Pussy, and Gouge Away join Foo Fighters on their 2026 Take Cover stadium tour. Here's the full lineup by date."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Glasto2023.jpg/1280px-Glasto2023.jpg"
 publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---
@@ -65,3 +65,7 @@ Check the [Foo Fighters page on TourWax](/artists/foo-fighters) for direct ticke
 ---
 
 Browse more [Rock tours](/tours/rock) or explore all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=SBjQ9tuuTJQ

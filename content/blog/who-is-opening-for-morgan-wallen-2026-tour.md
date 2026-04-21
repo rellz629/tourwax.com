@@ -4,7 +4,7 @@ slug: "who-is-opening-for-morgan-wallen-2026-tour"
 excerpt: "The full lineup of opening acts for Morgan Wallen's 2026 Still the Problem stadium tour, including Brooks & Dunn, HARDY, Thomas Rhett, and Ella Langley."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Morgan_Wallen_performing_at_Bank_of_America_Stadium.png/1280px-Morgan_Wallen_performing_at_Bank_of_America_Stadium.png"
 publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---
@@ -113,3 +113,7 @@ Tickets are available through Ticketmaster and various resale platforms. Check t
 ---
 
 Browse more [Country tours](/tours/country) or explore all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=hwUixddbmrQ

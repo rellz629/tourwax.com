@@ -4,7 +4,7 @@ slug: "summer-music-festivals-state-fair-concerts-2026"
 excerpt: "Your guide to 2026's biggest summer music festivals, state fair concerts, and multi-day events. Find lineups, dates, venues, and tickets for festivals across the US."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Glastonbury_Tribute.jpg/1280px-Glastonbury_Tribute.jpg"
 publishedAt: "2026-04-06"
 updatedAt: "2026-04-06"
 ---

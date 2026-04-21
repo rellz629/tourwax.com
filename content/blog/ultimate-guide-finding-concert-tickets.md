@@ -4,7 +4,7 @@ slug: "ultimate-guide-finding-concert-tickets"
 excerpt: "Learn the best strategies for scoring concert tickets at the best prices. From presale codes to last-minute deals, we cover everything you need to know."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/D%C3%BClmen%2C_D%C3%BClmener_Sommer%2C_Open-Air-Konzert%2C_%22Bounce%22_--_2018_--_0051.jpg/1280px-D%C3%BClmen%2C_D%C3%BClmener_Sommer%2C_Open-Air-Konzert%2C_%22Bounce%22_--_2018_--_0051.jpg"
 publishedAt: "2026-02-20"
 updatedAt: "2026-02-20"
 ---

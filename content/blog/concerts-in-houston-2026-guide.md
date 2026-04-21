@@ -4,7 +4,7 @@ slug: "concerts-in-houston-2026-guide"
 excerpt: "Your complete guide to concerts in Houston in 2026. From Toyota Center to White Oak Music Hall, discover the best venues, upcoming shows, and how to find the best ticket deals."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Texas_medical_center.jpg/1280px-Texas_medical_center.jpg"
 publishedAt: "2026-05-02"
 updatedAt: "2026-05-02"
 ---

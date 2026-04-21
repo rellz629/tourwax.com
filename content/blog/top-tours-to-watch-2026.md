@@ -4,7 +4,7 @@ slug: "top-tours-to-watch-2026"
 excerpt: "From stadium spectacles to intimate club runs, here are the biggest and most anticipated tours hitting the road in 2026."
 author: "TourWax Team"
 category: "Tour Roundup"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Miley_Cyrus_no_palco_do_Lollapalooza_Brasil_2022.jpg/1280px-Miley_Cyrus_no_palco_do_Lollapalooza_Brasil_2022.jpg"
 publishedAt: "2026-02-18"
 updatedAt: "2026-02-18"
 ---

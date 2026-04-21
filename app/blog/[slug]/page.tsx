@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateBlogPostMetadata, SITE_URL } from '@/lib/seo';
 import { generateBreadcrumbSchema, generateBlogPostingSchema } from '@/lib/schema';
@@ -64,7 +65,21 @@ export default async function BlogPostPage({
         <Breadcrumbs items={breadcrumbItems} />
 
         <article className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-          <div className="h-2 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
+          {post.featuredImage ? (
+            <div className="relative h-64 sm:h-80 md:h-96 w-full overflow-hidden">
+              <Image
+                src={post.featuredImage}
+                alt={post.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 896px"
+                priority
+              />
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white to-transparent" />
+            </div>
+          ) : (
+            <div className="h-2 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
+          )}
 
           <header className="px-6 sm:px-10 pt-8 pb-6 border-b border-gray-100">
             <div className="mb-4">

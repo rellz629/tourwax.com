@@ -4,7 +4,7 @@ slug: "who-is-opening-for-zach-bryan-2026-tour"
 excerpt: "Kings of Leon, Alabama Shakes, Caamp, MJ Lenderman, and Dijon rotate as openers on Zach Bryan's With Heaven stadium tour 2026. Full date-by-date opener lineup."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/0/07/Zach_Bryan_performing_at_Crypto.com_Arena_on_23_Aug_2023_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
 updatedAt: "2026-04-17"
 ---
@@ -100,3 +100,7 @@ Check the [Zach Bryan page on TourWax](/artists/zach-bryan) for direct ticket li
 ---
 
 Browse more [Country tours](/tours/country) or explore all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=lA8F9sIhGdg

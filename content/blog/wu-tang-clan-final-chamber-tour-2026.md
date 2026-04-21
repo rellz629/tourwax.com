@@ -4,7 +4,7 @@ slug: "wu-tang-clan-final-chamber-tour-2026"
 excerpt: "Wu-Tang Clan is hitting the road for a 26-city North American farewell tour with Bone Thugs-N-Harmony. Here's everything you need to know about The Final Chamber Tour."
 author: "TourWax Team"
 category: "Tour Announcement"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Wu-Tang_Clan_at_Exit_festival_2023.jpg/1280px-Wu-Tang_Clan_at_Exit_festival_2023.jpg"
 publishedAt: "2026-03-30"
 updatedAt: "2026-03-30"
 ---
@@ -63,3 +63,7 @@ Farewell tours in hip-hop are rare. Unlike rock bands that have made the farewel
 Tickets went on sale March 27 at 10 AM local time via Live Nation. Amphitheater shows like these tend to offer a range of pricing from lawn seats to premium packages, so there are options at multiple price points.
 
 Check out the [Wu-Tang Clan page](/artists/wu-tang-clan) on TourWax for ticket links and updated dates, or browse more [Hip-Hop tours](/tours/hip-hop) happening this year.
+
+## Watch
+
+https://www.youtube.com/watch?v=PBwAxmrE194

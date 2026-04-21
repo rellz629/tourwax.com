@@ -6,6 +6,7 @@ import { generateBreadcrumbSchema, generateFestivalEventSchema } from '@/lib/sch
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAllFestivals, getFestivalBySlug } from '@/lib/festivals';
+import { getFestivalImage } from '@/lib/festival-images';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { slugify } from '@/lib/slugify';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
@@ -84,11 +85,39 @@ export default async function FestivalPage({ params }: Props) {
     { name: festival.name, url: `/festivals/${festival.slug}` },
   ];
 
+  const festivalImage = getFestivalImage(festival.slug);
+
   return (
     <>
       <StructuredData data={[breadcrumbSchema, festivalSchema]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Breadcrumbs items={breadcrumbItems} />
+
+        {festivalImage && (
+          <div className="mb-10">
+            <div className="rounded-2xl overflow-hidden shadow-xl bg-gray-900">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={festivalImage.flyerUrl}
+                alt={`${festival.name} official lineup`}
+                className="w-full max-h-[700px] object-contain mx-auto block"
+              />
+            </div>
+            {festivalImage.officialUrl && (
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                Official flyer via{' '}
+                <a
+                  href={festivalImage.officialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-orange-500 transition-colors underline"
+                >
+                  {festivalImage.credit || 'official website'}
+                </a>
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="mb-12">
           <h1 className="text-5xl md:text-6xl font-black mb-4">

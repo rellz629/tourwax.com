@@ -4,7 +4,7 @@ slug: "who-is-opening-for-post-malone-2026-tour"
 excerpt: "Post Malone's Big Ass Stadium Tour Part 2 features Jelly Roll as co-headliner and Carter Faith as direct opener across 18 stadiums from May through July 2026."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Post_Malone_July_2021_%28cropped%29.jpg/1280px-Post_Malone_July_2021_%28cropped%29.jpg"
 publishedAt: "2026-04-17"
 updatedAt: "2026-04-17"
 ---
@@ -79,3 +79,7 @@ Tickets are available through Ticketmaster and major resale platforms. Check the
 ---
 
 Browse more [Country tours](/tours/country) or explore all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=UceaB4D0jpo

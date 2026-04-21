@@ -4,7 +4,7 @@ slug: "who-is-opening-for-my-chemical-romance-2026-tour"
 excerpt: "Every opening act on My Chemical Romance's 2026 Black Parade stadium tour, from Franz Ferdinand and Iggy Pop to The Mars Volta and Babymetal."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/MCR820_%28cropped%29.jpg/1280px-MCR820_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---
@@ -101,3 +101,7 @@ Check the [My Chemical Romance page on TourWax](/artists/my-chemical-romance) fo
 ---
 
 Browse more [Rock tours](/tours/rock) or explore all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=UCCyoocDxBA

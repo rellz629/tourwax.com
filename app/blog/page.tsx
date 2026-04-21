@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateBlogIndexMetadata, SITE_URL } from '@/lib/seo';
 import { generateBreadcrumbSchema } from '@/lib/schema';
@@ -58,7 +59,20 @@ export default function BlogPage() {
                 href={`/blog/${post.slug}`}
                 className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100"
               >
-                <div className="h-3 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
+                {post.featuredImage ? (
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={post.featuredImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent" />
+                  </div>
+                ) : (
+                  <div className="h-3 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
+                )}
                 <div className="p-6">
                   <div className="mb-3">
                     <span className="inline-block px-3 py-1 text-xs font-semibold text-orange-600 bg-orange-50 rounded-full">

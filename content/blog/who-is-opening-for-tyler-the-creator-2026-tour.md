@@ -4,7 +4,7 @@ slug: "who-is-opening-for-tyler-the-creator-2026-tour"
 excerpt: "Teezo Touchdown and Paris Texas are the opening acts on Tyler, The Creator's Chromakopia World Tour. Here's what to expect from the full show experience."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Tyler_the_Creator_%2852163761341%29_%28cropped%29.jpg/1280px-Tyler_the_Creator_%2852163761341%29_%28cropped%29.jpg"
 publishedAt: "2026-04-17"
 updatedAt: "2026-04-17"
 ---
@@ -42,3 +42,7 @@ For context on Tyler's typical ticket range: floor and pit tickets have started 
 ---
 
 Browse more [Hip-Hop tours](/tours/hip-hop) or check all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=HmAsUQEFYGI

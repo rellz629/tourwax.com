@@ -4,7 +4,7 @@ slug: "how-to-find-cheap-concert-tickets"
 excerpt: "Concert tickets don't have to break the bank. Here are proven strategies for finding affordable tickets to your favorite shows in 2026."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/D%C3%BClmen%2C_D%C3%BClmener_Sommer%2C_Open-Air-Konzert%2C_%22Bounce%22_--_2018_--_0051.jpg/1280px-D%C3%BClmen%2C_D%C3%BClmener_Sommer%2C_Open-Air-Konzert%2C_%22Bounce%22_--_2018_--_0051.jpg"
 publishedAt: "2026-03-27"
 updatedAt: "2026-03-27"
 ---

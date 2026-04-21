@@ -4,7 +4,7 @@ slug: "best-outdoor-amphitheaters-america-2026"
 excerpt: "The best outdoor amphitheaters in the US for concerts in 2026. From Gorge Amphitheatre to Red Rocks, here's where to see live music under the stars."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/3/33/RedRocksAMP.png"
 publishedAt: "2026-05-05"
 updatedAt: "2026-05-05"
 ---

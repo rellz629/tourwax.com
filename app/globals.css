@@ -71,4 +71,20 @@ body {
   .btn-secondary {
     @apply bg-gray-800 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-900 transition-all duration-300;
   }
+
+  .youtube-embed {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    margin: 1.5rem 0;
+  }
+
+  .youtube-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.75rem;
+  }
 }

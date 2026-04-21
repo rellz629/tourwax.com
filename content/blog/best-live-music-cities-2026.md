@@ -4,7 +4,7 @@ slug: "best-live-music-cities-2026"
 excerpt: "From Nashville to New York, these are the best US cities for live music in 2026. Find out which cities have the most concerts, best venues, and upcoming tours."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Skyline_of_Austin%2C_Texas_%28cropped%29.jpg/1280px-Skyline_of_Austin%2C_Texas_%28cropped%29.jpg"
 publishedAt: "2026-04-06"
 updatedAt: "2026-04-06"
 ---

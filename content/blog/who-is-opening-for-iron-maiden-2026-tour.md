@@ -4,7 +4,7 @@ slug: "who-is-opening-for-iron-maiden-2026-tour"
 excerpt: "Megadeth and Anthrax join Iron Maiden's Run for Your Lives World Tour for the 2026 North American leg. Here's the full lineup and every tour date."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/e/ed/IronMaidencollage2.jpg"
 publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---
@@ -85,3 +85,7 @@ Visit the [Iron Maiden page on TourWax](/artists/iron-maiden) for direct ticket 
 ---
 
 Browse more [Metal tours](/tours/metal) or explore all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=X4bgXH3sJ2Q

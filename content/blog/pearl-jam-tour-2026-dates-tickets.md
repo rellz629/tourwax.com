@@ -4,7 +4,7 @@ slug: "pearl-jam-tour-2026-dates-tickets"
 excerpt: "Is Pearl Jam still touring in 2026? Here's everything we know about Pearl Jam tour dates, upcoming shows, ticket prices, and what to expect at a Pearl Jam concert."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Pearl_Jam_2016.jpg/1280px-Pearl_Jam_2016.jpg"
 publishedAt: "2026-04-29"
 updatedAt: "2026-04-29"
 ---
@@ -112,3 +112,7 @@ The question isn't if Pearl Jam will tour again — it's when. Keep an eye on th
 ---
 
 **Track Pearl Jam tour dates:** [Follow Pearl Jam on TourWax](/artists/pearl-jam) to get the latest show announcements and ticket links the moment they go on sale.
+
+## Watch
+
+https://www.youtube.com/watch?v=qM0zINtulhM

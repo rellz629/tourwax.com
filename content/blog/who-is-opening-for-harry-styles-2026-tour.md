@@ -4,7 +4,7 @@ slug: "who-is-opening-for-harry-styles-2026-tour"
 excerpt: "Jamie xx, Robyn, Shania Twain, Jorja Smith, and more open for Harry Styles on his 2026 Together Together world tour, including 30 nights at Madison Square Garden."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/HarryStylesWembley170623_%2865_of_93%29_%2852982678051%29_%28cropped_2%29.jpg/1280px-HarryStylesWembley170623_%2865_of_93%29_%2852982678051%29_%28cropped_2%29.jpg"
 publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---
@@ -73,3 +73,7 @@ With 30 MSG dates, New York has the most availability, but demand is still high.
 ---
 
 Browse more [Pop tours](/tours/pop) or explore all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=H5v3kku4y6Q

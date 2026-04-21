@@ -4,7 +4,7 @@ slug: "sphere-las-vegas-concerts-2026-guide"
 excerpt: "Everything you need to know about seeing a show at the Sphere in Las Vegas. Who's performing in 2026, how to get tickets, what to expect inside, and tips for planning your trip."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/The_Sphere_in_Las_Vegas.jpg/1280px-The_Sphere_in_Las_Vegas.jpg"
 publishedAt: "2026-04-26"
 updatedAt: "2026-04-26"
 ---

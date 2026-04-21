@@ -4,7 +4,7 @@ slug: "best-concert-venues-america"
 excerpt: "From legendary theaters to outdoor amphitheaters, these are the concert venues every music fan should experience at least once."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Madison_Square_Garden_%28MSG%29_-_Full_%2848124330357%29.jpg/1280px-Madison_Square_Garden_%28MSG%29_-_Full_%2848124330357%29.jpg"
 publishedAt: "2026-03-28"
 updatedAt: "2026-03-28"
 ---

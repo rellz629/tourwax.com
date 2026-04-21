@@ -4,7 +4,7 @@ slug: "willie-nelson-outlaw-music-festival-2026"
 excerpt: "Willie Nelson announces a 12-date Outlaw Music Festival for summer 2026, featuring The Avett Brothers, Sheryl Crow, Wilco, and more across Texas, the Midwest, and Northeast."
 author: "TourWax Team"
 category: "Tour Announcement"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/0/03/Willie_UK2K7_2.JPG"
 publishedAt: "2026-03-30"
 updatedAt: "2026-03-30"
 ---
@@ -64,3 +64,7 @@ This year's scaled-back format of 12 cities (compared to larger runs in previous
 Tickets went on sale March 27 via Ticketmaster. Given Willie's legendary status and the strength of this lineup, high-demand dates like the July 4th Picnic and the Northeast run are expected to move fast.
 
 Check the [Willie Nelson page](/artists/willie-nelson) on TourWax for the latest dates and ticket links, or browse more [Country tours](/tours/country) happening this summer.
+
+## Watch
+
+https://www.youtube.com/watch?v=dBN86y30Ufc

@@ -4,7 +4,7 @@ slug: "who-is-opening-for-bruno-mars-2026-tour"
 excerpt: "Anderson .Paak, Leon Thomas, Victoria Monet, and RAYE rotate as openers on Bruno Mars' massive 2026 Romantic stadium tour. Here's the full lineup by date."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/b/b0/BrunoMars24KMagicWorldTourLive_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
 updatedAt: "2026-04-08"
 ---
@@ -84,3 +84,7 @@ Tickets are available via Ticketmaster and Live Nation. Given the multi-night fo
 ---
 
 Browse more [Pop tours](/tours/pop) or explore all [upcoming concerts](/concerts) on TourWax.
+
+## Watch
+
+https://www.youtube.com/watch?v=UqyT8IEBkvY
