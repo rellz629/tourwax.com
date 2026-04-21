@@ -4,7 +4,7 @@ slug: "the-strokes-tour-2026"
 excerpt: "The Strokes are touring North America and Europe in 2026 on the Reality Awaits tour. Full date list, ticket links, and what fans can expect from one of indie rock's most iconic live acts."
 author: "TourWax Team"
 category: "Tour Announcement"
-featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/The_Strokes_-_Lollapalooza_2011.jpg/1280px-The_Strokes_-_Lollapalooza_2011.jpg"
+featuredImage: null
 publishedAt: "2026-04-21"
 updatedAt: "2026-04-21"
 ---

@@ -4,7 +4,7 @@ slug: "karol-g-tour-2026"
 excerpt: "Karol G announced her first tour in two years at the end of her Coachella Weekend 2 headline set. Here's everything we know about the upcoming 2026 tour, what to expect, and how to get tickets."
 author: "TourWax Team"
 category: "Tour Announcement"
-featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Karol_G_in_2023.jpg/800px-Karol_G_in_2023.jpg"
+featuredImage: null
 publishedAt: "2026-04-21"
 updatedAt: "2026-04-21"
 ---

@@ -1,5 +1,5 @@
 ---
-title: "The Chicks Announces 'Tim McGraw with 49 Winchester, The Chicks, Lady A and more' — 9 Dates Across North America"
+title: "The Chicks 2026 Tour: Dates, Openers, Tickets & What to Expect"
 slug: "the-chicks-tour-2026"
 excerpt: "The Chicks is hitting the road with 9 upcoming tour dates. Here's everything you need to know about the 2026 tour — dates, cities, venues, and ticket info."
 author: "TourWax Team"
