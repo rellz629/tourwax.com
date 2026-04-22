@@ -4,7 +4,7 @@ slug: "bonnaroo-2026-lineup-tickets-guide"
 excerpt: "Your complete guide to Bonnaroo 2026 in Manchester, TN. Full lineup, ticket prices, camping tips, stage schedules, and how to find the best deals."
 author: "TourWax Team"
 category: "Festival Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/b/b3/Bonnaroo_What_Stage_%284704763599%29.jpg"
 publishedAt: "2026-04-20"
 updatedAt: "2026-04-20"
 ---

@@ -4,7 +4,7 @@ slug: "the-chicks-tour-2026"
 excerpt: "The Chicks is hitting the road with 9 upcoming tour dates. Here's everything you need to know about the 2026 tour — dates, cities, venues, and ticket info."
 author: "TourWax Team"
 category: "Tour Announcement"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Dixie_Chicks_by_ViVr_016.jpg"
 publishedAt: "2026-04-21"
 updatedAt: "2026-04-21"
 ---

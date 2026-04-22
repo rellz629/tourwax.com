@@ -4,7 +4,7 @@ slug: "edc-las-vegas-2026-lineup-tickets-guide"
 excerpt: "Everything you need to know about Electric Daisy Carnival Las Vegas 2026. Full lineup, ticket options, what to pack, hotel tips, and how to survive three nights under the electric sky."
 author: "TourWax Team"
 category: "Festival Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/b/b2/EDC_Mainstage_2018.jpg"
 publishedAt: "2026-04-20"
 updatedAt: "2026-04-20"
 ---

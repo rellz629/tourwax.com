@@ -4,7 +4,7 @@ slug: "lollapalooza-2026-lineup-tickets-guide"
 excerpt: "Everything you need to know about Lollapalooza 2026 in Chicago's Grant Park. Full lineup, ticket options, hotel tips, stage maps, and how to get the best deals on tickets."
 author: "TourWax Team"
 category: "Festival Guide"
-featuredImage: null
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/3/36/Lollapalooza_2015.JPG"
 publishedAt: "2026-04-20"
 updatedAt: "2026-04-20"
 ---
