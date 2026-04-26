@@ -85,10 +85,13 @@ export default async function TonightPage() {
 
         <div className="mb-12">
           <h1 className="text-5xl md:text-6xl font-black mb-4">
-            Concerts <span className="gradient-text">Tonight</span>
+            Concerts <span className="gradient-text">Today & Tonight</span>
           </h1>
           <p className="text-xl text-gray-600">
-            {tonightEvents.length} show{tonightEvents.length === 1 ? '' : 's'} happening tonight
+            {tonightEvents.length} show{tonightEvents.length === 1 ? '' : 's'} happening today
+          </p>
+          <p className="text-base text-gray-600 mt-3 max-w-3xl">
+            Every concert happening today and tonight, grouped by city. Find last-minute tickets, see who&apos;s playing in your city right now, and grab a seat for tonight&apos;s show. The list updates throughout the day as new dates go on sale.
           </p>
           <div className="flex gap-3 mt-4">
             <Link href="/concerts/this-weekend" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2.5 rounded-lg transition-colors">This Weekend</Link>

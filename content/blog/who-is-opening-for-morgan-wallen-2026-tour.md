@@ -1,13 +1,15 @@
 ---
-title: "Who Is Opening for Morgan Wallen on the Still the Problem Tour 2026?"
+title: "Who Is Opening for Morgan Wallen 2026? Full Tour Lineup by Date"
 slug: "who-is-opening-for-morgan-wallen-2026-tour"
-excerpt: "The full lineup of opening acts for Morgan Wallen's 2026 Still the Problem stadium tour, including Brooks & Dunn, HARDY, Thomas Rhett, and Ella Langley."
+excerpt: "Brooks & Dunn, HARDY, Thomas Rhett, and Ella Langley rotate as openers on Morgan Wallen's 2026 Still the Problem stadium tour. Full lineup by city and date."
 author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Morgan_Wallen_performing_at_Bank_of_America_Stadium.png/1280px-Morgan_Wallen_performing_at_Bank_of_America_Stadium.png"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-08"
+updatedAt: "2026-04-25"
 ---
+
+_Updated April 25, 2026 with the latest confirmed dates and openers._
 
 Morgan Wallen's Still the Problem Tour is the biggest country tour of 2026: an 11-city, 22-date stadium run with a stacked rotating lineup that changes every night. If you're trying to figure out who's opening, the answer depends on which date you pick. Here's the full breakdown.
 
@@ -109,6 +111,30 @@ If your city has two dates, here's a rough guide:
 ## How to Get Tickets
 
 Tickets are available through Ticketmaster and various resale platforms. Check the [Morgan Wallen page on TourWax](/artists/morgan-wallen) for direct ticket links and updated tour information as dates approach.
+
+## Frequently Asked Questions
+
+### Who is the main opener for Morgan Wallen in 2026?
+There isn't one main opener. Wallen rotates four headlining support acts across the tour: Brooks & Dunn (8 dates), Ella Langley (8 dates), Thomas Rhett (4 dates), and HARDY (3 dates). Most cities get two nights with a different lineup each night.
+
+### Is Brooks & Dunn opening every Morgan Wallen show?
+No. Brooks & Dunn play 8 of the 22 stadium dates, almost always on Night 1 of a two-night stop. They are not on the Tuscaloosa, Gainesville, or Ann Arbor dates.
+
+### Who opens for Morgan Wallen in Indianapolis 2026?
+The Indianapolis dates at Lucas Oil Stadium feature Brooks & Dunn (May 8) and Ella Langley (May 9), with Hudson Westbrook, Flatland Cavalry, and Zach John King filling out the bills.
+
+### When did Morgan Wallen's 2026 tour start?
+The Still the Problem Tour opened April 10, 2026 at U.S. Bank Stadium in Minneapolis and runs through August 1 at Lincoln Financial Field in Philadelphia.
+
+### How long is Morgan Wallen's set on the 2026 tour?
+Wallen has been performing roughly two-hour headline sets across the tour. With three openers per night, doors typically open about three hours before his set begins.
+
+## More Tour Opener Guides
+
+- [Who Is Opening for Bruno Mars](/blog/who-is-opening-for-bruno-mars-2026-tour)
+- [Who Is Opening for Zach Bryan](/blog/who-is-opening-for-zach-bryan-2026-tour)
+- [Who Is Opening for Eric Church](/blog/who-is-opening-for-eric-church-2026-tour)
+- [Who Is Opening for The Chicks](/blog/who-is-opening-for-the-chicks-2026-tour)
 
 ---
 

@@ -12,7 +12,7 @@ import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
-import { normalizeGenre, genreSlug, GENRE_DESCRIPTIONS, GENRE_DISPLAY_NAMES } from '@/lib/genres';
+import { normalizeGenre, genreSlug, GENRE_DESCRIPTIONS, GENRE_DISPLAY_NAMES, GENRE_LONG_CONTENT } from '@/lib/genres';
 import { slugify } from '@/lib/slugify';
 import Pagination from '@/components/Pagination';
 
@@ -181,6 +181,7 @@ export default async function GenrePage({ params, searchParams }: Props) {
   }, {} as Record<string, typeof genreEvents>);
 
   const description = GENRE_DESCRIPTIONS[genreName] || GENRE_DESCRIPTIONS['Other'];
+  const longContent = GENRE_LONG_CONTENT[genreName];
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },
@@ -245,12 +246,25 @@ export default async function GenrePage({ params, searchParams }: Props) {
 
         <div className="mb-12">
           <h1 className="text-5xl md:text-6xl font-black mb-4">
-            <span className="gradient-text">{genreName} Tours {year}</span>
+            <span className="gradient-text">
+              {genreName === 'Hip-Hop' ? 'Hip-Hop & Rap' : genreName} Tours {year}
+            </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl">
             {description}
           </p>
         </div>
+
+        {longContent && (
+          <section className="mb-16 max-w-4xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{longContent.headline}</h2>
+            <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
+              {longContent.paragraphs.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Artists Grid */}
         <section className="mb-16">

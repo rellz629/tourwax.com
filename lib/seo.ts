@@ -153,9 +153,9 @@ export function generateArtistMetadata(data: ArtistWithEvents) {
 export function generateCityTitle(cityName: string, state: string | null, eventCount: number, year: number = new Date().getFullYear()): string {
   const location = state ? `${cityName}, ${state}` : cityName;
   if (eventCount > 0) {
-    return `${cityName} Concerts ${year} - ${eventCount} Upcoming Shows & Tickets`;
+    return `Concerts in ${location} ${year}: ${eventCount} Upcoming Shows & Tickets`;
   }
-  return `${cityName} Concerts ${year} - Upcoming Shows & Tickets`;
+  return `Concerts in ${location} ${year}: Upcoming Shows & Tickets`;
 }
 
 export function generateCityDescription(
@@ -244,11 +244,13 @@ export function generateConcertsIndexMetadata() {
 }
 
 export function generateGenreTitle(genreName: string, artistCount: number, year: number = new Date().getFullYear(), topArtistNames?: string[]): string {
+  // Hip-Hop also captures "rap" queries
+  const displayGenre = genreName === 'Hip-Hop' ? 'Hip-Hop & Rap' : genreName;
   if (topArtistNames && topArtistNames.length >= 2) {
     const featured = topArtistNames.slice(0, 2).join(', ');
-    return `${genreName} Tours ${year}: ${featured} & More`;
+    return `${displayGenre} Tours ${year}: ${featured} & More`;
   }
-  return `${genreName} Tours ${year} - ${artistCount} Artists on Tour Now`;
+  return `${displayGenre} Tours ${year} - ${artistCount} Artists on Tour Now`;
 }
 
 export function generateGenreDescription(
@@ -320,11 +322,11 @@ export function generateToursIndexMetadata() {
 }
 
 export function generateVenueTitle(venueName: string, city: string | null, eventCount: number, year: number = new Date().getFullYear()): string {
-  const location = city ? `, ${city}` : '';
+  const location = city ? ` (${city})` : '';
   if (eventCount > 0) {
-    return `${venueName}${location} ${year} Schedule: ${eventCount} Upcoming Shows & Tickets`;
+    return `${venueName} Upcoming Events ${year}${location}: ${eventCount} Concerts & Tickets`;
   }
-  return `${venueName}${location}: ${year} Concert Schedule & Upcoming Events`;
+  return `${venueName} Upcoming Events & Concert Schedule ${year}${location}`;
 }
 
 export function generateVenueDescription(
@@ -338,7 +340,7 @@ export function generateVenueDescription(
   const location = city ? ` in ${city}` : '';
 
   if (eventCount === 0) {
-    return `${venueName}${location} ${year} concert schedule & upcoming events. Check back for new shows, events & tickets.`;
+    return `${venueName}${location} ${year} concert schedule & upcoming events. Check back for newly announced shows, tour dates & tickets.`;
   }
 
   const nextDateText = nextEventDate
@@ -348,7 +350,7 @@ export function generateVenueDescription(
   const topArtists = artistNames.slice(0, 3).join(', ');
   const moreText = artistNames.length > 3 ? ` + ${artistNames.length - 3} more` : '';
 
-  return `${nextDateText}${eventCount} upcoming shows at ${venueName}${location}: ${topArtists}${moreText}. Full ${year} schedule, concerts & tickets.`;
+  return `${nextDateText}${eventCount} upcoming events at ${venueName}${location}: ${topArtists}${moreText}. See the full ${year} concert schedule, set times & buy tickets.`;
 }
 
 export function generateVenueMetadata(data: {
@@ -599,10 +601,10 @@ export function generateThisWeekendMetadata(eventCount: number) {
 }
 
 export function generateTonightMetadata(eventCount: number) {
-  const title = `Concerts Tonight ${new Date().getFullYear()} - Live Shows Near You`;
+  const title = `Concerts Today & Tonight ${new Date().getFullYear()}: Live Shows Near You`;
   const description = eventCount > 0
-    ? `${eventCount} concerts happening tonight. Find last-minute tickets and live shows near you.`
-    : `Find concerts happening tonight. Browse live shows and buy last-minute tickets on ${SITE_NAME}.`;
+    ? `${eventCount} concerts happening today and tonight. Find last-minute tickets, today's shows, and live music near you.`
+    : `Find concerts happening today and tonight. Browse live shows and buy last-minute tickets on ${SITE_NAME}.`;
   const url = generateCanonicalUrl('/concerts/tonight');
 
   return {
@@ -743,6 +745,24 @@ export function generateEventPageMetadata(data: {
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url, image }),
     twitter: generateTwitterCardTags({ title, description, image }),
+  };
+}
+
+export function generateNearMeMetadata(cityName?: string | null) {
+  const year = new Date().getFullYear();
+  const locationLabel = cityName ? ` in ${cityName}` : ' Near Me';
+  const title = `Concerts${locationLabel} ${year}: Live Shows Near You`;
+  const description = cityName
+    ? `Find concerts and live music near ${cityName}. Browse upcoming shows, last-minute tickets, and tour dates near you on ${SITE_NAME}.`
+    : `Find concerts and live music near you. Browse upcoming shows, last-minute tickets, and tour dates near your location on ${SITE_NAME}.`;
+  const url = generateCanonicalUrl('/concerts/near-me');
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: generateOpenGraphTags({ title, description, url }),
+    twitter: generateTwitterCardTags({ title, description }),
   };
 }
 

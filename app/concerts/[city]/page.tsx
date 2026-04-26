@@ -13,6 +13,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
+import { CITY_LONG_CONTENT } from '@/lib/city-content';
 import Pagination from '@/components/Pagination';
 
 export const revalidate = 1800;
@@ -291,6 +292,7 @@ export default async function CityPage({ params, searchParams }: Props) {
   ];
 
   const faqSchema = generateFAQSchema(faqs);
+  const longContent = CITY_LONG_CONTENT[cityInfo.city];
 
   return (
     <>
@@ -310,6 +312,17 @@ export default async function CityPage({ params, searchParams }: Props) {
             {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
           </p>
         </div>
+
+        {longContent && (
+          <section className="mb-12 max-w-4xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{longContent.headline}</h2>
+            <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
+              {longContent.paragraphs.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Quick Stats Bar */}
         {allCityEvents.length > 0 && (

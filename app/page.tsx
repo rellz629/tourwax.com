@@ -10,6 +10,7 @@ import { slugify } from '@/lib/slugify';
 import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
 import ShowMoreEvents from '@/components/ShowMoreEvents';
+import HomepageNearMe from '@/components/HomepageNearMe';
 
 // Use Static Site Generation with ISR
 export const dynamic = 'force-static';
@@ -157,7 +158,7 @@ export default async function HomePage() {
       <StructuredData data={[organizationSchema, websiteSchema, breadcrumbSchema]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Hero Section */}
-      <div className="text-center mb-20">
+      <div className="text-center mb-12">
         <h1 className="text-6xl md:text-7xl font-black mb-6">
           <span className="gradient-text">Never Miss a Show</span>
         </h1>
@@ -166,6 +167,9 @@ export default async function HomePage() {
           <span className="block mt-2 text-orange-500 font-semibold">Updated automatically, every day.</span>
         </p>
       </div>
+
+      {/* Concerts Near Me (client-side, hydrates after page load) */}
+      <HomepageNearMe />
 
       {/* Featured Artists */}
       <section className="mb-20">

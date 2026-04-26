@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateFestivalMetadata, SITE_URL } from '@/lib/seo';
-import { generateBreadcrumbSchema, generateFestivalEventSchema } from '@/lib/schema';
+import { generateBreadcrumbSchema, generateFestivalEventSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAllFestivals, getFestivalBySlug } from '@/lib/festivals';
@@ -87,9 +87,44 @@ export default async function FestivalPage({ params }: Props) {
 
   const festivalImage = getFestivalImage(festival.slug);
 
+  const lowestPrice = festival.events
+    .map((e) => e.minPrice)
+    .filter((p): p is number => p !== null && p > 0)
+    .reduce<number | null>((min, p) => (min === null || p < min ? p : min), null);
+
+  const topArtistNames = festival.artists.slice(0, 5).map((a) => a.name);
+  const venueLocationText = locationLabel ? `${festival.venue.name} in ${locationLabel}` : festival.venue.name;
+
+  const faqs = [
+    {
+      question: `When is ${festival.name}?`,
+      answer: `${festival.name} takes place ${festival.formattedDate} at ${venueLocationText}.`,
+    },
+    {
+      question: `Who is performing at ${festival.name}?`,
+      answer: festival.artists.length > 0
+        ? `The ${festival.name} lineup includes ${topArtistNames.join(', ')}${festival.artistCount > 5 ? `, and ${festival.artistCount - 5} more artists` : ''}.`
+        : `The ${festival.name} lineup will be announced soon. Check back for updates.`,
+    },
+    {
+      question: `Where is ${festival.name} held?`,
+      answer: `${festival.name} is held at ${venueLocationText}${festival.venue.address ? ` (${festival.venue.address})` : ''}.`,
+    },
+    {
+      question: `How do I get tickets to ${festival.name}?`,
+      answer: `Tickets to ${festival.name} are available through Ticketmaster and SeatGeek. ${lowestPrice ? `Prices start from $${lowestPrice}.` : ''} Click "Get Tickets" on any artist below to be taken to the official ticket page.`,
+    },
+    {
+      question: `How many artists are performing at ${festival.name}?`,
+      answer: `${festival.artistCount} artist${festival.artistCount === 1 ? '' : 's'} ${festival.artistCount === 1 ? 'is' : 'are'} confirmed for ${festival.name}.`,
+    },
+  ];
+
+  const faqSchema = generateFAQSchema(faqs);
+
   return (
     <>
-      <StructuredData data={[breadcrumbSchema, festivalSchema]} />
+      <StructuredData data={[breadcrumbSchema, festivalSchema, faqSchema]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Breadcrumbs items={breadcrumbItems} />
 
@@ -321,6 +356,24 @@ export default async function FestivalPage({ params }: Props) {
                 Capacity: {festival.venue.capacity.toLocaleString()}
               </p>
             )}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <details key={i} className="group bg-white rounded-xl shadow-md border border-gray-100">
+                <summary className="cursor-pointer p-5 font-semibold text-gray-900 hover:text-orange-600 transition-colors list-none flex justify-between items-center">
+                  {faq.question}
+                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-5 pb-5 text-gray-600">{faq.answer}</div>
+              </details>
+            ))}
           </div>
         </section>
       </div>

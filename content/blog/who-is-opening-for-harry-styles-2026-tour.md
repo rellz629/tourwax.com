@@ -1,13 +1,15 @@
 ---
-title: "Who Is Opening for Harry Styles on the Together Together Tour 2026?"
+title: "Who Is Opening for Harry Styles 2026? Full Tour Lineup by City"
 slug: "who-is-opening-for-harry-styles-2026-tour"
-excerpt: "Jamie xx, Robyn, Shania Twain, Jorja Smith, and more open for Harry Styles on his 2026 Together Together world tour, including 30 nights at Madison Square Garden."
+excerpt: "Jamie xx, Robyn, Shania Twain, and Jorja Smith open for Harry Styles on the 2026 Together Together world tour, including 30 nights at MSG. Full city-by-city lineup."
 author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/HarryStylesWembley170623_%2865_of_93%29_%2852982678051%29_%28cropped_2%29.jpg/1280px-HarryStylesWembley170623_%2865_of_93%29_%2852982678051%29_%28cropped_2%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-08"
+updatedAt: "2026-04-25"
 ---
+
+_Updated April 25, 2026 with the latest confirmed openers and dates._
 
 Harry Styles' 2026 Together Together Tour is one of the year's most ambitious concert events: 67 shows across just seven cities, including a 30-night residency at Madison Square Garden. Each city gets a different opening act, and the choices say a lot about where Styles is heading musically.
 
@@ -69,6 +71,30 @@ The tour supports Styles' fourth studio album *Kiss All the Time. Disco, Occasio
 ## How to Get Tickets
 
 With 30 MSG dates, New York has the most availability, but demand is still high. Tickets are available via Ticketmaster and venue box offices. Check the [Harry Styles page on TourWax](/artists/harry-styles) for ticket links and updates.
+
+## Frequently Asked Questions
+
+### Who is opening for Harry Styles at Madison Square Garden?
+Jamie xx is the opener for all 30 nights of the MSG residency. The xx producer brings a DJ set of dance-leaning electronic music to pair with Styles' headline show.
+
+### Who is opening for Harry Styles in London?
+Shania Twain is the confirmed support act for the London dates of the Together Together Tour, an unexpected pop-country pairing that has been one of the tour's most-discussed bookings.
+
+### Who is opening for Harry Styles in Amsterdam?
+Robyn opens the Amsterdam dates at Johan Cruyff Arena starting May 16, 2026. The Swedish pop icon's dance-pop catalog pairs naturally with Styles' setlist.
+
+### What cities is Harry Styles touring in 2026?
+The Together Together Tour visits only seven cities worldwide: Amsterdam, London, New York City (MSG residency), Sao Paulo, Mexico City, Melbourne, and Sydney. The tour wraps in Sydney on December 13.
+
+### How long is Harry Styles' MSG residency?
+Styles is playing 30 consecutive nights at Madison Square Garden. It's one of the largest single-venue concert residencies announced for 2026.
+
+## More Tour Opener Guides
+
+- [Who Is Opening for Bruno Mars](/blog/who-is-opening-for-bruno-mars-2026-tour)
+- [Who Is Opening for Post Malone](/blog/who-is-opening-for-post-malone-2026-tour)
+- [Who Is Opening for Foo Fighters](/blog/who-is-opening-for-foo-fighters-2026-tour)
+- [Who Is Opening for Childish Gambino](/blog/who-is-opening-for-childish-gambino-2026-tour)
 
 ---
 

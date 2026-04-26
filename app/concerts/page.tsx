@@ -59,6 +59,7 @@ export default async function ConcertsPage() {
             Browse concerts in {cities.length} cities
           </p>
           <div className="flex flex-wrap gap-3 mt-4">
+            <Link href="/concerts/near-me" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-4 py-2 rounded-lg transition-colors">Near Me</Link>
             <Link href="/concerts/tonight" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-4 py-2 rounded-lg transition-colors">Tonight</Link>
             <Link href="/concerts/this-weekend" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-4 py-2 rounded-lg transition-colors">This Weekend</Link>
             <Link href="/concerts/this-week" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-4 py-2 rounded-lg transition-colors">This Week</Link>

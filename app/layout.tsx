@@ -123,6 +123,7 @@ export default function RootLayout({
               <div>
                 <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-4">Quick Links</h3>
                 <ul className="space-y-2">
+                  <li><Link href="/concerts/near-me" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Concerts Near Me</Link></li>
                   <li><Link href="/concerts/tonight" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Concerts Tonight</Link></li>
                   <li><Link href="/concerts/this-weekend" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">This Weekend</Link></li>
                   <li><Link href="/concerts/this-week" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">This Week</Link></li>
