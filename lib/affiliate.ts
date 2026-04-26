@@ -36,17 +36,21 @@ export const AFFILIATE_CONFIG = {
 
 export function getTicketmasterAffiliateUrl(url: string): string {
   if (!url) return url;
-  if (!url.includes('ticketmaster.com')) return url;
 
   const { affiliateId, campaignId, creativeId, trackingDomain } = AFFILIATE_CONFIG.ticketmaster;
+  if (url.startsWith(`https://${trackingDomain}/`)) return url;
+  if (!url.includes('ticketmaster.com')) return url;
+
   return `https://${trackingDomain}/c/${affiliateId}/${campaignId}/${creativeId}?u=${encodeURIComponent(url)}`;
 }
 
 export function getSeatGeekAffiliateUrl(url: string): string {
   if (!url) return url;
-  if (!url.includes('seatgeek.com')) return url;
 
   const { affiliateId, creativeId, advertiserId, trackingDomain } = AFFILIATE_CONFIG.seatgeek;
+  if (url.startsWith(`https://${trackingDomain}/`)) return url;
+  if (!url.includes('seatgeek.com')) return url;
+
   return `https://${trackingDomain}/c/${affiliateId}/${creativeId}/${advertiserId}?u=${encodeURIComponent(url)}`;
 }
 
