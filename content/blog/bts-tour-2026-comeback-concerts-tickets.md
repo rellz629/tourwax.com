@@ -4,7 +4,7 @@ slug: "bts-tour-2026-comeback-concerts-tickets"
 excerpt: "Everything ARMY needs to know about BTS's 2026 group comeback: expected reunion concerts, member solo tours still on the road, ticket pricing, and how to be ready when dates drop."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: "https://upload.wikimedia.org/wikipedia/commons/9/9f/BTS_for_Dispatch_%22White_Day%22_Special%2C_27_February_2019_05.jpg"
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/BTS_during_a_White_House_press_conference_May_31%2C_2022_%28cropped%29.jpg/1280px-BTS_during_a_White_House_press_conference_May_31%2C_2022_%28cropped%29.jpg"
 publishedAt: "2026-04-25"
 updatedAt: "2026-04-25"
 ---

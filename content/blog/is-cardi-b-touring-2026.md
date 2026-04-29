@@ -4,7 +4,7 @@ slug: "is-cardi-b-touring-2026"
 excerpt: "Is Cardi B touring in 2026? Here's what we know about her next concert, festival appearances, the long-awaited new album, and how to be ready when tour dates are announced."
 author: "TourWax Team"
 category: "Guide"
-featuredImage: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Cardi_B_2018.png"
+featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Cardi_B_March_2024.png/1280px-Cardi_B_March_2024.png"
 publishedAt: "2026-04-25"
 updatedAt: "2026-04-25"
 ---
