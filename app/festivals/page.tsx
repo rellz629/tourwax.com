@@ -86,12 +86,17 @@ export default async function FestivalsPage({ searchParams }: Props) {
                 >
                   <div className="h-3 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
                   <div className="p-6">
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2 mb-3 flex-wrap">
                       <span className="inline-block px-3 py-1 text-xs font-semibold text-orange-600 bg-orange-50 rounded-full">
                         {festival.artistCount} Artists
                       </span>
+                      {festival.isMultiDay && (
+                        <span className="inline-block px-3 py-1 text-xs font-semibold text-purple-600 bg-purple-50 rounded-full">
+                          {festival.days.length} Days
+                        </span>
+                      )}
                       <span className="text-xs text-gray-500">
-                        {festival.formattedDate}
+                        {festival.formattedDateRange}
                       </span>
                     </div>
                     <h2 className="text-lg font-bold text-gray-900 group-hover:text-orange-500 transition-colors mb-2">

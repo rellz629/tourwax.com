@@ -6,8 +6,9 @@ import { generateBreadcrumbSchema, generateFestivalEventSchema, generateFAQSchem
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAllFestivals, getArchivedFestivals, getFestivalBySlug } from '@/lib/festivals';
+import type { FestivalEventCard } from '@/lib/festivals';
 import { getFestivalImage } from '@/lib/festival-images';
-import { getAffiliateUrl } from '@/lib/affiliate';
+import { getAffiliateUrl, getVividSeatsSearchUrl, getStubHubSearchUrl } from '@/lib/affiliate';
 import { slugify } from '@/lib/slugify';
 import { normalizeGenre } from '@/lib/genres';
 import { notFound, permanentRedirect } from 'next/navigation';
@@ -27,8 +28,8 @@ export async function generateStaticParams() {
   const seen = new Set<string>();
   const params: { slug: string }[] = [];
   for (const f of [...upcoming, ...archived]) {
-    // Pre-render canonical AND legacy slugs so both old GSC URLs and new ones resolve at the static layer.
-    for (const slug of [f.slug, f.legacySlug]) {
+    // Pre-render canonical AND every legacy slug so old URLs resolve at the static layer.
+    for (const slug of [f.slug, f.legacySlug, ...f.legacySlugs]) {
       if (seen.has(slug)) continue;
       seen.add(slug);
       params.push({ slug });
@@ -53,11 +54,116 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     slug: festival.slug,
     venueName: festival.venue.name,
     city: festival.venue.city,
-    date: festival.formattedDate,
+    date: festival.formattedDateRange,
     artistCount: festival.artistCount,
     artistNames: festival.artists.map((a) => a.name),
     isPast: festival.isPast,
   });
+}
+
+function pickPrimaryEvent(events: FestivalEventCard[]): FestivalEventCard | null {
+  if (events.length === 0) return null;
+  const withPrice = events.filter((e) => e.minPrice !== null && e.minPrice > 0);
+  if (withPrice.length === 0) return events[0];
+  return withPrice.reduce((cheapest, e) =>
+    cheapest.minPrice !== null && e.minPrice !== null && e.minPrice < cheapest.minPrice ? e : cheapest
+  , withPrice[0]);
+}
+
+function CtaButtons({
+  event,
+  festivalName,
+  variant = 'primary',
+}: {
+  event: FestivalEventCard;
+  festivalName: string;
+  variant?: 'primary' | 'compact';
+}) {
+  const sources: { label: string; href: string; source: string }[] = [];
+  for (const ts of event.ticketSources) {
+    if (!ts.ticketUrl) continue;
+    sources.push({
+      label: ts.source.charAt(0).toUpperCase() + ts.source.slice(1),
+      href: getAffiliateUrl(ts.ticketUrl, ts.source),
+      source: ts.source.toLowerCase(),
+    });
+  }
+  // Resale fallbacks: search-based URLs, useful even when face-value is sold out.
+  sources.push({ label: 'Vivid Seats', href: getVividSeatsSearchUrl(festivalName), source: 'vividseats' });
+  sources.push({ label: 'StubHub', href: getStubHubSearchUrl(festivalName), source: 'stubhub' });
+
+  const baseClass = variant === 'primary'
+    ? 'btn-primary text-base'
+    : 'inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-bold bg-orange-500 text-white hover:bg-orange-600 transition-colors';
+  const altClass = variant === 'primary'
+    ? 'inline-flex items-center justify-center px-5 py-3 rounded-lg font-bold text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors'
+    : 'inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors';
+
+  return (
+    <div className={variant === 'primary' ? 'flex flex-wrap gap-3' : 'flex flex-wrap gap-2 justify-end'}>
+      {sources.map((s, i) => (
+        <a
+          key={s.source}
+          href={s.href}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          className={i === 0 ? baseClass : altClass}
+        >
+          Get Tickets <span className="opacity-75 ml-1.5">{s.label}</span>
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function EventCard({
+  event,
+  festivalName,
+  isPast,
+}: {
+  event: FestivalEventCard;
+  festivalName: string;
+  isPast: boolean;
+}) {
+  return (
+    <div
+      id={`event-${event.id}`}
+      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 border border-gray-100"
+    >
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+        <div className="flex-1">
+          <h3 className="font-bold text-gray-900 text-lg">{event.name}</h3>
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-500">
+            <span className="flex items-center gap-1">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {event.formattedDate}
+            </span>
+            <span className="flex items-center gap-1">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {new Date(event.eventDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+            </span>
+            {!isPast && event.minPrice !== null && (
+              <>
+                <span className="text-gray-300">|</span>
+                <span className="font-semibold text-orange-600">
+                  From {event.currency || 'USD'} {event.minPrice}
+                  {event.maxPrice !== null && event.maxPrice !== event.minPrice && ` - ${event.maxPrice}`}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+        {!isPast && <CtaButtons event={event} festivalName={festivalName} variant="compact" />}
+        {isPast && (
+          <span className="text-xs text-gray-500 italic">Tickets no longer available</span>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default async function FestivalPage({ params }: Props) {
@@ -68,7 +174,7 @@ export default async function FestivalPage({ params }: Props) {
     notFound();
   }
 
-  // Legacy slug hit → redirect to canonical URL with 308 so Google consolidates.
+  // Non-canonical slug → 308 redirect to canonical so Google consolidates.
   if (slug !== festival.slug) {
     permanentRedirect(`/festivals/${festival.slug}`);
   }
@@ -93,13 +199,15 @@ export default async function FestivalPage({ params }: Props) {
     date: festival.date,
     venue: festival.venue,
     artists: festival.artists,
-    events: festival.events.map((e) => ({
-      ticketUrl: e.ticketUrl,
-      minPrice: e.minPrice,
-      maxPrice: e.maxPrice,
-      currency: e.currency,
-      source: e.source,
-    })),
+    events: festival.events.flatMap((e) =>
+      e.ticketSources.map((ts) => ({
+        ticketUrl: ts.ticketUrl,
+        minPrice: ts.minPrice,
+        maxPrice: ts.maxPrice,
+        currency: ts.currency,
+        source: ts.source,
+      }))
+    ),
   });
 
   const breadcrumbItems = [
@@ -118,11 +226,13 @@ export default async function FestivalPage({ params }: Props) {
   const topArtistNames = festival.artists.slice(0, 5).map((a) => a.name);
   const venueLocationText = locationLabel ? `${festival.venue.name} in ${locationLabel}` : festival.venue.name;
 
+  const primaryEvent = pickPrimaryEvent(festival.events);
+
   const faqs = isPast
     ? [
         {
           question: `When was ${festival.name}?`,
-          answer: `${festival.name} took place ${festival.formattedDate} at ${venueLocationText}.`,
+          answer: `${festival.name} took place ${festival.formattedDateRange} at ${venueLocationText}.`,
         },
         {
           question: `Who performed at ${festival.name}?`,
@@ -136,7 +246,7 @@ export default async function FestivalPage({ params }: Props) {
         },
         {
           question: `Are tickets still available for ${festival.name}?`,
-          answer: `${festival.name} took place on ${festival.formattedDate}, so tickets are no longer available. Browse current tour dates from the lineup above to find their next shows.`,
+          answer: `${festival.name} took place on ${festival.formattedDateRange}, so face-value tickets are no longer available. Browse current tour dates from the lineup above to find their next shows.`,
         },
         {
           question: `How many artists performed at ${festival.name}?`,
@@ -146,7 +256,7 @@ export default async function FestivalPage({ params }: Props) {
     : [
         {
           question: `When is ${festival.name}?`,
-          answer: `${festival.name} takes place ${festival.formattedDate} at ${venueLocationText}.`,
+          answer: `${festival.name} takes place ${festival.formattedDateRange} at ${venueLocationText}.`,
         },
         {
           question: `Who is performing at ${festival.name}?`,
@@ -160,7 +270,7 @@ export default async function FestivalPage({ params }: Props) {
         },
         {
           question: `How do I get tickets to ${festival.name}?`,
-          answer: `Tickets to ${festival.name} are available through Ticketmaster and SeatGeek. ${lowestPrice ? `Prices start from $${lowestPrice}.` : ''} Click "Get Tickets" on any artist below to be taken to the official ticket page.`,
+          answer: `Tickets to ${festival.name} are available through Ticketmaster, SeatGeek, Vivid Seats, and StubHub. ${lowestPrice ? `Prices start from $${lowestPrice}.` : ''} Compare prices in the Event Details section below.`,
         },
         {
           question: `How many artists are performing at ${festival.name}?`,
@@ -184,7 +294,7 @@ export default async function FestivalPage({ params }: Props) {
             <div>
               <p className="font-semibold text-gray-900">Archived festival</p>
               <p className="text-sm text-gray-600 mt-0.5">
-                {festival.name} {performedAt} on {festival.formattedDate}. Tickets are no longer available, but you can browse the lineup&apos;s current tour dates below.
+                {festival.name} {performedAt} on {festival.formattedDateRange}. Tickets are no longer available, but you can browse the lineup&apos;s current tour dates below.
               </p>
             </div>
           </div>
@@ -216,7 +326,7 @@ export default async function FestivalPage({ params }: Props) {
           </div>
         )}
 
-        <div className="mb-12">
+        <div className="mb-8">
           <h1 className="text-5xl md:text-6xl font-black mb-4">
             <span className={isPast ? 'text-gray-700' : 'gradient-text'}>{festival.name}</span>
           </h1>
@@ -225,7 +335,7 @@ export default async function FestivalPage({ params }: Props) {
               <svg className="w-5 h-5 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              {festival.formattedDate}
+              {festival.formattedDateRange}
             </span>
             <span className="flex items-center gap-2 text-lg">
               <svg className="w-5 h-5 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -251,8 +361,36 @@ export default async function FestivalPage({ params }: Props) {
           </div>
           <p className="text-xl text-gray-600 mt-3">
             {festival.artistCount} artist{festival.artistCount === 1 ? '' : 's'} {performVerb}
+            {festival.isMultiDay && ` across ${festival.days.length} days`}
           </p>
         </div>
+
+        {/* Primary CTA: cheapest pass + multi-source buttons (only when upcoming) */}
+        {!isPast && primaryEvent && (
+          <section className="mb-12 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100 p-6 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-wide font-bold text-orange-600 mb-1">Get Tickets</p>
+                <p className="text-lg font-bold text-gray-900">
+                  {primaryEvent.name}
+                </p>
+                {primaryEvent.minPrice !== null && primaryEvent.minPrice > 0 && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    From {primaryEvent.currency || 'USD'} ${primaryEvent.minPrice}
+                  </p>
+                )}
+              </div>
+              <CtaButtons event={primaryEvent} festivalName={festival.name} variant="primary" />
+            </div>
+            {festival.events.length > 1 && (
+              <p className="text-sm text-gray-500 mt-4">
+                <a href="#event-details" className="font-medium text-orange-600 hover:text-orange-700">
+                  More ticket options below ↓
+                </a>
+              </p>
+            )}
+          </section>
+        )}
 
         {/* Lineup Grid */}
         <section className="mb-12">
@@ -298,97 +436,89 @@ export default async function FestivalPage({ params }: Props) {
           </div>
         </section>
 
-        {/* Event Details */}
-        <section className="mb-12">
+        {/* Secondary CTA: smaller, between lineup and Event Details */}
+        {!isPast && primaryEvent && (
+          <section className="mb-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white rounded-xl shadow-sm border border-gray-100 px-5 py-4">
+            <p className="text-sm text-gray-700">
+              <span className="font-semibold">Ready to grab tickets?</span>
+              {primaryEvent.minPrice !== null && primaryEvent.minPrice > 0 && (
+                <> Passes start at ${primaryEvent.minPrice}.</>
+              )}
+            </p>
+            <CtaButtons event={primaryEvent} festivalName={festival.name} variant="compact" />
+          </section>
+        )}
+
+        {/* Day-by-day breakdown for multi-day festivals */}
+        {festival.isMultiDay && (
+          <section id="lineup-by-day" className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+              <h2 className="text-2xl font-bold text-gray-900">Lineup by Day</h2>
+              <div className="h-px flex-1 bg-gray-200"></div>
+            </div>
+            <div className="space-y-8">
+              {festival.days.map((day, i) => (
+                <div key={day.date} id={`day-${i + 1}`}>
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">
+                    Day {i + 1}: {day.formattedDate}
+                    <span className="ml-2 text-sm font-normal text-gray-500">
+                      ({day.artists.length} artist{day.artists.length === 1 ? '' : 's'})
+                    </span>
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-2">
+                    {day.artists.map((artist) => (
+                      <Link
+                        key={artist.slug}
+                        href={`/artists/${artist.slug}`}
+                        className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 p-2 text-center"
+                      >
+                        <div className="w-full aspect-square rounded-md bg-gradient-to-br from-orange-500 to-red-500 overflow-hidden mb-2">
+                          {artist.imageUrl ? (
+                            <Image
+                              src={artist.imageUrl}
+                              alt={artist.name}
+                              width={120}
+                              height={120}
+                              className="w-full h-full object-cover"
+                              sizes="(max-width: 640px) 33vw, 14vw"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-white text-2xl font-bold">
+                              {artist.name.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-xs font-semibold text-gray-900 group-hover:text-orange-500 transition-colors truncate">
+                          {artist.name}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Event Details: deduplicated tickets across the festival */}
+        <section id="event-details" className="mb-12 scroll-mt-20">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
-            <h2 className="text-2xl font-bold text-gray-900">Event Details</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {festival.events.length === 1 ? 'Event Details' : `Ticket Options (${festival.events.length})`}
+            </h2>
             <div className="h-px flex-1 bg-gray-200"></div>
           </div>
 
           <div className="space-y-4">
             {festival.events.map((event) => (
-              <div
+              <EventCard
                 key={event.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 border border-gray-100"
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                  <div className="flex items-start gap-4 flex-1">
-                    <Link
-                      href={`/artists/${event.artist.slug}`}
-                      className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-500 to-red-500"
-                    >
-                      {event.artist.imageUrl ? (
-                        <Image
-                          src={event.artist.imageUrl}
-                          alt={event.artist.name}
-                          width={56}
-                          height={56}
-                          className="w-full h-full object-cover"
-                          sizes="56px"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white text-xl font-bold">
-                          {event.artist.name.charAt(0)}
-                        </div>
-                      )}
-                    </Link>
-                    <div className="flex-1">
-                      <Link
-                        href={`/artists/${event.artist.slug}`}
-                        className="font-bold text-gray-900 hover:text-orange-600 transition-colors text-lg"
-                      >
-                        {event.artist.name}
-                      </Link>
-                      <p className="text-sm text-gray-600 mt-1">{event.name}</p>
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          {new Date(event.eventDate).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                        {!isPast && (event.minPrice || event.maxPrice) && (
-                          <>
-                            <span className="text-gray-300">|</span>
-                            <span className="font-semibold text-orange-600">
-                              From {event.currency || 'USD'} {event.minPrice || event.maxPrice}
-                              {event.maxPrice && event.minPrice !== event.maxPrice &&
-                                ` - ${event.currency || 'USD'} ${event.maxPrice}`}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2 items-end">
-                    {!isPast && event.ticketUrl && (
-                      <a
-                        href={getAffiliateUrl(event.ticketUrl, event.source)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-primary whitespace-nowrap"
-                      >
-                        Get Tickets
-                      </a>
-                    )}
-                    {isPast && (
-                      <Link
-                        href={`/artists/${event.artist.slug}`}
-                        className="text-sm font-semibold text-orange-500 hover:text-orange-600 whitespace-nowrap"
-                      >
-                        See current tour →
-                      </Link>
-                    )}
-                    <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">
-                      via {event.source}
-                    </span>
-                  </div>
-                </div>
-              </div>
+                event={event}
+                festivalName={festival.name}
+                isPast={isPast}
+              />
             ))}
           </div>
         </section>

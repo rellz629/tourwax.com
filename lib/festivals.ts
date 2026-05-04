@@ -8,6 +8,8 @@ import type { Artist, Event, Venue } from '@/db/schema';
 
 export const MIN_ARTISTS_FOR_FESTIVAL = 3;
 export const ARCHIVE_MONTHS = 18;
+/** Max gap (in days) between consecutive festival days that still belongs to the same multi-day festival. */
+const MAX_DAY_GAP = 2;
 
 /**
  * Branded festival names used as canonical slug bases when matched in event names.
@@ -72,34 +74,71 @@ export interface FestivalArtist {
   genre: string | null;
 }
 
-export interface FestivalEvent {
-  id: string;
-  name: string;
-  eventDate: Date;
+/** A single ticket source (Ticketmaster, SeatGeek, etc.) for a given event card. */
+export interface TicketSource {
+  source: string;
   ticketUrl: string | null;
   minPrice: number | null;
   maxPrice: number | null;
   currency: string | null;
-  source: string;
-  artist: FestivalArtist;
+}
+
+/**
+ * One unique ticket-purchase option for the festival (e.g. "4-Day Pass", "Single Day Friday",
+ * "VIP"). Aggregates multiple sources (TM, SG) into a single card with multi-source CTAs.
+ */
+export interface FestivalEventCard {
+  id: string;
+  name: string;
+  eventDate: Date;
+  formattedDate: string;
+  ticketSources: TicketSource[];
+  /** Lowest minPrice across all ticket sources. */
+  minPrice: number | null;
+  /** Highest maxPrice across all ticket sources. */
+  maxPrice: number | null;
+  currency: string | null;
+}
+
+export interface FestivalDay {
+  date: string;
+  formattedDate: string;
+  artists: FestivalArtist[];
+  events: FestivalEventCard[];
 }
 
 export interface Festival {
   name: string;
-  /** Canonical slug: stable across lineup/event-name changes (venueSlug + date). */
+  /** Canonical slug. For branded festivals: brand+startDate. Else: venueSlug+startDate. */
   slug: string;
   /**
-   * Legacy prefix-based slug used before slug stabilization. Computed deterministically
-   * from sorted unique event names so it can still match historic GSC URLs.
+   * Primary legacy slug derived from sorted unique event names (deterministic).
+   * Single-day festival's first-day legacy slug.
    */
   legacySlug: string;
-  date: string; // YYYY-MM-DD
+  /**
+   * All slugs that should redirect to this festival (canonical + legacy for every
+   * day in a multi-day festival, minus the canonical itself).
+   */
+  legacySlugs: string[];
+  /** Start date YYYY-MM-DD. Kept as `date` for back-compat with the festival listing/compare pages. */
+  date: string;
+  /** End date YYYY-MM-DD. Equals `date` for single-day festivals. */
+  endDate: string;
+  /** "Friday, July 30, 2026" — start date pretty. Kept for back-compat. */
   formattedDate: string;
+  /** "Friday, July 30 to Monday, August 2, 2026" or just one date for single-day. */
+  formattedDateRange: string;
+  isMultiDay: boolean;
   venue: Venue;
   venueSlug: string;
+  /** One entry per festival day, sorted ascending. */
+  days: FestivalDay[];
+  /** Deduplicated union of artists across all days. */
   artists: FestivalArtist[];
-  events: FestivalEvent[];
   artistCount: number;
+  /** Festival-level deduplicated tickets (4-Day Pass, Single-Day, VIP, etc.). */
+  events: FestivalEventCard[];
   isPast: boolean;
 }
 
@@ -129,9 +168,152 @@ export function deriveFestivalName(eventNames: string[], venueName: string, form
   return `${venueName} - ${formattedDate}`;
 }
 
+function formatDateLong(yyyymmdd: string): string {
+  return new Date(yyyymmdd + 'T12:00:00').toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function formatDateRange(startDate: string, endDate: string): string {
+  if (startDate === endDate) return formatDateLong(startDate);
+  const start = new Date(startDate + 'T12:00:00');
+  const end = new Date(endDate + 'T12:00:00');
+  const sameYear = start.getFullYear() === end.getFullYear();
+  const startStr = start.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: sameYear ? undefined : 'numeric',
+  });
+  const endStr = end.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+  return `${startStr} to ${endStr}`;
+}
+
+/**
+ * Build event cards by deduplicating raw rows by (event name + event date),
+ * accumulating each event's ticket sources (TM, SG) into a single card.
+ */
+function buildEventCards(rawRows: { event: Event }[]): FestivalEventCard[] {
+  const cards = new Map<string, {
+    id: string;
+    name: string;
+    eventDate: Date;
+    sources: Map<string, TicketSource>;
+  }>();
+
+  for (const row of rawRows) {
+    const key = `${row.event.name}|${row.event.eventDate.toISOString()}`;
+    let card = cards.get(key);
+    if (!card) {
+      card = {
+        id: row.event.id,
+        name: row.event.name,
+        eventDate: row.event.eventDate,
+        sources: new Map(),
+      };
+      cards.set(key, card);
+    }
+    // Stable id: lowest by string sort across sources for a given (name, date)
+    if (row.event.id < card.id) card.id = row.event.id;
+
+    if (!card.sources.has(row.event.source)) {
+      card.sources.set(row.event.source, {
+        source: row.event.source,
+        ticketUrl: row.event.ticketUrl,
+        minPrice: row.event.minPrice,
+        maxPrice: row.event.maxPrice,
+        currency: row.event.currency,
+      });
+    }
+  }
+
+  const result: FestivalEventCard[] = [];
+  for (const c of cards.values()) {
+    const ticketSources = Array.from(c.sources.values());
+    const mins = ticketSources.map((ts) => ts.minPrice).filter((p): p is number => p !== null && p > 0);
+    const maxs = ticketSources.map((ts) => ts.maxPrice).filter((p): p is number => p !== null && p > 0);
+    result.push({
+      id: c.id,
+      name: c.name,
+      eventDate: c.eventDate,
+      formattedDate: c.eventDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+      ticketSources,
+      minPrice: mins.length ? Math.min(...mins) : null,
+      maxPrice: maxs.length ? Math.max(...maxs) : null,
+      currency: ticketSources.find((ts) => ts.currency)?.currency || null,
+    });
+  }
+
+  return result.sort((a, b) => a.eventDate.getTime() - b.eventDate.getTime());
+}
+
+/**
+ * Festival-level event cards: across all days, dedupe by event NAME (the same
+ * "4-Day Pass" listed on multiple days collapses to one card showing the earliest date).
+ */
+function dedupeFestivalEvents(allDayEvents: FestivalEventCard[]): FestivalEventCard[] {
+  const byName = new Map<string, FestivalEventCard>();
+  for (const card of allDayEvents) {
+    const existing = byName.get(card.name);
+    if (!existing) {
+      byName.set(card.name, card);
+      continue;
+    }
+    // Merge: keep the earlier card's date and id, but union the ticket sources and price range.
+    const merged: FestivalEventCard = card.eventDate < existing.eventDate
+      ? { ...card }
+      : { ...existing };
+    const sourceMap = new Map<string, TicketSource>();
+    for (const ts of [...existing.ticketSources, ...card.ticketSources]) {
+      if (!sourceMap.has(ts.source)) sourceMap.set(ts.source, ts);
+    }
+    merged.ticketSources = Array.from(sourceMap.values());
+    const mins = merged.ticketSources.map((ts) => ts.minPrice).filter((p): p is number => p !== null && p > 0);
+    const maxs = merged.ticketSources.map((ts) => ts.maxPrice).filter((p): p is number => p !== null && p > 0);
+    merged.minPrice = mins.length ? Math.min(...mins) : null;
+    merged.maxPrice = maxs.length ? Math.max(...maxs) : null;
+    byName.set(card.name, merged);
+  }
+  return Array.from(byName.values()).sort((a, b) => a.eventDate.getTime() - b.eventDate.getTime());
+}
+
 interface FetchOptions {
   from?: Date;
   to?: Date;
+}
+
+interface DayGroup {
+  venueSlug: string;
+  date: string;
+  venue: Venue;
+  rawRows: { event: Event; artist: Artist }[];
+  artistsById: Map<string, Artist>;
+  allEventNames: Set<string>;
+}
+
+interface QualifiedDay {
+  venueSlug: string;
+  date: string;
+  venue: Venue;
+  artists: FestivalArtist[];
+  events: FestivalEventCard[];
+  brandKey: string | null;
+  derivedName: string;
+  legacySlug: string;
+  rawRows: { event: Event; artist: Artist }[];
 }
 
 async function fetchFestivals({ from, to }: FetchOptions): Promise<Festival[]> {
@@ -152,16 +334,8 @@ async function fetchFestivals({ from, to }: FetchOptions): Promise<Festival[]> {
     .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(events.eventDate);
 
-  // Group by venue slug + date
-  const groups = new Map<string, {
-    venueSlug: string;
-    date: string;
-    venue: Venue;
-    eventsByArtist: Map<string, { event: Event; artist: Artist }>;
-    /** All distinct event names across every row in the group, used for deterministic legacy slug derivation. */
-    allEventNames: Set<string>;
-  }>();
-
+  // Step 1: bucket raw rows into per-day groups keyed by venueSlug + date.
+  const dayGroups = new Map<string, DayGroup>();
   for (const row of rows) {
     if (!row.venue.name) continue;
     if (isPackage(row.event.name)) continue;
@@ -170,111 +344,190 @@ async function fetchFestivals({ from, to }: FetchOptions): Promise<Festival[]> {
     const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
     const groupKey = `${venueSlug}_${dateKey}`;
 
-    let group = groups.get(groupKey);
+    let group = dayGroups.get(groupKey);
     if (!group) {
       group = {
         venueSlug,
         date: dateKey,
         venue: row.venue,
-        eventsByArtist: new Map(),
+        rawRows: [],
+        artistsById: new Map(),
         allEventNames: new Set(),
       };
-      groups.set(groupKey, group);
+      dayGroups.set(groupKey, group);
     }
 
+    group.rawRows.push({ event: row.event, artist: row.artist });
     group.allEventNames.add(row.event.name);
-
-    // Keep one event per artist (prefer non-package, already filtered above)
-    if (!group.eventsByArtist.has(row.artist.id)) {
-      group.eventsByArtist.set(row.artist.id, { event: row.event, artist: row.artist });
+    if (!group.artistsById.has(row.artist.id)) {
+      group.artistsById.set(row.artist.id, row.artist);
     }
   }
 
-  // Filter to groups with 3+ distinct artists, OR events whose name matches festival keywords
-  const festivals: Festival[] = [];
-  const todayKey = new Date().toISOString().slice(0, 10);
-
-  for (const group of groups.values()) {
-    const hasEnoughArtists = group.eventsByArtist.size >= MIN_ARTISTS_FOR_FESTIVAL;
-    const nameMatchesFestival = Array.from(group.allEventNames).some(name => isFestival(name));
-
+  // Step 2: filter to qualifying festival days (3+ artists OR brand/festival keyword match).
+  const qualifiedDays: QualifiedDay[] = [];
+  for (const group of dayGroups.values()) {
+    const hasEnoughArtists = group.artistsById.size >= MIN_ARTISTS_FOR_FESTIVAL;
+    const eventNamesArray = Array.from(group.allEventNames);
+    const nameMatchesFestival = eventNamesArray.some((name) => isFestival(name));
     if (!hasEnoughArtists && !nameMatchesFestival) continue;
 
-    const entries = Array.from(group.eventsByArtist.values());
+    const formattedDate = formatDateLong(group.date);
+    const allEventNamesSorted = eventNamesArray.sort();
+    const derivedName = deriveFestivalName(allEventNamesSorted, group.venue.name, formattedDate);
+    const legacySlug = `${slugify(derivedName)}-${group.date}`;
 
-    const formattedDate = new Date(group.date + 'T12:00:00').toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-
-    // Legacy slug uses ALL distinct event names (sorted) so it's deterministic across runs.
-    // This matches what was historically indexed by Google when the data first stabilized.
-    const allEventNamesSorted = Array.from(group.allEventNames).sort();
-    const festivalName = deriveFestivalName(allEventNamesSorted, group.venue.name, formattedDate);
-    const legacySlug = `${slugify(festivalName)}-${group.date}`;
-
-    // Canonical slug:
-    //   1. If any event name contains a known branded festival (Lollapalooza, Wacken, etc.),
-    //      use the brand keyword + date. Preserves search/CTR value of the festival name.
-    //   2. Otherwise fall back to venueSlug + date. Stable across lineup churn for ad-hoc
-    //      multi-artist groups (e.g. headliner-with-openers shows where the prefix shifts).
-    let brandSlugBase: string | null = null;
+    let brandKey: string | null = null;
     for (const eventName of allEventNamesSorted) {
       const brand = findBrandFestival(eventName);
       if (brand) {
-        brandSlugBase = slugify(brand);
+        brandKey = brand;
         break;
       }
     }
-    const canonicalSlug = brandSlugBase
-      ? `${brandSlugBase}-${group.date}`
-      : `${group.venueSlug}-${group.date}`;
 
-    const festivalArtists: FestivalArtist[] = entries.map((e) => ({
-      name: e.artist.name,
-      slug: e.artist.slug,
-      imageUrl: e.artist.imageUrl,
-      genre: e.artist.genre,
+    const dayArtists: FestivalArtist[] = Array.from(group.artistsById.values()).map((a) => ({
+      name: a.name,
+      slug: a.slug,
+      imageUrl: a.imageUrl,
+      genre: a.genre,
     }));
 
-    const festivalEvents: FestivalEvent[] = entries.map((e) => ({
-      id: e.event.id,
-      name: e.event.name,
-      eventDate: e.event.eventDate,
-      ticketUrl: e.event.ticketUrl,
-      minPrice: e.event.minPrice,
-      maxPrice: e.event.maxPrice,
-      currency: e.event.currency,
-      source: e.event.source,
-      artist: {
-        name: e.artist.name,
-        slug: e.artist.slug,
-        imageUrl: e.artist.imageUrl,
-        genre: e.artist.genre,
-      },
-    }));
+    const dayEvents = buildEventCards(group.rawRows);
 
-    festivals.push({
-      name: festivalName,
-      slug: canonicalSlug,
-      legacySlug,
-      date: group.date,
-      formattedDate,
-      venue: group.venue,
+    qualifiedDays.push({
       venueSlug: group.venueSlug,
-      artists: festivalArtists,
-      events: festivalEvents,
-      artistCount: festivalArtists.length,
-      isPast: group.date < todayKey,
+      date: group.date,
+      venue: group.venue,
+      artists: dayArtists,
+      events: dayEvents,
+      brandKey,
+      derivedName,
+      legacySlug,
+      rawRows: group.rawRows,
     });
   }
 
-  // Sort by artist count descending
-  festivals.sort((a, b) => b.artistCount - a.artistCount);
+  // Step 3: cluster days that belong to the same multi-day festival (same venue, same brand,
+  // contiguous dates with at most MAX_DAY_GAP days between consecutive entries).
+  // Days without a brand keyword stay as standalone single-day festivals.
+  const clusters = new Map<string, QualifiedDay[]>();
+  for (const day of qualifiedDays) {
+    const clusterKey = day.brandKey
+      ? `${day.venueSlug}|brand|${day.brandKey}`
+      : `${day.venueSlug}|nobrand|${day.date}`; // nobrand keys are unique per date so they don't merge
+    const list = clusters.get(clusterKey) ?? [];
+    list.push(day);
+    clusters.set(clusterKey, list);
+  }
+
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const festivals: Festival[] = [];
+
+  for (const cluster of clusters.values()) {
+    cluster.sort((a, b) => a.date.localeCompare(b.date));
+
+    // Split cluster into contiguous runs.
+    const runs: QualifiedDay[][] = [];
+    let currentRun: QualifiedDay[] = [cluster[0]];
+    for (let i = 1; i < cluster.length; i++) {
+      const prev = cluster[i - 1];
+      const cur = cluster[i];
+      const gapMs = new Date(cur.date).getTime() - new Date(prev.date).getTime();
+      const gapDays = Math.round(gapMs / (1000 * 60 * 60 * 24));
+      if (gapDays <= MAX_DAY_GAP) {
+        currentRun.push(cur);
+      } else {
+        runs.push(currentRun);
+        currentRun = [cur];
+      }
+    }
+    runs.push(currentRun);
+
+    for (const run of runs) {
+      festivals.push(buildFestivalFromRun(run, todayKey));
+    }
+  }
+
+  // Sort by start date ascending so listings show what's coming up first.
+  festivals.sort((a, b) => a.date.localeCompare(b.date));
 
   return festivals;
+}
+
+function buildFestivalFromRun(days: QualifiedDay[], todayKey: string): Festival {
+  const startDate = days[0].date;
+  const endDate = days[days.length - 1].date;
+  const isMultiDay = days.length > 1;
+
+  // Festival name: prefer first day's brand-derived label if available, else first day's derived name.
+  // For multi-day branded fests, this is just the brand keyword in title case.
+  const firstDay = days[0];
+  let name = firstDay.derivedName;
+  if (firstDay.brandKey) {
+    // Title-case the brand keyword (e.g. "lollapalooza" → "Lollapalooza", "rock am ring" → "Rock Am Ring")
+    name = firstDay.brandKey.replace(/\b\w/g, (c: string) => c.toUpperCase());
+  }
+
+  // Canonical slug: brand+startDate or venue+startDate
+  const slug = firstDay.brandKey
+    ? `${slugify(firstDay.brandKey)}-${startDate}`
+    : `${firstDay.venueSlug}-${startDate}`;
+
+  // Primary legacy slug = first day's legacy slug.
+  const primaryLegacy = firstDay.legacySlug;
+  // All slugs that should redirect to this canonical: every day's canonical+legacy except the canonical itself.
+  const legacySlugSet = new Set<string>();
+  for (const day of days) {
+    const dayCanonical = firstDay.brandKey
+      ? `${slugify(firstDay.brandKey)}-${day.date}`
+      : `${day.venueSlug}-${day.date}`;
+    if (dayCanonical !== slug) legacySlugSet.add(dayCanonical);
+    if (day.legacySlug !== slug) legacySlugSet.add(day.legacySlug);
+  }
+  legacySlugSet.delete(slug); // safety
+  // primaryLegacy is also in the set when it's not equal to canonical
+  const legacySlugs = Array.from(legacySlugSet);
+
+  // Union artists across days, dedupe by slug.
+  const artistsBySlug = new Map<string, FestivalArtist>();
+  for (const day of days) {
+    for (const a of day.artists) {
+      if (!artistsBySlug.has(a.slug)) artistsBySlug.set(a.slug, a);
+    }
+  }
+  const allArtists = Array.from(artistsBySlug.values());
+
+  // Festival-level events: all day events deduped by name (collapses multi-day passes).
+  const allDayEvents = days.flatMap((d) => d.events);
+  const festivalEvents = dedupeFestivalEvents(allDayEvents);
+
+  // Per-day FestivalDay objects for the page's day-by-day section.
+  const festivalDays: FestivalDay[] = days.map((d) => ({
+    date: d.date,
+    formattedDate: formatDateLong(d.date),
+    artists: d.artists,
+    events: d.events,
+  }));
+
+  return {
+    name,
+    slug,
+    legacySlug: primaryLegacy,
+    legacySlugs,
+    date: startDate,
+    endDate,
+    formattedDate: formatDateLong(startDate),
+    formattedDateRange: formatDateRange(startDate, endDate),
+    isMultiDay,
+    venue: firstDay.venue,
+    venueSlug: firstDay.venueSlug,
+    days: festivalDays,
+    artists: allArtists,
+    artistCount: allArtists.length,
+    events: festivalEvents,
+    isPast: endDate < todayKey,
+  };
 }
 
 export const getAllFestivals = cache(async function getAllFestivals(): Promise<Festival[]> {
@@ -289,15 +542,18 @@ export const getArchivedFestivals = cache(async function getArchivedFestivals(mo
 });
 
 /**
- * Look up a festival by either its canonical slug (venue+date) or its legacy
- * prefix-based slug. Returns the festival; the caller is responsible for
- * redirecting legacy hits to the canonical URL.
+ * Look up a festival by either its canonical slug or any of its legacy slugs.
+ * Returns the festival; the caller is responsible for redirecting non-canonical
+ * hits to the canonical URL.
  */
 export async function getFestivalBySlug(slug: string): Promise<Festival | null> {
+  const matches = (f: Festival) =>
+    f.slug === slug || f.legacySlug === slug || f.legacySlugs.includes(slug);
+
   const upcoming = await getAllFestivals();
-  const upcomingMatch = upcoming.find((f) => f.slug === slug || f.legacySlug === slug);
+  const upcomingMatch = upcoming.find(matches);
   if (upcomingMatch) return upcomingMatch;
 
   const archived = await getArchivedFestivals();
-  return archived.find((f) => f.slug === slug || f.legacySlug === slug) ?? null;
+  return archived.find(matches) ?? null;
 }
