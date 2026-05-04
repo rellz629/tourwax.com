@@ -5,12 +5,12 @@ import { generateFestivalMetadata, SITE_URL } from '@/lib/seo';
 import { generateBreadcrumbSchema, generateFestivalEventSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { getAllFestivals, getFestivalBySlug } from '@/lib/festivals';
+import { getAllFestivals, getArchivedFestivals, getFestivalBySlug } from '@/lib/festivals';
 import { getFestivalImage } from '@/lib/festival-images';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { slugify } from '@/lib/slugify';
-import { normalizeGenre, genreSlug } from '@/lib/genres';
-import { notFound } from 'next/navigation';
+import { normalizeGenre } from '@/lib/genres';
+import { notFound, permanentRedirect } from 'next/navigation';
 
 export const dynamic = 'force-static';
 export const revalidate = 1800;
@@ -20,8 +20,21 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const festivals = await getAllFestivals();
-  return festivals.map((f) => ({ slug: f.slug }));
+  const [upcoming, archived] = await Promise.all([
+    getAllFestivals(),
+    getArchivedFestivals(),
+  ]);
+  const seen = new Set<string>();
+  const params: { slug: string }[] = [];
+  for (const f of [...upcoming, ...archived]) {
+    // Pre-render canonical AND legacy slugs so both old GSC URLs and new ones resolve at the static layer.
+    for (const slug of [f.slug, f.legacySlug]) {
+      if (seen.has(slug)) continue;
+      seen.add(slug);
+      params.push({ slug });
+    }
+  }
+  return params;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -43,6 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     date: festival.formattedDate,
     artistCount: festival.artistCount,
     artistNames: festival.artists.map((a) => a.name),
+    isPast: festival.isPast,
   });
 }
 
@@ -53,6 +67,15 @@ export default async function FestivalPage({ params }: Props) {
   if (!festival) {
     notFound();
   }
+
+  // Legacy slug hit → redirect to canonical URL with 308 so Google consolidates.
+  if (slug !== festival.slug) {
+    permanentRedirect(`/festivals/${festival.slug}`);
+  }
+
+  const isPast = festival.isPast;
+  const performVerb = isPast ? 'performed' : 'performing';
+  const performedAt = isPast ? 'took place' : 'takes place';
 
   const locationParts: string[] = [];
   if (festival.venue.city) locationParts.push(festival.venue.city);
@@ -95,30 +118,55 @@ export default async function FestivalPage({ params }: Props) {
   const topArtistNames = festival.artists.slice(0, 5).map((a) => a.name);
   const venueLocationText = locationLabel ? `${festival.venue.name} in ${locationLabel}` : festival.venue.name;
 
-  const faqs = [
-    {
-      question: `When is ${festival.name}?`,
-      answer: `${festival.name} takes place ${festival.formattedDate} at ${venueLocationText}.`,
-    },
-    {
-      question: `Who is performing at ${festival.name}?`,
-      answer: festival.artists.length > 0
-        ? `The ${festival.name} lineup includes ${topArtistNames.join(', ')}${festival.artistCount > 5 ? `, and ${festival.artistCount - 5} more artists` : ''}.`
-        : `The ${festival.name} lineup will be announced soon. Check back for updates.`,
-    },
-    {
-      question: `Where is ${festival.name} held?`,
-      answer: `${festival.name} is held at ${venueLocationText}${festival.venue.address ? ` (${festival.venue.address})` : ''}.`,
-    },
-    {
-      question: `How do I get tickets to ${festival.name}?`,
-      answer: `Tickets to ${festival.name} are available through Ticketmaster and SeatGeek. ${lowestPrice ? `Prices start from $${lowestPrice}.` : ''} Click "Get Tickets" on any artist below to be taken to the official ticket page.`,
-    },
-    {
-      question: `How many artists are performing at ${festival.name}?`,
-      answer: `${festival.artistCount} artist${festival.artistCount === 1 ? '' : 's'} ${festival.artistCount === 1 ? 'is' : 'are'} confirmed for ${festival.name}.`,
-    },
-  ];
+  const faqs = isPast
+    ? [
+        {
+          question: `When was ${festival.name}?`,
+          answer: `${festival.name} took place ${festival.formattedDate} at ${venueLocationText}.`,
+        },
+        {
+          question: `Who performed at ${festival.name}?`,
+          answer: festival.artists.length > 0
+            ? `The ${festival.name} lineup included ${topArtistNames.join(', ')}${festival.artistCount > 5 ? `, and ${festival.artistCount - 5} more artists` : ''}.`
+            : `The ${festival.name} lineup is not on file.`,
+        },
+        {
+          question: `Where was ${festival.name} held?`,
+          answer: `${festival.name} was held at ${venueLocationText}${festival.venue.address ? ` (${festival.venue.address})` : ''}.`,
+        },
+        {
+          question: `Are tickets still available for ${festival.name}?`,
+          answer: `${festival.name} took place on ${festival.formattedDate}, so tickets are no longer available. Browse current tour dates from the lineup above to find their next shows.`,
+        },
+        {
+          question: `How many artists performed at ${festival.name}?`,
+          answer: `${festival.artistCount} artist${festival.artistCount === 1 ? '' : 's'} performed at ${festival.name}.`,
+        },
+      ]
+    : [
+        {
+          question: `When is ${festival.name}?`,
+          answer: `${festival.name} takes place ${festival.formattedDate} at ${venueLocationText}.`,
+        },
+        {
+          question: `Who is performing at ${festival.name}?`,
+          answer: festival.artists.length > 0
+            ? `The ${festival.name} lineup includes ${topArtistNames.join(', ')}${festival.artistCount > 5 ? `, and ${festival.artistCount - 5} more artists` : ''}.`
+            : `The ${festival.name} lineup will be announced soon. Check back for updates.`,
+        },
+        {
+          question: `Where is ${festival.name} held?`,
+          answer: `${festival.name} is held at ${venueLocationText}${festival.venue.address ? ` (${festival.venue.address})` : ''}.`,
+        },
+        {
+          question: `How do I get tickets to ${festival.name}?`,
+          answer: `Tickets to ${festival.name} are available through Ticketmaster and SeatGeek. ${lowestPrice ? `Prices start from $${lowestPrice}.` : ''} Click "Get Tickets" on any artist below to be taken to the official ticket page.`,
+        },
+        {
+          question: `How many artists are performing at ${festival.name}?`,
+          answer: `${festival.artistCount} artist${festival.artistCount === 1 ? '' : 's'} ${festival.artistCount === 1 ? 'is' : 'are'} confirmed for ${festival.name}.`,
+        },
+      ];
 
   const faqSchema = generateFAQSchema(faqs);
 
@@ -127,6 +175,20 @@ export default async function FestivalPage({ params }: Props) {
       <StructuredData data={[breadcrumbSchema, festivalSchema, faqSchema]} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Breadcrumbs items={breadcrumbItems} />
+
+        {isPast && (
+          <div className="mb-6 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 flex items-start gap-3">
+            <svg className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p className="font-semibold text-gray-900">Archived festival</p>
+              <p className="text-sm text-gray-600 mt-0.5">
+                {festival.name} {performedAt} on {festival.formattedDate}. Tickets are no longer available, but you can browse the lineup&apos;s current tour dates below.
+              </p>
+            </div>
+          </div>
+        )}
 
         {festivalImage && (
           <div className="mb-10">
@@ -156,7 +218,7 @@ export default async function FestivalPage({ params }: Props) {
 
         <div className="mb-12">
           <h1 className="text-5xl md:text-6xl font-black mb-4">
-            <span className="gradient-text">{festival.name}</span>
+            <span className={isPast ? 'text-gray-700' : 'gradient-text'}>{festival.name}</span>
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-gray-600">
             <span className="flex items-center gap-2 text-lg">
@@ -188,7 +250,7 @@ export default async function FestivalPage({ params }: Props) {
             )}
           </div>
           <p className="text-xl text-gray-600 mt-3">
-            {festival.artistCount} artist{festival.artistCount === 1 ? '' : 's'} performing
+            {festival.artistCount} artist{festival.artistCount === 1 ? '' : 's'} {performVerb}
           </p>
         </div>
 
@@ -289,7 +351,7 @@ export default async function FestivalPage({ params }: Props) {
                             minute: '2-digit',
                           })}
                         </span>
-                        {(event.minPrice || event.maxPrice) && (
+                        {!isPast && (event.minPrice || event.maxPrice) && (
                           <>
                             <span className="text-gray-300">|</span>
                             <span className="font-semibold text-orange-600">
@@ -303,7 +365,7 @@ export default async function FestivalPage({ params }: Props) {
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 items-end">
-                    {event.ticketUrl && (
+                    {!isPast && event.ticketUrl && (
                       <a
                         href={getAffiliateUrl(event.ticketUrl, event.source)}
                         target="_blank"
@@ -312,6 +374,14 @@ export default async function FestivalPage({ params }: Props) {
                       >
                         Get Tickets
                       </a>
+                    )}
+                    {isPast && (
+                      <Link
+                        href={`/artists/${event.artist.slug}`}
+                        className="text-sm font-semibold text-orange-500 hover:text-orange-600 whitespace-nowrap"
+                      >
+                        See current tour →
+                      </Link>
                     )}
                     <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">
                       via {event.source}

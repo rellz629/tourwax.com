@@ -556,14 +556,22 @@ export function generateFestivalMetadata(data: {
   date: string;
   artistCount: number;
   artistNames: string[];
+  isPast?: boolean;
 }) {
   const year = new Date().getFullYear();
   const location = data.city ? ` in ${data.city}` : '';
-  const title = `${data.festivalName}${location} ${year} | Lineup & Tickets`;
   const artistText = data.artistNames.length > 0
     ? ` ${data.artistNames.slice(0, 2).join(', ')}${data.artistNames.length > 2 ? ` + ${data.artistCount - 2} more` : ''}.`
     : '';
-  const description = `${data.festivalName} ${year}:${artistText} ${data.date} at ${data.venueName}${location}. Full lineup & tickets.`;
+
+  const title = data.isPast
+    ? `${data.festivalName}${location} | Lineup & Recap (Archived)`
+    : `${data.festivalName}${location} ${year} | Lineup & Tickets`;
+
+  const description = data.isPast
+    ? `${data.festivalName} took place ${data.date} at ${data.venueName}${location}.${artistText} See the full lineup and browse current tour dates.`
+    : `${data.festivalName} ${year}:${artistText} ${data.date} at ${data.venueName}${location}. Full lineup & tickets.`;
+
   const url = generateCanonicalUrl(`/festivals/${data.slug}`);
 
   return {

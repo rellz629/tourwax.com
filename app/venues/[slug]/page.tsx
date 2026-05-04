@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues, eventArtists } from '@/db/schema';
-import { eq, gte, sql, and, isNotNull, ne, inArray } from 'drizzle-orm';
+import { eq, gte, lt, sql, and, isNotNull, ne, inArray } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -19,6 +19,8 @@ import type { Venue } from '@/db/schema';
 export const revalidate = 1800;
 
 const EVENTS_PER_PAGE = 50;
+const PAST_EVENTS_LIMIT = 50;
+const VENUE_ARCHIVE_MONTHS = 18;
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -83,6 +85,43 @@ const getVenueEvents = cache(async function getVenueEvents(venueIds: string[]) {
   return Array.from(groups.values());
 });
 
+const getVenuePastEvents = cache(async function getVenuePastEvents(venueIds: string[]) {
+  const now = new Date();
+  const since = new Date();
+  since.setMonth(since.getMonth() - VENUE_ARCHIVE_MONTHS);
+
+  const venueEvents = await db
+    .select({
+      event: events,
+      venue: venues,
+      artistName: artists.name,
+      artistSlug: artists.slug,
+      artistImageUrl: artists.imageUrl,
+    })
+    .from(events)
+    .innerJoin(venues, eq(events.venueId, venues.id))
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
+    .where(and(
+      inArray(events.venueId, venueIds),
+      gte(events.eventDate, since),
+      lt(events.eventDate, now)
+    ))
+    .orderBy(sql`${events.eventDate} desc`);
+
+  const groups = new Map<string, typeof venueEvents[0]>();
+  for (const row of venueEvents) {
+    const key = row.event.id;
+    const existing = groups.get(key);
+    if (!existing) {
+      groups.set(key, row);
+    } else if (isPackage(existing.event.name) && !isPackage(row.event.name)) {
+      groups.set(key, row);
+    }
+  }
+  return Array.from(groups.values()).slice(0, PAST_EVENTS_LIMIT);
+});
+
 export async function generateStaticParams() {
   const now = new Date();
 
@@ -140,11 +179,36 @@ export default async function VenuePage({ params, searchParams }: Props) {
 
   const { venue } = match;
   const allVenueEvents = await getVenueEvents(match.allVenueIds);
+
+  // Only query the past-events archive for venues that would otherwise 404.
+  // Skipping this for venues with upcoming events keeps build time down.
+  const pastVenueEvents = allVenueEvents.length === 0
+    ? await getVenuePastEvents(match.allVenueIds)
+    : [];
+
+  // 404 only if venue has no upcoming AND no archived events in window
+  if (allVenueEvents.length === 0 && pastVenueEvents.length === 0) {
+    notFound();
+  }
+
   const totalPages = Math.ceil(allVenueEvents.length / EVENTS_PER_PAGE);
   const venueEvents = allVenueEvents.slice(
     (currentPage - 1) * EVENTS_PER_PAGE,
     currentPage * EVENTS_PER_PAGE
   );
+
+  // Group past events by date (descending)
+  const pastEventsByDate = pastVenueEvents.reduce((acc, row) => {
+    const dateKey = new Date(row.event.eventDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    if (!acc[dateKey]) acc[dateKey] = [];
+    acc[dateKey].push(row);
+    return acc;
+  }, {} as Record<string, typeof pastVenueEvents>);
 
   const locationParts: string[] = [];
   if (venue.city) locationParts.push(venue.city);
@@ -299,7 +363,9 @@ export default async function VenuePage({ params, searchParams }: Props) {
           <p className="text-xl text-gray-600 mt-3">
             {allVenueEvents.length > 0
               ? `${allVenueEvents.length} upcoming show${allVenueEvents.length === 1 ? '' : 's'} & concerts`
-              : 'Shows, concerts & upcoming events'
+              : pastVenueEvents.length > 0
+                ? `Concert history: ${pastVenueEvents.length} past show${pastVenueEvents.length === 1 ? '' : 's'}`
+                : 'Shows, concerts & upcoming events'
             }
             {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
           </p>
@@ -350,19 +416,23 @@ export default async function VenuePage({ params, searchParams }: Props) {
           </section>
         )}
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Upcoming Shows & Events at {venue.name}
-        </h2>
+        {(venueEvents.length > 0 || pastVenueEvents.length === 0) && (
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Upcoming Shows & Events at {venue.name}
+          </h2>
+        )}
 
         {venueEvents.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+          pastVenueEvents.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p className="text-gray-500 text-lg">No upcoming shows at {venue.name}.</p>
             </div>
-            <p className="text-gray-500 text-lg">No upcoming shows at {venue.name}.</p>
-          </div>
+          ) : null
         ) : (
           <div className="space-y-10">
             {Object.entries(eventsByDate).map(([date, dateEvents]) => (
@@ -455,6 +525,77 @@ export default async function VenuePage({ params, searchParams }: Props) {
         )}
 
         <Pagination currentPage={currentPage} totalPages={totalPages} basePath={`/venues/${venueSlug}`} />
+
+        {/* Past Concerts Archive */}
+        {pastVenueEvents.length > 0 && (
+          <section className="mt-16">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-1 w-8 bg-gray-300 rounded-full"></div>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Past Concerts at {venue.name}
+              </h2>
+              <div className="h-px flex-1 bg-gray-200"></div>
+            </div>
+            <p className="text-sm text-gray-500 mb-6">
+              Showing the most recent {pastVenueEvents.length} archived show{pastVenueEvents.length === 1 ? '' : 's'} from the last {VENUE_ARCHIVE_MONTHS} months.
+            </p>
+            <div className="space-y-8">
+              {Object.entries(pastEventsByDate).map(([date, dateEvents]) => (
+                <section key={date}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <h3 className="text-base font-semibold text-gray-700">{date}</h3>
+                    <div className="h-px flex-1 bg-gray-200"></div>
+                  </div>
+                  <div className="space-y-2">
+                    {dateEvents.map((row) => (
+                      <div
+                        key={row.event.id}
+                        className="bg-gray-50 rounded-lg border border-gray-100 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Link
+                            href={`/artists/${row.artistSlug}`}
+                            className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-300 to-gray-400"
+                          >
+                            {row.artistImageUrl ? (
+                              <Image
+                                src={row.artistImageUrl}
+                                alt={row.artistName}
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                                sizes="40px"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
+                                {row.artistName.charAt(0)}
+                              </div>
+                            )}
+                          </Link>
+                          <div className="min-w-0">
+                            <Link
+                              href={`/artists/${row.artistSlug}`}
+                              className="font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate block"
+                            >
+                              {row.artistName}
+                            </Link>
+                            <p className="text-xs text-gray-500 truncate">{row.event.name}</p>
+                          </div>
+                        </div>
+                        <Link
+                          href={`/artists/${row.artistSlug}`}
+                          className="text-sm font-medium text-orange-500 hover:text-orange-600 whitespace-nowrap"
+                        >
+                          See current tour →
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* About Venue Section */}
         <section className="mt-16 max-w-4xl">

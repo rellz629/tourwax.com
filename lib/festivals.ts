@@ -1,12 +1,69 @@
 import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues, eventArtists } from '@/db/schema';
-import { eq, gte, sql } from 'drizzle-orm';
+import { and, eq, gte, lt } from 'drizzle-orm';
 import { slugify } from './slugify';
 import { isPackage, isFestival } from './event-utils';
 import type { Artist, Event, Venue } from '@/db/schema';
 
 export const MIN_ARTISTS_FOR_FESTIVAL = 3;
+export const ARCHIVE_MONTHS = 18;
+
+/**
+ * Branded festival names used as canonical slug bases when matched in event names.
+ * These are well-known multi-artist festivals where the brand keyword is a strong
+ * search term in its own right. When no match is found, the canonical slug falls
+ * back to venue + date (stable but generic).
+ *
+ * Order matters: more specific phrases are listed BEFORE shorter ones that would
+ * also substring-match (e.g. "rock am ring" before "ring", "big ears festival"
+ * before "ears"). All entries must be lowercase.
+ */
+const BRAND_FESTIVAL_KEYWORDS = [
+  'austin city limits',
+  'big ears festival',
+  'bonnaroo',
+  'byron bay bluesfest',
+  'camp bestival',
+  'coachella',
+  'creamfields',
+  'download festival',
+  'electric daisy carnival',
+  'firefly',
+  'fuji rock',
+  'glastonbury',
+  'governors ball',
+  'hellfest',
+  'hurricane festival',
+  'lollapalooza',
+  'mountain jam',
+  'newport folk',
+  'newport jazz',
+  'nova rock',
+  'osheaga',
+  'outside lands',
+  'parklife',
+  'pitchfork',
+  'primavera',
+  'reading & leeds',
+  'rock am ring',
+  'rock im park',
+  'roskilde',
+  'sonar',
+  'southside festival',
+  'splash!',
+  'summerfest',
+  'tomorrowland',
+  'wacken',
+] as const;
+
+export function findBrandFestival(name: string): string | null {
+  const lower = name.toLowerCase();
+  for (const kw of BRAND_FESTIVAL_KEYWORDS) {
+    if (lower.includes(kw)) return kw;
+  }
+  return null;
+}
 
 export interface FestivalArtist {
   name: string;
@@ -29,7 +86,13 @@ export interface FestivalEvent {
 
 export interface Festival {
   name: string;
+  /** Canonical slug: stable across lineup/event-name changes (venueSlug + date). */
   slug: string;
+  /**
+   * Legacy prefix-based slug used before slug stabilization. Computed deterministically
+   * from sorted unique event names so it can still match historic GSC URLs.
+   */
+  legacySlug: string;
   date: string; // YYYY-MM-DD
   formattedDate: string;
   venue: Venue;
@@ -37,6 +100,7 @@ export interface Festival {
   artists: FestivalArtist[];
   events: FestivalEvent[];
   artistCount: number;
+  isPast: boolean;
 }
 
 /**
@@ -65,10 +129,16 @@ export function deriveFestivalName(eventNames: string[], venueName: string, form
   return `${venueName} - ${formattedDate}`;
 }
 
-export const getAllFestivals = cache(async function getAllFestivals(): Promise<Festival[]> {
-  const now = new Date();
+interface FetchOptions {
+  from?: Date;
+  to?: Date;
+}
 
-  // Fetch all future events with venue and artist info
+async function fetchFestivals({ from, to }: FetchOptions): Promise<Festival[]> {
+  const conditions = [];
+  if (from) conditions.push(gte(events.eventDate, from));
+  if (to) conditions.push(lt(events.eventDate, to));
+
   const rows = await db
     .select({
       event: events,
@@ -79,7 +149,7 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
     .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .innerJoin(artists, eq(artists.id, eventArtists.artistId))
     .innerJoin(venues, eq(events.venueId, venues.id))
-    .where(gte(events.eventDate, now))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(events.eventDate);
 
   // Group by venue slug + date
@@ -88,6 +158,8 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
     date: string;
     venue: Venue;
     eventsByArtist: Map<string, { event: Event; artist: Artist }>;
+    /** All distinct event names across every row in the group, used for deterministic legacy slug derivation. */
+    allEventNames: Set<string>;
   }>();
 
   for (const row of rows) {
@@ -105,9 +177,12 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
         date: dateKey,
         venue: row.venue,
         eventsByArtist: new Map(),
+        allEventNames: new Set(),
       };
       groups.set(groupKey, group);
     }
+
+    group.allEventNames.add(row.event.name);
 
     // Keep one event per artist (prefer non-package, already filtered above)
     if (!group.eventsByArtist.has(row.artist.id)) {
@@ -117,11 +192,11 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
 
   // Filter to groups with 3+ distinct artists, OR events whose name matches festival keywords
   const festivals: Festival[] = [];
+  const todayKey = new Date().toISOString().slice(0, 10);
 
   for (const group of groups.values()) {
-    const eventNames = Array.from(group.eventsByArtist.values()).map(e => e.event.name);
     const hasEnoughArtists = group.eventsByArtist.size >= MIN_ARTISTS_FOR_FESTIVAL;
-    const nameMatchesFestival = eventNames.some(name => isFestival(name));
+    const nameMatchesFestival = Array.from(group.allEventNames).some(name => isFestival(name));
 
     if (!hasEnoughArtists && !nameMatchesFestival) continue;
 
@@ -134,8 +209,28 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
       day: 'numeric',
     });
 
-    const festivalName = deriveFestivalName(eventNames, group.venue.name, formattedDate);
-    const festivalSlug = `${slugify(festivalName)}-${group.date}`;
+    // Legacy slug uses ALL distinct event names (sorted) so it's deterministic across runs.
+    // This matches what was historically indexed by Google when the data first stabilized.
+    const allEventNamesSorted = Array.from(group.allEventNames).sort();
+    const festivalName = deriveFestivalName(allEventNamesSorted, group.venue.name, formattedDate);
+    const legacySlug = `${slugify(festivalName)}-${group.date}`;
+
+    // Canonical slug:
+    //   1. If any event name contains a known branded festival (Lollapalooza, Wacken, etc.),
+    //      use the brand keyword + date. Preserves search/CTR value of the festival name.
+    //   2. Otherwise fall back to venueSlug + date. Stable across lineup churn for ad-hoc
+    //      multi-artist groups (e.g. headliner-with-openers shows where the prefix shifts).
+    let brandSlugBase: string | null = null;
+    for (const eventName of allEventNamesSorted) {
+      const brand = findBrandFestival(eventName);
+      if (brand) {
+        brandSlugBase = slugify(brand);
+        break;
+      }
+    }
+    const canonicalSlug = brandSlugBase
+      ? `${brandSlugBase}-${group.date}`
+      : `${group.venueSlug}-${group.date}`;
 
     const festivalArtists: FestivalArtist[] = entries.map((e) => ({
       name: e.artist.name,
@@ -163,7 +258,8 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
 
     festivals.push({
       name: festivalName,
-      slug: festivalSlug,
+      slug: canonicalSlug,
+      legacySlug,
       date: group.date,
       formattedDate,
       venue: group.venue,
@@ -171,6 +267,7 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
       artists: festivalArtists,
       events: festivalEvents,
       artistCount: festivalArtists.length,
+      isPast: group.date < todayKey,
     });
   }
 
@@ -178,9 +275,29 @@ export const getAllFestivals = cache(async function getAllFestivals(): Promise<F
   festivals.sort((a, b) => b.artistCount - a.artistCount);
 
   return festivals;
+}
+
+export const getAllFestivals = cache(async function getAllFestivals(): Promise<Festival[]> {
+  return fetchFestivals({ from: new Date() });
 });
 
+export const getArchivedFestivals = cache(async function getArchivedFestivals(monthsBack = ARCHIVE_MONTHS): Promise<Festival[]> {
+  const from = new Date();
+  from.setMonth(from.getMonth() - monthsBack);
+  const to = new Date();
+  return fetchFestivals({ from, to });
+});
+
+/**
+ * Look up a festival by either its canonical slug (venue+date) or its legacy
+ * prefix-based slug. Returns the festival; the caller is responsible for
+ * redirecting legacy hits to the canonical URL.
+ */
 export async function getFestivalBySlug(slug: string): Promise<Festival | null> {
-  const festivals = await getAllFestivals();
-  return festivals.find((f) => f.slug === slug) || null;
+  const upcoming = await getAllFestivals();
+  const upcomingMatch = upcoming.find((f) => f.slug === slug || f.legacySlug === slug);
+  if (upcomingMatch) return upcomingMatch;
+
+  const archived = await getArchivedFestivals();
+  return archived.find((f) => f.slug === slug || f.legacySlug === slug) ?? null;
 }

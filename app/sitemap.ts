@@ -6,7 +6,7 @@ import { SITE_URL } from '@/lib/seo';
 import { slugify } from '@/lib/slugify';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
 import { getAllPosts } from '@/lib/blog';
-import { getAllFestivals } from '@/lib/festivals';
+import { getAllFestivals, getArchivedFestivals } from '@/lib/festivals';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all active artists
@@ -109,6 +109,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .innerJoin(events, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now));
 
+  // Get venues with archived events (last 18 months) but no future events
+  const archiveCutoff = new Date();
+  archiveCutoff.setMonth(archiveCutoff.getMonth() - 18);
+  const venuesWithPastEvents = await db
+    .selectDistinct({ venueName: venues.name })
+    .from(venues)
+    .innerJoin(events, eq(events.venueId, venues.id))
+    .where(and(gte(events.eventDate, archiveCutoff), sql`${events.eventDate} < ${now.toISOString()}`));
+
+  const upcomingVenueSlugs = new Set(venuesWithEvents.map((r) => slugify(r.venueName)));
+
   const venueRoutes: MetadataRoute.Sitemap = [
     {
       url: `${SITE_URL}/venues`,
@@ -122,6 +133,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily' as const,
       priority: 0.7,
     })),
+    ...venuesWithPastEvents
+      .filter((row) => !upcomingVenueSlugs.has(slugify(row.venueName)))
+      .map((row) => ({
+        url: `${SITE_URL}/venues/${slugify(row.venueName)}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.4,
+      })),
   ];
 
   // Blog routes
@@ -169,8 +188,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Festival routes
-  const allFestivals = await getAllFestivals();
+  // Festival routes (upcoming + archived)
+  const [upcomingFestivals, archivedFestivals] = await Promise.all([
+    getAllFestivals(),
+    getArchivedFestivals(),
+  ]);
+  const archivedSeen = new Set(upcomingFestivals.map((f) => f.slug));
   const festivalRoutes: MetadataRoute.Sitemap = [
     {
       url: `${SITE_URL}/festivals`,
@@ -178,12 +201,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.8,
     },
-    ...allFestivals.map((festival) => ({
+    ...upcomingFestivals.map((festival) => ({
       url: `${SITE_URL}/festivals/${festival.slug}`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 0.7,
     })),
+    ...archivedFestivals
+      .filter((festival) => !archivedSeen.has(festival.slug))
+      .map((festival) => ({
+        url: `${SITE_URL}/festivals/${festival.slug}`,
+        lastModified: new Date(festival.date + 'T12:00:00'),
+        changeFrequency: 'yearly' as const,
+        priority: 0.4,
+      })),
   ];
 
   // Time-based routes
