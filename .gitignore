@@ -47,3 +47,9 @@ Vercel-Dash.png
 *.docx
 pagespeed-results.json
 Traffic Reports/
+
+# Generated audit output (run `npm run audit:seo` to regenerate)
+audit-output/
+
+# Claude Code runtime
+.claude/scheduled_tasks.lock

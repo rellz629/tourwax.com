@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ARTIST_TWITTER_HANDLES } from '@/lib/twitter';
 import { generateArtistMetadata, SITE_URL, extractCitiesFromEvents } from '@/lib/seo';
+import { shouldNoindexArtist } from '@/lib/seo-pruning';
 import { generatePersonSchema, generateMusicEventSchema, generateBreadcrumbSchema, generateNewsArticleSchema, generateFAQSchema } from '@/lib/schema';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
 import ShareButtons from '@/components/ShareButtons';
@@ -468,12 +469,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const artistEvents = await getArtistEvents(artist.id);
+  const [artistEvents, lifetimeRows] = await Promise.all([
+    getArtistEvents(artist.id),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(eventArtists)
+      .where(eq(eventArtists.artistId, artist.id)),
+  ]);
+  const lifetime = lifetimeRows[0]?.count ?? 0;
 
-  return generateArtistMetadata({
+  const metadata = generateArtistMetadata({
     artist,
     events: artistEvents,
   });
+
+  if (shouldNoindexArtist({ lifetime, upcoming: artistEvents.length })) {
+    return { ...metadata, robots: { index: false, follow: true } };
+  }
+  return metadata;
 }
 
 export default async function ArtistPage({ params }: Props) {

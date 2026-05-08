@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateCityMetadata, SITE_URL } from '@/lib/seo';
+import { shouldNoindexCity } from '@/lib/seo-pruning';
 import { generateBreadcrumbSchema, generateCityEventListSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -127,12 +128,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const cityEvents = await getCityEvents(cityInfo.city);
+  const [cityEvents, lifetimeRows] = await Promise.all([
+    getCityEvents(cityInfo.city),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(events)
+      .innerJoin(venues, eq(events.venueId, venues.id))
+      .where(sql`${venues.city} = ${cityInfo.city}`),
+  ]);
+  const lifetime = lifetimeRows[0]?.count ?? 0;
   const artistNames = [...new Set(cityEvents.map((e) => e.artistName))];
   const venueNames = [...new Set(cityEvents.filter((e) => e.venue).map((e) => e.venue!.name))];
   const nextEventDate = cityEvents.length > 0 ? new Date(cityEvents[0].event.eventDate) : null;
 
-  return generateCityMetadata({
+  const metadata = generateCityMetadata({
     cityName: cityInfo.city,
     state: cityInfo.state,
     citySlug,
@@ -141,6 +150,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     venueNames,
     nextEventDate,
   });
+
+  if (shouldNoindexCity({ lifetime, upcoming: cityEvents.length })) {
+    return { ...metadata, robots: { index: false, follow: true } };
+  }
+  return metadata;
 }
 
 export default async function CityPage({ params, searchParams }: Props) {

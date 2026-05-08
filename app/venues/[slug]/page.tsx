@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateVenueMetadata, SITE_URL } from '@/lib/seo';
+import { shouldNoindexVenue } from '@/lib/seo-pruning';
 import { generateBreadcrumbSchema, generateVenueSchema, generateVenueEventListSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -152,11 +153,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const venueEvents = await getVenueEvents(match.allVenueIds);
+  const [venueEvents, lifetimeRows] = await Promise.all([
+    getVenueEvents(match.allVenueIds),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(events)
+      .where(inArray(events.venueId, match.allVenueIds)),
+  ]);
+  const lifetime = lifetimeRows[0]?.count ?? 0;
   const artistNames = [...new Set(venueEvents.map((e) => e.artistName))];
   const nextEventDate = venueEvents.length > 0 ? new Date(venueEvents[0].event.eventDate) : null;
 
-  return generateVenueMetadata({
+  const metadata = generateVenueMetadata({
     venueName: match.venue.name,
     venueSlug,
     city: match.venue.city,
@@ -165,6 +173,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     artistNames,
     nextEventDate,
   });
+
+  if (shouldNoindexVenue({ lifetime, upcoming: venueEvents.length })) {
+    return { ...metadata, robots: { index: false, follow: true } };
+  }
+  return metadata;
 }
 
 export default async function VenuePage({ params, searchParams }: Props) {

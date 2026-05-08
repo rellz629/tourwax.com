@@ -5,8 +5,9 @@ import { generateFestivalMetadata, SITE_URL } from '@/lib/seo';
 import { generateBreadcrumbSchema, generateFestivalEventSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { getAllFestivals, getArchivedFestivals, getFestivalBySlug } from '@/lib/festivals';
+import { getAllFestivals, getArchivedFestivals, getFestivalBySlug, findBrandFestival } from '@/lib/festivals';
 import type { FestivalEventCard } from '@/lib/festivals';
+import { shouldNoindexFestival } from '@/lib/seo-pruning';
 import { getFestivalImage } from '@/lib/festival-images';
 import { getAffiliateUrl, getVividSeatsSearchUrl, getStubHubSearchUrl } from '@/lib/affiliate';
 import { slugify } from '@/lib/slugify';
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  return generateFestivalMetadata({
+  const metadata = generateFestivalMetadata({
     festivalName: festival.name,
     slug: festival.slug,
     venueName: festival.venue.name,
@@ -59,6 +60,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     artistNames: festival.artists.map((a) => a.name),
     isPast: festival.isPast,
   });
+
+  // Tour stops, single-show ad-hoc groupings, and other not-real-festival
+  // pages get noindex. The page still renders so internal links don't 404,
+  // but it's not surfaced to search.
+  const noindex = shouldNoindexFestival({
+    brandKey: findBrandFestival(festival.name),
+    artistCount: festival.artistCount,
+    daysCount: festival.days.length,
+  });
+  if (noindex) {
+    return { ...metadata, robots: { index: false, follow: true } };
+  }
+  return metadata;
 }
 
 function pickPrimaryEvent(events: FestivalEventCard[]): FestivalEventCard | null {
