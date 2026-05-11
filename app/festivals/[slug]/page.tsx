@@ -6,6 +6,7 @@ import { generateBreadcrumbSchema, generateFestivalEventSchema, generateFAQSchem
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAllFestivals, getArchivedFestivals, getFestivalBySlug, findBrandFestival } from '@/lib/festivals';
+import { resolveRemovedFestivalSlug } from '@/lib/festival-redirect';
 import type { FestivalEventCard } from '@/lib/festivals';
 import { shouldNoindexFestival } from '@/lib/seo-pruning';
 import { getFestivalImage } from '@/lib/festival-images';
@@ -185,6 +186,14 @@ export default async function FestivalPage({ params }: Props) {
   const festival = await getFestivalBySlug(slug);
 
   if (!festival) {
+    // Slug used to resolve but has been reclassified out of the festival listing
+    // (e.g. a tour stop with named openers that the detector now correctly rejects).
+    // Map the slug back to the venue+date and 308 to the headliner artist or venue
+    // so previously-indexed URLs land somewhere useful instead of 404ing.
+    const fallback = await resolveRemovedFestivalSlug(slug);
+    if (fallback) {
+      permanentRedirect(fallback);
+    }
     notFound();
   }
 

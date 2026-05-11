@@ -74,6 +74,16 @@ const INSIGHTS = [
       </svg>
     ),
   },
+  {
+    title: 'Most Expensive Concert Cities 2026',
+    description: 'Which US cities have the priciest concert tickets this year? Cities ranked by average starting ticket price, with the headliners driving demand.',
+    href: '/insights/expensive-concert-cities',
+    icon: (
+      <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+    ),
+  },
 ];
 
 export default function InsightsPage() {

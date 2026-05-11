@@ -4,39 +4,39 @@ import { generateInsightMetadata, SITE_URL } from '@/lib/seo';
 import { generateBreadcrumbSchema, generateArticleSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { getMostAffordableConcertCities } from '@/lib/insights';
+import { getMostExpensiveConcertCities } from '@/lib/insights';
 
 export const dynamic = 'force-static';
 export const revalidate = 1800;
 
 export async function generateMetadata(): Promise<Metadata> {
   return generateInsightMetadata({
-    title: 'Most Affordable Concert Cities 2026 — Cheapest Avg Ticket Prices',
-    description: 'Which US cities have the cheapest concert tickets in 2026? Ranked by average minimum ticket price across all upcoming shows, with top artists and venues.',
-    slug: 'affordable-concert-cities',
+    title: 'Most Expensive Concert Cities 2026 — Highest Avg Ticket Prices',
+    description: 'Which US cities have the priciest concert tickets in 2026? Cities ranked by average minimum ticket price across upcoming shows, with top artists driving demand.',
+    slug: 'expensive-concert-cities',
   });
 }
 
-export default async function AffordableConcertCitiesPage() {
-  const cities = await getMostAffordableConcertCities();
+export default async function ExpensiveConcertCitiesPage() {
+  const cities = await getMostExpensiveConcertCities();
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },
     { name: 'Insights', url: `${SITE_URL}/insights` },
-    { name: 'Most Affordable Concert Cities', url: `${SITE_URL}/insights/affordable-concert-cities` },
+    { name: 'Most Expensive Concert Cities', url: `${SITE_URL}/insights/expensive-concert-cities` },
   ]);
 
   const articleSchema = generateArticleSchema({
-    headline: 'Most Affordable Concert Cities 2026',
-    description: 'Cities ranked by average minimum ticket price for upcoming concerts.',
-    slug: 'affordable-concert-cities',
+    headline: 'Most Expensive Concert Cities 2026',
+    description: 'Cities ranked by the highest average starting ticket price for upcoming concerts.',
+    slug: 'expensive-concert-cities',
     dateModified: new Date().toISOString(),
   });
 
   const breadcrumbItems = [
     { name: 'Home', url: '/' },
     { name: 'Insights', url: '/insights' },
-    { name: 'Most Affordable Concert Cities', url: '/insights/affordable-concert-cities' },
+    { name: 'Most Expensive Concert Cities', url: '/insights/expensive-concert-cities' },
   ];
 
   const year = new Date().getFullYear();
@@ -49,11 +49,11 @@ export default async function AffordableConcertCitiesPage() {
 
         <div className="mb-12">
           <h1 className="text-5xl md:text-6xl font-black mb-4">
-            <span className="gradient-text">Most Affordable Concert Cities {year}</span>
+            <span className="gradient-text">Most Expensive Concert Cities {year}</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl">
-            Cities ranked by the lowest average starting ticket price across all upcoming concerts.
-            The best places to see live music without breaking the bank.
+            US cities ranked by the highest average starting ticket price across upcoming concerts.
+            The markets where demand, venue tier, and headliner power push prices the furthest.
           </p>
         </div>
 
@@ -111,26 +111,26 @@ export default async function AffordableConcertCitiesPage() {
         )}
 
         <section className="mt-16 max-w-3xl">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">How We Calculate Concert Affordability</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Why These Cities Are Pricey</h2>
           <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
             <p>
-              This ranking uses the average starting ticket price across all upcoming concerts in each city.
-              Only cities with at least 3 upcoming priced events are included. Prices reflect the lowest available
-              ticket tier from Ticketmaster and SeatGeek at time of indexing, not resale market prices.
+              This ranking uses the average starting ticket price across upcoming concerts in each city.
+              Only cities with at least five upcoming priced events are included. Prices reflect the lowest
+              available tier from Ticketmaster and SeatGeek at time of indexing, not resale market prices.
             </p>
             <p>
-              Cities with strong local venue scenes, regional touring circuits, or college-town amphitheaters
-              often appear near the top. Big markets like New York and Los Angeles tend to have higher
-              starting prices due to demand, but also offer more shows per dollar if you plan ahead.
+              The cities at the top of this list usually share a few traits: a high concentration of arena
+              and stadium-tier headliners, premium-venue residencies that anchor a market for a full weekend,
+              and tourist-driven demand that lets venues hold the starting tier higher than secondary markets
+              can. Las Vegas residencies, Manhattan venues, and major-league sports complexes pull averages up
+              quickly.
             </p>
             <p>
-              Browse{' '}
-              <Link href="/concerts/tonight" className="text-orange-500 hover:text-orange-600 font-medium">concerts tonight</Link>
-              {' '}or{' '}
-              <Link href="/concerts/this-weekend" className="text-orange-500 hover:text-orange-600 font-medium">concerts this weekend</Link>
-              {' '}to find affordable last-minute shows, or check{' '}
-              <Link href="/blog/how-to-find-cheap-concert-tickets" className="text-orange-500 hover:text-orange-600 font-medium">our guide to cheap concert tickets</Link>
-              {' '}for tips on scoring deals.
+              If you want the opposite view, see the{' '}
+              <Link href="/insights/affordable-concert-cities" className="text-orange-500 hover:text-orange-600 font-medium">most affordable concert cities</Link>
+              {' '}ranking. For tips on lowering your ticket cost in any market, our{' '}
+              <Link href="/blog/how-to-find-cheap-concert-tickets" className="text-orange-500 hover:text-orange-600 font-medium">guide to cheap concert tickets</Link>
+              {' '}covers presales, day-of releases, and price drops worth tracking.
             </p>
           </div>
         </section>
@@ -138,17 +138,13 @@ export default async function AffordableConcertCitiesPage() {
         <section className="mt-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Related Insights</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Link href="/insights/expensive-concert-cities" className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5 group">
-              <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">Most Expensive Concert Cities</h3>
-              <p className="text-sm text-gray-500 mt-1">The priciest cities for live music in 2026</p>
+            <Link href="/insights/affordable-concert-cities" className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5 group">
+              <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">Most Affordable Concert Cities</h3>
+              <p className="text-sm text-gray-500 mt-1">The cheapest cities for live music in 2026</p>
             </Link>
             <Link href="/insights/most-toured-cities" className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5 group">
               <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">Most Toured Cities</h3>
               <p className="text-sm text-gray-500 mt-1">Cities with the most upcoming shows</p>
-            </Link>
-            <Link href="/insights/busiest-touring-artists" className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5 group">
-              <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">Busiest Touring Artists</h3>
-              <p className="text-sm text-gray-500 mt-1">Artists playing the most shows in 2026</p>
             </Link>
             <Link href="/insights/top-concert-venues" className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5 group">
               <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">Top Concert Venues</h3>

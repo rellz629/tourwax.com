@@ -3,13 +3,20 @@ import { db } from '@/db';
 import { artists, events, venues, eventArtists } from '@/db/schema';
 import { and, eq, gte, lt } from 'drizzle-orm';
 import { slugify } from './slugify';
-import { isPackage, isFestival } from './event-utils';
+import { isPackage, isFestival, looksLikeTourStopName } from './event-utils';
 import type { Artist, Event, Venue } from '@/db/schema';
 
 export const MIN_ARTISTS_FOR_FESTIVAL = 3;
 export const ARCHIVE_MONTHS = 18;
 /** Max gap (in days) between consecutive festival days that still belongs to the same multi-day festival. */
 const MAX_DAY_GAP = 2;
+/**
+ * If the same set of artists plays this many distinct venues with no festival/brand
+ * keyword, it's a touring package (e.g. Bruno Mars + RAYE + DJ Pee .Wee), not a
+ * festival. Two venues can happen for a residency split across cities; three is
+ * the point where we're confident it's a tour.
+ */
+const TOUR_PACKAGE_VENUE_THRESHOLD = 3;
 
 /**
  * Branded festival names used as canonical slug bases when matched in event names.
@@ -391,13 +398,23 @@ async function fetchFestivals({ from, to }: FetchOptions): Promise<Festival[]> {
     }
   }
 
-  // Step 2: filter to qualifying festival days (3+ artists OR brand/festival keyword match).
+  // Step 2: filter to qualifying festival days. A day qualifies as a festival when:
+  //   - any event name matches a branded festival (Bonnaroo, Coachella, etc.), OR
+  //   - any event name matches a generic festival keyword ("fest", "festival") AND that
+  //     same name doesn't also look like a tour stop. This guards against tour-stop
+  //     names that happen to contain "fest" as a substring (e.g. "GODSMACK Tour 2026 -
+  //     UFEST 20" contains "fest" but is clearly a tour stop), OR
+  //   - the day has 3+ distinct artists AND none of the event names look like a tour
+  //     stop ("Bruno Mars with X and Y", "Metallica: M72 World Tour", "w/", "presents:").
   const qualifiedDays: QualifiedDay[] = [];
   for (const group of dayGroups.values()) {
-    const hasEnoughArtists = group.artistsById.size >= MIN_ARTISTS_FOR_FESTIVAL;
     const eventNamesArray = Array.from(group.allEventNames);
-    const nameMatchesFestival = eventNamesArray.some((name) => isFestival(name));
-    if (!hasEnoughArtists && !nameMatchesFestival) continue;
+    const hasBrandMatch = eventNamesArray.some((name) => findBrandFestival(name));
+    const hasCleanFestMatch = eventNamesArray.some((name) => isFestival(name) && !looksLikeTourStopName(name));
+    const hasEnoughArtists = group.artistsById.size >= MIN_ARTISTS_FOR_FESTIVAL;
+    const anyLooksLikeTourStop = eventNamesArray.some((name) => looksLikeTourStopName(name));
+    const qualifiesFromArtists = hasEnoughArtists && !anyLooksLikeTourStop;
+    if (!hasBrandMatch && !hasCleanFestMatch && !qualifiesFromArtists) continue;
 
     const formattedDate = formatDateLong(group.date);
     const allEventNamesSorted = eventNamesArray.sort();
@@ -435,11 +452,48 @@ async function fetchFestivals({ from, to }: FetchOptions): Promise<Festival[]> {
     });
   }
 
+  // Step 2b: drop tour packages misidentified as festivals. A "tour package" is the same
+  // sorted artist set appearing at 3+ distinct venues — that pattern is a headliner touring
+  // with named openers, not a festival. Days with a brand or festival-keyword match are
+  // exempt (a real festival can legitimately share a lineup with another stop).
+  const signatureVenues = new Map<string, Set<string>>();
+  for (const day of qualifiedDays) {
+    if (day.brandKey) continue;
+    const hasFestivalKeyword = Array.from(new Set(day.rawRows.map((r) => r.event.name))).some((n) => isFestival(n) && !looksLikeTourStopName(n));
+    if (hasFestivalKeyword) continue;
+    const signature = day.artists.map((a) => a.slug).sort().join(',');
+    let venueSet = signatureVenues.get(signature);
+    if (!venueSet) {
+      venueSet = new Set();
+      signatureVenues.set(signature, venueSet);
+    }
+    venueSet.add(day.venueSlug);
+  }
+  const tourSignatures = new Set<string>();
+  for (const [signature, venues] of signatureVenues.entries()) {
+    if (venues.size >= TOUR_PACKAGE_VENUE_THRESHOLD) tourSignatures.add(signature);
+  }
+  const cleanedDays: QualifiedDay[] = [];
+  for (const day of qualifiedDays) {
+    if (day.brandKey) {
+      cleanedDays.push(day);
+      continue;
+    }
+    const hasFestivalKeyword = Array.from(new Set(day.rawRows.map((r) => r.event.name))).some((n) => isFestival(n) && !looksLikeTourStopName(n));
+    if (hasFestivalKeyword) {
+      cleanedDays.push(day);
+      continue;
+    }
+    const signature = day.artists.map((a) => a.slug).sort().join(',');
+    if (tourSignatures.has(signature)) continue;
+    cleanedDays.push(day);
+  }
+
   // Step 3: cluster days that belong to the same multi-day festival (same venue, same brand,
   // contiguous dates with at most MAX_DAY_GAP days between consecutive entries).
   // Days without a brand keyword stay as standalone single-day festivals.
   const clusters = new Map<string, QualifiedDay[]>();
-  for (const day of qualifiedDays) {
+  for (const day of cleanedDays) {
     const clusterKey = day.brandKey
       ? `${day.venueSlug}|brand|${day.brandKey}`
       : `${day.venueSlug}|nobrand|${day.date}`; // nobrand keys are unique per date so they don't merge

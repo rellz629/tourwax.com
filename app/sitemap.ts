@@ -178,6 +178,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/insights/most-toured-cities`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${SITE_URL}/insights/busiest-touring-artists`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${SITE_URL}/insights/top-concert-venues`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${SITE_URL}/insights/busiest-touring-months`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${SITE_URL}/insights/rising-artists`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${SITE_URL}/insights/affordable-concert-cities`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${SITE_URL}/insights/expensive-concert-cities`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
   ];
 
   // ---- Festivals (drop tour-stops and ad-hoc venue+date "festivals") ----

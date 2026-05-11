@@ -196,6 +196,16 @@ Run `npm run fetch:tours` to refresh all tour dates and update artist metadata (
 ### Fixing Duplicate Events
 Check `scripts/fix-duplicates-and-images.ts` for patterns on deduplication logic.
 
+### Publishing a Blog Post
+Blog posts in `content/blog/*.md` are considered "published" once `publishedAt` is at or before today. Before setting that date (or before merging a new/edited post), you MUST verify the `featuredImage` URL actually returns a 2xx response. Two posts already shipped with 404 Wikimedia thumbnails, which is why this step is required.
+
+Workflow:
+1. Pick the image URL from Wikimedia Commons (or another allowed `remotePatterns` host in `next.config.ts`) and confirm it loads in a browser.
+2. Run `npm run blog:check-images` — it fetches every published post's `featuredImage` and exits non-zero on any broken or missing image. Do not mark a post as published until this passes.
+3. If Wikimedia returns 429, the script already retries with backoff. Persistent non-2xx means the file no longer exists at that path — find a replacement.
+
+If a post is scheduled for the future (`publishedAt` after today), the checker skips it. Re-run the checker at publish time.
+
 ### Adding a New External API
 1. Create new file in `lib/` with typed interfaces
 2. Implement search function returning normalized `NewEvent[]` and `NewVenue[]`
