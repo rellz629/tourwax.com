@@ -21,7 +21,13 @@ export const revalidate = 1800;
 
 const EVENTS_PER_PAGE = 50;
 const PAST_EVENTS_LIMIT = 50;
-const VENUE_ARCHIVE_MONTHS = 18;
+// Extended from 18 -> 60 months as part of the 2026-05-31 indexing recovery.
+// 97 venues in the GSC "Not found" bucket had matching DB rows but no events
+// inside the 18-month window — Google had them indexed when they were active,
+// then they fell out of the past-events query when the window slid. 5 years
+// is long enough that the venue almost certainly had at least one show; the
+// shouldNoindexVenue predicate keeps thin venues out of the index either way.
+const VENUE_ARCHIVE_MONTHS = 60;
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -550,7 +556,7 @@ export default async function VenuePage({ params, searchParams }: Props) {
               <div className="h-px flex-1 bg-gray-200"></div>
             </div>
             <p className="text-sm text-gray-500 mb-6">
-              Showing the most recent {pastVenueEvents.length} archived show{pastVenueEvents.length === 1 ? '' : 's'} from the last {VENUE_ARCHIVE_MONTHS} months.
+              Showing the most recent {pastVenueEvents.length} archived show{pastVenueEvents.length === 1 ? '' : 's'} from the last {Math.round(VENUE_ARCHIVE_MONTHS / 12)} years.
             </p>
             <div className="space-y-8">
               {Object.entries(pastEventsByDate).map(([date, dateEvents]) => (
