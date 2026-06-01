@@ -7,17 +7,28 @@
  *   - app/festivals/[slug]/page.tsx    (same for ad-hoc/tour-stop "festival" pages)
  *   - scripts/seo-audit.ts             (mirrors these constants for offline reports)
  *
- * These thresholds were calibrated against the May 2026 GSC drilldown which
- * showed ~3,700 thin programmatic URLs in "Crawled - currently not indexed" /
- * "Discovered - currently not indexed" buckets after a late-April quality
- * reassessment by Google.
+ * Thresholds were re-calibrated 2026-05-31 against the GSC drilldowns under
+ * Traffic Reports/5-31-2026/. The previous (May 7) thresholds were directionally
+ * correct but too generous: 656 artists in GSC "Crawled - not indexed" passed
+ * the old `lifetime >= 3 OR upcoming >= 1` rule. Google's quality classifier
+ * rejects single-event artist pages even when our predicate allows them, so
+ * the new floors require either a real upcoming presence (>=2 for artists,
+ * >=5 for cities) or meaningful lifetime depth (>=5 / >=10).
+ *
+ * Bing, DuckDuckGo, and Yahoo continue to index and rank the surface that
+ * Google has demoted (Vercel referrers and GA4 channel breakdown both confirm
+ * ~70% of organic traffic comes from non-Google search engines as of late May
+ * 2026). The cut is calibrated to convince Google's classifier without
+ * destroying the surface those other engines are still ranking.
  */
 
 export const SEO_PRUNE = {
-  ARTIST_MIN_LIFETIME_EVENTS: 3,
-  VENUE_MIN_LIFETIME_EVENTS: 3,
-  CITY_MIN_LIFETIME_EVENTS: 5,
-  CITY_MIN_UPCOMING_EVENTS: 3,
+  ARTIST_MIN_LIFETIME_EVENTS: 5,
+  ARTIST_MIN_UPCOMING_EVENTS: 2,
+  VENUE_MIN_LIFETIME_EVENTS: 5,
+  VENUE_MIN_UPCOMING_EVENTS: 1,
+  CITY_MIN_LIFETIME_EVENTS: 10,
+  CITY_MIN_UPCOMING_EVENTS: 5,
   FESTIVAL_MIN_ARTISTS_NO_BRAND: 5,
   FESTIVAL_MIN_DAYS_NO_BRAND: 2,
 } as const;
@@ -33,17 +44,24 @@ interface EventCounts {
  * is told to skip it until events return.
  */
 export function shouldNoindexArtist({ lifetime, upcoming }: EventCounts): boolean {
-  return upcoming === 0 && lifetime < SEO_PRUNE.ARTIST_MIN_LIFETIME_EVENTS;
+  return (
+    upcoming < SEO_PRUNE.ARTIST_MIN_UPCOMING_EVENTS &&
+    lifetime < SEO_PRUNE.ARTIST_MIN_LIFETIME_EVENTS
+  );
 }
 
 export function shouldNoindexVenue({ lifetime, upcoming }: EventCounts): boolean {
-  return upcoming === 0 && lifetime < SEO_PRUNE.VENUE_MIN_LIFETIME_EVENTS;
+  return (
+    upcoming < SEO_PRUNE.VENUE_MIN_UPCOMING_EVENTS &&
+    lifetime < SEO_PRUNE.VENUE_MIN_LIFETIME_EVENTS
+  );
 }
 
 export function shouldNoindexCity({ lifetime, upcoming }: EventCounts): boolean {
-  if (upcoming === 0 && lifetime < SEO_PRUNE.CITY_MIN_LIFETIME_EVENTS) return true;
-  if (upcoming > 0 && upcoming < SEO_PRUNE.CITY_MIN_UPCOMING_EVENTS) return true;
-  return false;
+  return (
+    upcoming < SEO_PRUNE.CITY_MIN_UPCOMING_EVENTS &&
+    lifetime < SEO_PRUNE.CITY_MIN_LIFETIME_EVENTS
+  );
 }
 
 interface FestivalShape {

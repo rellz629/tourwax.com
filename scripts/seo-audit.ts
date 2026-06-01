@@ -33,15 +33,17 @@ import { getAllFestivals, getArchivedFestivals, findBrandFestival } from '@/lib/
 // Thresholds (tune in one place)
 // ============================================================================
 
+// Mirrors lib/seo-pruning.ts SEO_PRUNE constants. Bump in lockstep.
 const THRESHOLDS = {
-  /** Artist with no upcoming events AND fewer than this many lifetime events → noindex. */
-  ARTIST_MIN_LIFETIME_EVENTS: 3,
-  /** Venue with no upcoming events AND fewer than this many lifetime events → noindex. */
-  VENUE_MIN_LIFETIME_EVENTS: 3,
-  /** City with no upcoming events AND fewer than this many lifetime events → noindex. */
-  CITY_MIN_LIFETIME_EVENTS: 5,
-  /** City with upcoming events fewer than this → low-priority (consider noindex). */
-  CITY_LOW_PRIORITY_UPCOMING: 3,
+  /** Artist needs at least this many upcoming OR this many lifetime events to index. */
+  ARTIST_MIN_LIFETIME_EVENTS: 5,
+  ARTIST_MIN_UPCOMING_EVENTS: 2,
+  /** Venue needs at least this many upcoming OR this many lifetime events to index. */
+  VENUE_MIN_LIFETIME_EVENTS: 5,
+  VENUE_MIN_UPCOMING_EVENTS: 1,
+  /** City needs at least this many upcoming OR this many lifetime events to index. */
+  CITY_MIN_LIFETIME_EVENTS: 10,
+  CITY_MIN_UPCOMING_EVENTS: 5,
   /** Festival without a brand keyword needs at least this many distinct artists OR at least this many days. */
   FESTIVAL_MIN_ARTISTS_NO_BRAND: 5,
   FESTIVAL_MIN_DAYS_NO_BRAND: 2,
@@ -277,7 +279,9 @@ function nameSuggestsNonArtist(name: string): boolean {
 function recommendArtist(a: ArtistStats): { action: string; reason: string } | null {
   const lacksMetadata = !a.hasBio && !a.hasImage && !a.hasSpotifyId;
   const looksFake = nameSuggestsNonArtist(a.name);
-  const noEvents = a.upcoming === 0 && a.lifetime < THRESHOLDS.ARTIST_MIN_LIFETIME_EVENTS;
+  const noEvents =
+    a.upcoming < THRESHOLDS.ARTIST_MIN_UPCOMING_EVENTS &&
+    a.lifetime < THRESHOLDS.ARTIST_MIN_LIFETIME_EVENTS;
 
   // Junk import: looks like a non-artist + no curated metadata + no events.
   if (looksFake && lacksMetadata && noEvents) {
@@ -312,26 +316,26 @@ function recommendArtist(a: ArtistStats): { action: string; reason: string } | n
 }
 
 function recommendVenue(v: VenueStats): { action: string; reason: string } | null {
-  if (v.upcoming === 0 && v.lifetime < THRESHOLDS.VENUE_MIN_LIFETIME_EVENTS) {
+  if (
+    v.upcoming < THRESHOLDS.VENUE_MIN_UPCOMING_EVENTS &&
+    v.lifetime < THRESHOLDS.VENUE_MIN_LIFETIME_EVENTS
+  ) {
     return {
       action: 'noindex / drop from sitemap',
-      reason: `no upcoming events, only ${v.lifetime} lifetime`,
+      reason: `${v.upcoming} upcoming / ${v.lifetime} lifetime`,
     };
   }
   return null;
 }
 
 function recommendCity(c: CityStats): { action: string; reason: string } | null {
-  if (c.upcoming === 0 && c.lifetime < THRESHOLDS.CITY_MIN_LIFETIME_EVENTS) {
+  if (
+    c.upcoming < THRESHOLDS.CITY_MIN_UPCOMING_EVENTS &&
+    c.lifetime < THRESHOLDS.CITY_MIN_LIFETIME_EVENTS
+  ) {
     return {
       action: 'noindex / drop from sitemap',
-      reason: `no upcoming events, only ${c.lifetime} lifetime`,
-    };
-  }
-  if (c.upcoming > 0 && c.upcoming < THRESHOLDS.CITY_LOW_PRIORITY_UPCOMING) {
-    return {
-      action: 'low priority (consider noindex)',
-      reason: `only ${c.upcoming} upcoming events`,
+      reason: `${c.upcoming} upcoming / ${c.lifetime} lifetime`,
     };
   }
   return null;
