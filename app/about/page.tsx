@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'About TourWax - Live Music Tour Dates & Concert Discovery',
   description: 'TourWax aggregates live music tour dates from Ticketmaster and SeatGeek, providing comprehensive concert listings, venue information, and artist news.',
+  alternates: { canonical: '/about' },
 };
 
 export default function AboutPage() {

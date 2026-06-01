@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { db } from '@/db';
 import { artists, events, venues, eventArtists } from '@/db/schema';
 import { eq, desc, gte, lte, and, sql, isNotNull } from 'drizzle-orm';
@@ -11,6 +12,10 @@ import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
 import ShowMoreEvents from '@/components/ShowMoreEvents';
 import HomepageNearMe from '@/components/HomepageNearMe';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+};
 
 // Use Static Site Generation with ISR
 export const dynamic = 'force-static';
