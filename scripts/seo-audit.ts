@@ -57,15 +57,20 @@ const NON_ARTIST_NAME_FLAGS = [
 // GSC CSV loading
 // ============================================================================
 
-const REPORTS_DIR = path.join(process.cwd(), 'Traffic Reports');
+const REPORTS_DIR = path.join(process.cwd(), 'Traffic Reports', '5-31-2026');
+const NOT_FOUND_404 = path.join(
+  REPORTS_DIR,
+  'tourwax.com-Coverage-Drilldown-2026-05-31',
+  'Table.csv',
+);
 const CRAWLED_NOT_INDEXED = path.join(
   REPORTS_DIR,
-  'tourwax.com-Coverage-Drilldown-2026-05-06',
+  'tourwax.com-Coverage-Drilldown-2026-05-31 (1)',
   'Table.csv',
 );
 const DISCOVERED_NOT_INDEXED = path.join(
   REPORTS_DIR,
-  'tourwax.com-Coverage-Drilldown-2026-05-06 (1)',
+  'tourwax.com-Coverage-Drilldown-2026-05-31 (2)',
   'Table.csv',
 );
 const OUTPUT_DIR = path.join(process.cwd(), 'audit-output');
@@ -340,10 +345,12 @@ async function main() {
   console.log('📥 Loading GSC drilldown exports...');
   const crawled = loadGscUrls(CRAWLED_NOT_INDEXED);
   const discovered = loadGscUrls(DISCOVERED_NOT_INDEXED);
+  const notFound = loadGscUrls(NOT_FOUND_404);
   const gsc = indexGscUrls(crawled, discovered);
   console.log(`   crawled-not-indexed:    ${crawled.length} URLs`);
   console.log(`   discovered-not-indexed: ${discovered.length} URLs`);
-  console.log(`   by type:`);
+  console.log(`   not-found-404:          ${notFound.length} URLs`);
+  console.log(`   by type (not-indexed buckets):`);
   console.log(`     artists=${gsc.artists.size} venues=${gsc.venues.size} festivals=${gsc.festivals.size} concerts=${gsc.cities.size} blog=${gsc.blog.size} tours=${gsc.tours.size}`);
 
   const now = new Date();
@@ -545,6 +552,53 @@ async function main() {
     phantomRows,
   );
 
+  // ---- 404 redirect candidates (URLs Google had indexed and now hit 404) ----
+  // Each row gets a suggested action: 410 (gone, no replacement), 301-redirect
+  // (closest live entity), or review (slug change candidate).
+  const fourOhFourRows: unknown[][] = [];
+  for (const url of notFound) {
+    const pathname = url.replace(/^https?:\/\/(www\.)?tourwax\.com/, '');
+    const parts = pathname.split('/').filter(Boolean);
+    if (parts.length < 2) {
+      fourOhFourRows.push([url, '', '', '410', 'top-level URL no longer exists']);
+      continue;
+    }
+    const [type, slug] = parts;
+
+    if (type === 'artists') {
+      const liveBySlug = artistStats.find((a) => a.slug === slug);
+      if (liveBySlug) {
+        fourOhFourRows.push([url, 'artist', slug, 'investigate', 'slug matches DB but URL 404s — check page render']);
+        continue;
+      }
+      // Slug-change candidate: any artist whose transliterated slug matches?
+      const transliterated = artistStats.find((a) => slugifyTransliterated(a.name) === slug);
+      if (transliterated) {
+        fourOhFourRows.push([url, 'artist', slug, `301 /artists/${transliterated.slug}`, `slug changed: ${transliterated.name}`]);
+        continue;
+      }
+      fourOhFourRows.push([url, 'artist', slug, '410', 'no matching artist in DB']);
+    } else if (type === 'venues') {
+      const liveBySlug = venueStats.find((v) => v.slug === slug);
+      if (liveBySlug) {
+        fourOhFourRows.push([url, 'venue', slug, 'investigate', 'slug matches DB but URL 404s']);
+        continue;
+      }
+      fourOhFourRows.push([url, 'venue', slug, '410', 'no matching venue in DB']);
+    } else if (type === 'festivals') {
+      fourOhFourRows.push([url, 'festival', slug, '410', 'festival likely pruned by classifier or dedup']);
+    } else if (type === 'concerts') {
+      fourOhFourRows.push([url, 'city', slug, 'investigate', 'city URL 404 — check route']);
+    } else {
+      fourOhFourRows.push([url, type, slug, 'investigate', 'unusual 404 path']);
+    }
+  }
+  writeCsv(
+    '404-redirects.csv',
+    ['url', 'type', 'slug', 'recommended_action', 'reason'],
+    fourOhFourRows,
+  );
+
   // ---- Slugify unicode issues ----
   const unicodeRows: unknown[][] = [];
   const seenCitySlugs = new Set<string>();
@@ -576,8 +630,9 @@ SEO Audit — ${new Date().toISOString()}
 
 GSC inputs
   Crawled - not indexed:    ${crawled.length} URLs (capped at GSC's 1,000 export limit)
-  Discovered - not indexed: ${discovered.length} URLs (full export)
-  Combined unique URLs:     ${totalRejected}
+  Discovered - not indexed: ${discovered.length} URLs (capped at 1,000)
+  Not found (404):          ${notFound.length} URLs
+  Combined unique not-indexed URLs: ${totalRejected}
 
 Distribution by path:
   /artists  ${gsc.artists.size}
@@ -614,6 +669,7 @@ Files written to ${OUTPUT_DIR}:
   cities-prune.csv           (same filter)
   festivals-prune.csv        (rows in GSC bucket OR not-real-festival classification)
   phantom-urls.csv           (GSC URLs with no matching DB row — handle as 410 or sitemap-remove)
+  404-redirects.csv          (GSC "Not found" bucket with suggested 410 / 301 / investigate action)
   slugify-unicode-issues.csv (cities/venues whose slug differs from a transliterated slug)
 
 Thresholds in use (edit at top of scripts/seo-audit.ts to tune):
