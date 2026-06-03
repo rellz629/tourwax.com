@@ -39,8 +39,8 @@ const THRESHOLDS = {
   ARTIST_MIN_LIFETIME_EVENTS: 5,
   ARTIST_MIN_UPCOMING_EVENTS: 2,
   /** Venue needs at least this many upcoming OR this many lifetime events to index. */
-  VENUE_MIN_LIFETIME_EVENTS: 5,
-  VENUE_MIN_UPCOMING_EVENTS: 1,
+  VENUE_MIN_LIFETIME_EVENTS: 10,
+  VENUE_MIN_UPCOMING_EVENTS: 2,
   /** City needs at least this many upcoming OR this many lifetime events to index. */
   CITY_MIN_LIFETIME_EVENTS: 10,
   CITY_MIN_UPCOMING_EVENTS: 5,
