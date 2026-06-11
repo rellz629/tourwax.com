@@ -590,7 +590,10 @@ async function main() {
       }
       fourOhFourRows.push([url, 'venue', slug, '410', 'no matching venue in DB']);
     } else if (type === 'festivals') {
-      fourOhFourRows.push([url, 'festival', slug, '410', 'festival likely pruned by classifier or dedup']);
+      // Never 410 festival URLs: detection is dynamic, so a slug dead today can
+      // be a live festival (or legacy alias) after the next import. The festival
+      // page itself 308s legacy/reclassified slugs and 404s unknown ones.
+      fourOhFourRows.push([url, 'festival', slug, 'leave', 'festival page self-resolves (308 to canonical/artist/venue, else 404) — do not add to GONE_URLS']);
     } else if (type === 'concerts') {
       fourOhFourRows.push([url, 'city', slug, 'investigate', 'city URL 404 — check route']);
     } else {

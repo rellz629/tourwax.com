@@ -8,6 +8,7 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateCityMetadata, SITE_URL } from '@/lib/seo';
 import { shouldNoindexCity } from '@/lib/seo-pruning';
+import { getCityIndexCounts } from '@/lib/event-counts';
 import { generateBreadcrumbSchema, generateCityEventListSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -35,11 +36,17 @@ const getCityInfo = cache(async function getCityInfo(citySlug: string) {
     })
     .from(venues);
 
-  const match = allCities.find(
+  const matches = allCities.filter(
     (row) => row.city && slugify(row.city) === citySlug
   );
+  if (matches.length === 0) return null;
 
-  return match || null;
+  return {
+    ...matches[0],
+    // Every spelling sharing this slug — the indexing counts roll these up the
+    // same way the sitemap does.
+    allCityNames: [...new Set(matches.map((m) => m.city!))],
+  };
 });
 
 const getNearbyCities = cache(async function getNearbyCities(cityName: string, state: string | null) {
@@ -128,15 +135,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const [cityEvents, lifetimeRows] = await Promise.all([
+  const [cityEvents, indexCounts] = await Promise.all([
     getCityEvents(cityInfo.city),
-    db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(events)
-      .innerJoin(venues, eq(events.venueId, venues.id))
-      .where(sql`${venues.city} = ${cityInfo.city}`),
+    getCityIndexCounts(cityInfo.allCityNames),
   ]);
-  const lifetime = lifetimeRows[0]?.count ?? 0;
   const artistNames = [...new Set(cityEvents.map((e) => e.artistName))];
   const venueNames = [...new Set(cityEvents.filter((e) => e.venue).map((e) => e.venue!.name))];
   const nextEventDate = cityEvents.length > 0 ? new Date(cityEvents[0].event.eventDate) : null;
@@ -151,7 +153,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     nextEventDate,
   });
 
-  if (shouldNoindexCity({ lifetime, upcoming: cityEvents.length })) {
+  // Same counts the sitemap filter uses (lib/event-counts.ts), so this page
+  // is never noindexed while still listed in sitemap.xml.
+  if (shouldNoindexCity(indexCounts)) {
     return { ...metadata, robots: { index: false, follow: true } };
   }
   return metadata;

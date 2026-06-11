@@ -8,6 +8,7 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateVenueMetadata, SITE_URL } from '@/lib/seo';
 import { shouldNoindexVenue } from '@/lib/seo-pruning';
+import { getVenueIndexCounts } from '@/lib/event-counts';
 import { generateBreadcrumbSchema, generateVenueSchema, generateVenueEventListSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -159,14 +160,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const [venueEvents, lifetimeRows] = await Promise.all([
+  const [venueEvents, indexCounts] = await Promise.all([
     getVenueEvents(match.allVenueIds),
-    db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(events)
-      .where(inArray(events.venueId, match.allVenueIds)),
+    getVenueIndexCounts(match.allVenueIds),
   ]);
-  const lifetime = lifetimeRows[0]?.count ?? 0;
   const artistNames = [...new Set(venueEvents.map((e) => e.artistName))];
   const nextEventDate = venueEvents.length > 0 ? new Date(venueEvents[0].event.eventDate) : null;
 
@@ -180,7 +177,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     nextEventDate,
   });
 
-  if (shouldNoindexVenue({ lifetime, upcoming: venueEvents.length })) {
+  // Same counts the sitemap filter uses (lib/event-counts.ts), so this page
+  // is never noindexed while still listed in sitemap.xml.
+  if (shouldNoindexVenue(indexCounts)) {
     return { ...metadata, robots: { index: false, follow: true } };
   }
   return metadata;

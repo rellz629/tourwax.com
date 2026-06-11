@@ -8,6 +8,8 @@ import Image from 'next/image';
 import { ARTIST_TWITTER_HANDLES } from '@/lib/twitter';
 import { generateArtistMetadata, SITE_URL, extractCitiesFromEvents } from '@/lib/seo';
 import { shouldNoindexArtist } from '@/lib/seo-pruning';
+import { getArtistIndexCounts } from '@/lib/event-counts';
+import { getAllFestivals, type Festival } from '@/lib/festivals';
 import { generatePersonSchema, generateMusicEventSchema, generateBreadcrumbSchema, generateNewsArticleSchema, generateFAQSchema } from '@/lib/schema';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
 import ShareButtons from '@/components/ShareButtons';
@@ -252,15 +254,11 @@ interface ArtistFestival {
 const getArtistFestivals = cache(async function getArtistFestivals(artistId: string): Promise<ArtistFestival[]> {
   const now = new Date();
 
-  // Get this artist's upcoming events at venues where 3+ artists are playing on the same date
+  // The artist's upcoming venue+date pairs.
   const artistEvents = await db
     .select({
-      eventName: events.name,
       eventDate: events.eventDate,
-      venueId: events.venueId,
       venueName: venues.name,
-      venueCity: venues.city,
-      venueState: venues.state,
     })
     .from(events)
     .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
@@ -272,37 +270,37 @@ const getArtistFestivals = cache(async function getArtistFestivals(artistId: str
 
   if (artistEvents.length === 0) return [];
 
-  const festivals: ArtistFestival[] = [];
-
-  for (const ev of artistEvents) {
-    if (!ev.venueId) continue;
-    const dateKey = new Date(ev.eventDate).toISOString().slice(0, 10);
-
-    // Count how many distinct artists are playing at this venue on this date
-    const countResult = await db
-      .select({
-        count: sql<number>`count(distinct ${eventArtists.artistId})`,
-      })
-      .from(events)
-      .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
-      .where(and(
-        eq(events.venueId, ev.venueId),
-        sql`${events.eventDate}::date = ${dateKey}`,
-      ));
-
-    const artistCount = countResult[0]?.count ?? 0;
-    if (artistCount >= 3) {
-      const slug = slugify(`${ev.venueName}-${dateKey}`);
-      festivals.push({
-        name: ev.eventName,
-        slug,
-        date: dateKey,
-        venueName: ev.venueName!,
-        city: ev.venueCity,
-        state: ev.venueState,
-        artistCount,
-      });
+  // Resolve venue+date pairs against the rolled-up festival list so links use
+  // the CANONICAL slug. Building `${venueSlug}-${ownEventDate}` here gave
+  // artists playing day 2+ of a multi-day festival a day-specific slug, which
+  // 410s/redirects instead of resolving — the source of the 203 pages with
+  // broken internal links in the 2026-06-09 Ahrefs crawl.
+  const allFestivals = await getAllFestivals();
+  const festivalByVenueDay = new Map<string, Festival>();
+  for (const f of allFestivals) {
+    const venueSlug = slugify(f.venue.name);
+    for (const day of f.days) {
+      festivalByVenueDay.set(`${venueSlug}_${day.date}`, f);
     }
+  }
+
+  const seen = new Set<string>();
+  const festivals: ArtistFestival[] = [];
+  for (const ev of artistEvents) {
+    if (!ev.venueName) continue;
+    const dateKey = new Date(ev.eventDate).toISOString().slice(0, 10);
+    const festival = festivalByVenueDay.get(`${slugify(ev.venueName)}_${dateKey}`);
+    if (!festival || seen.has(festival.slug)) continue;
+    seen.add(festival.slug);
+    festivals.push({
+      name: festival.name,
+      slug: festival.slug,
+      date: festival.date,
+      venueName: festival.venue.name,
+      city: festival.venue.city,
+      state: festival.venue.state,
+      artistCount: festival.artistCount,
+    });
   }
 
   return festivals;
@@ -469,21 +467,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const [artistEvents, lifetimeRows] = await Promise.all([
+  const [artistEvents, indexCounts] = await Promise.all([
     getArtistEvents(artist.id),
-    db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(eventArtists)
-      .where(eq(eventArtists.artistId, artist.id)),
+    getArtistIndexCounts(artist.id),
   ]);
-  const lifetime = lifetimeRows[0]?.count ?? 0;
 
   const metadata = generateArtistMetadata({
     artist,
     events: artistEvents,
   });
 
-  if (shouldNoindexArtist({ lifetime, upcoming: artistEvents.length })) {
+  // Same counts the sitemap filter uses (lib/event-counts.ts), so this page
+  // is never noindexed while still listed in sitemap.xml.
+  if (shouldNoindexArtist(indexCounts)) {
     return { ...metadata, robots: { index: false, follow: true } };
   }
   return metadata;

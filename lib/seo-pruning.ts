@@ -1,5 +1,7 @@
 /**
- * SEO pruning thresholds and predicates. Single source of truth used by:
+ * SEO pruning thresholds and predicates. Event counts fed into these predicates
+ * come from lib/event-counts.ts so the sitemap and pages always agree.
+ * Single source of truth used by:
  *   - app/sitemap.ts                   (filter URLs out of sitemap.xml)
  *   - app/artists/[slug]/page.tsx      (set robots.index=false on thin artist pages)
  *   - app/venues/[slug]/page.tsx       (same for thin venue pages)

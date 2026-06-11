@@ -611,15 +611,55 @@ function buildFestivalFromRun(days: QualifiedDay[], todayKey: string): Festival 
   };
 }
 
+/**
+ * Cross-request TTL memo. React's cache() only dedupes within a single request,
+ * so every statically generated page re-ran the full-events festival scan —
+ * with ~19k pages in a build, the concurrent scans saturated the database and
+ * festival/artist pages hit Next's 60s static-generation timeout. One scan per
+ * process per TTL window is plenty: festival data only moves when imports run,
+ * and pages revalidate every 30 minutes anyway.
+ */
+function ttlMemo<T>(fn: () => Promise<T>, ttlMs: number): () => Promise<T> {
+  let entry: { at: number; value: Promise<T> } | null = null;
+  return () => {
+    if (!entry || Date.now() - entry.at > ttlMs) {
+      const value = fn().catch((err) => {
+        entry = null; // don't cache failures
+        throw err;
+      });
+      entry = { at: Date.now(), value };
+    }
+    return entry.value;
+  };
+}
+
+const FESTIVALS_TTL_MS = 30 * 60 * 1000;
+
+const getUpcomingFestivalsMemo = ttlMemo(
+  () => fetchFestivals({ from: new Date() }),
+  FESTIVALS_TTL_MS,
+);
+
+const getArchivedFestivalsMemo = ttlMemo(
+  () => {
+    const from = new Date();
+    from.setMonth(from.getMonth() - ARCHIVE_MONTHS);
+    return fetchFestivals({ from, to: new Date() });
+  },
+  FESTIVALS_TTL_MS,
+);
+
 export const getAllFestivals = cache(async function getAllFestivals(): Promise<Festival[]> {
-  return fetchFestivals({ from: new Date() });
+  return getUpcomingFestivalsMemo();
 });
 
 export const getArchivedFestivals = cache(async function getArchivedFestivals(monthsBack = ARCHIVE_MONTHS): Promise<Festival[]> {
-  const from = new Date();
-  from.setMonth(from.getMonth() - monthsBack);
-  const to = new Date();
-  return fetchFestivals({ from, to });
+  if (monthsBack !== ARCHIVE_MONTHS) {
+    const from = new Date();
+    from.setMonth(from.getMonth() - monthsBack);
+    return fetchFestivals({ from, to: new Date() });
+  }
+  return getArchivedFestivalsMemo();
 });
 
 /**

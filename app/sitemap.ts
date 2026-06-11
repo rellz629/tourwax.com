@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { db } from '@/db';
-import { artists, events, venues, eventArtists } from '@/db/schema';
-import { eq, gte, isNotNull, and, sql } from 'drizzle-orm';
+import { artists, events, venues } from '@/db/schema';
+import { eq, gte, isNotNull, and } from 'drizzle-orm';
 import { SITE_URL } from '@/lib/seo';
 import { slugify } from '@/lib/slugify';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
@@ -13,84 +13,38 @@ import {
   shouldNoindexCity,
   shouldNoindexFestival,
 } from '@/lib/seo-pruning';
+import {
+  getAllArtistIndexCounts,
+  getAllVenueIndexCounts,
+  getAllCityIndexCounts,
+} from '@/lib/event-counts';
+
+// Regenerate on the same cadence as the pages. A build-time-only sitemap
+// drifts out of sync with the pages' noindex decisions as event dates pass.
+export const revalidate = 1800;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const nowIso = now.toISOString();
 
   // ---- Aggregate event counts (per-artist, per-venue, per-city) ----
-  // One round-trip each. Used both for sitemap filtering and to drop thin
-  // pages out of the indexed surface.
+  // lib/event-counts.ts is the shared source of truth: the same queries drive
+  // the pages' noindex decisions, so sitemap inclusion and page robots meta
+  // can never disagree.
   const [
     artistRows,
-    artistEventCounts,
-    venueEventCounts,
-    cityEventCounts,
+    countsByArtistId,
+    countsByVenueSlug,
+    countsByCitySlug,
   ] = await Promise.all([
     db.select({
       id: artists.id,
       slug: artists.slug,
       updatedAt: artists.updatedAt,
     }).from(artists).where(eq(artists.isActive, true)),
-
-    db.select({
-      artistId: eventArtists.artistId,
-      lifetime: sql<number>`count(*)::int`,
-      upcoming: sql<number>`count(*) filter (where ${events.eventDate} >= ${nowIso})::int`,
-    })
-      .from(eventArtists)
-      .innerJoin(events, eq(events.id, eventArtists.eventId))
-      .groupBy(eventArtists.artistId),
-
-    db.select({
-      venueName: venues.name,
-      lifetime: sql<number>`count(*)::int`,
-      upcoming: sql<number>`count(*) filter (where ${events.eventDate} >= ${nowIso})::int`,
-    })
-      .from(events)
-      .innerJoin(venues, eq(events.venueId, venues.id))
-      .groupBy(venues.name),
-
-    db.select({
-      city: venues.city,
-      lifetime: sql<number>`count(*)::int`,
-      upcoming: sql<number>`count(*) filter (where ${events.eventDate} >= ${nowIso})::int`,
-    })
-      .from(events)
-      .innerJoin(venues, eq(events.venueId, venues.id))
-      .where(isNotNull(venues.city))
-      .groupBy(venues.city),
+    getAllArtistIndexCounts(now),
+    getAllVenueIndexCounts(now),
+    getAllCityIndexCounts(now),
   ]);
-
-  const countsByArtistId = new Map(
-    artistEventCounts.map((r) => [r.artistId, { lifetime: r.lifetime, upcoming: r.upcoming }]),
-  );
-
-  // Roll up per-venue-slug counts so duplicate venue rows with the same name
-  // (across data sources) collapse into one sitemap entry.
-  const countsByVenueSlug = new Map<string, { lifetime: number; upcoming: number; name: string }>();
-  for (const r of venueEventCounts) {
-    if (!r.venueName) continue;
-    const slug = slugify(r.venueName);
-    const cur = countsByVenueSlug.get(slug);
-    if (cur) {
-      cur.lifetime += r.lifetime;
-      cur.upcoming += r.upcoming;
-    } else {
-      countsByVenueSlug.set(slug, { lifetime: r.lifetime, upcoming: r.upcoming, name: r.venueName });
-    }
-  }
-
-  // Same idea for cities — same-name cities in different states share a slug.
-  const countsByCitySlug = new Map<string, { lifetime: number; upcoming: number }>();
-  for (const r of cityEventCounts) {
-    if (!r.city) continue;
-    const slug = slugify(r.city);
-    const cur = countsByCitySlug.get(slug) ?? { lifetime: 0, upcoming: 0 };
-    cur.lifetime += r.lifetime;
-    cur.upcoming += r.upcoming;
-    countsByCitySlug.set(slug, cur);
-  }
 
   // ---- Static routes ----
   const staticRoutes: MetadataRoute.Sitemap = [
