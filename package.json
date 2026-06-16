@@ -25,7 +25,9 @@
     "blog:draft": "dotenv -e .env.local -- tsx scripts/generate-blog-draft.ts",
     "blog:check-images": "tsx scripts/check-blog-images.ts",
     "audit:seo": "dotenv -e .env.local -- tsx scripts/seo-audit.ts",
-    "deactivate:junk-artists": "dotenv -e .env.local -- tsx scripts/deactivate-junk-artists.ts"
+    "deactivate:junk-artists": "dotenv -e .env.local -- tsx scripts/deactivate-junk-artists.ts",
+    "reattribute:promoter": "dotenv -e .env.local -- tsx scripts/reattribute-promoter-events.ts",
+    "find:nonartists": "dotenv -e .env.local -- tsx scripts/find-nonartist-artists.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",

@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { artists } from '@/db/schema';
 import { nanoid } from 'nanoid';
 import { slugify } from '@/lib/slugify';
+import { isLikelyNonArtist } from '@/lib/non-artist';
 
 /**
  * Import artists from Ticketmaster who have upcoming events
@@ -55,11 +56,14 @@ async function getArtistsWithEvents(): Promise<TicketmasterAttraction[]> {
       for (const evt of evts) {
         const attractions = evt._embedded?.attractions || [];
         for (const attraction of attractions) {
-          // Only include music artists (not venues, sponsors, etc.)
+          // Only include music artists (not venues, sponsors, promoters, etc.).
+          // Attractions with no classification used to slip through here, which
+          // is how booking agencies like "Winiary Bookings" got imported, so we
+          // also reject names that look like a promoter/festival/tribute.
           const isMusicArtist = attraction.classifications?.some(
             (c: any) => c.segment?.name === 'Music'
           );
-          if (isMusicArtist || !attraction.classifications) {
+          if ((isMusicArtist || !attraction.classifications) && !isLikelyNonArtist(attraction.name)) {
             allArtists.push(attraction);
           }
         }

@@ -10,6 +10,7 @@ import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import { nanoid } from 'nanoid';
+import { isLikelyNonArtist } from '@/lib/non-artist';
 import type { FestivalLineup } from '@/lib/ticketmaster';
 import type { NewEvent } from '@/db/schema';
 
@@ -168,6 +169,7 @@ async function main() {
       if (!sourceEvent) continue;
 
       for (const attraction of lineup.attractions) {
+        if (isLikelyNonArtist(attraction.name)) continue;
         const attrSlug = slugify(attraction.name);
         const existing = await db.query.artists.findFirst({
           where: or(eq(artists.ticketmasterId, attraction.id), eq(artists.slug, attrSlug)),

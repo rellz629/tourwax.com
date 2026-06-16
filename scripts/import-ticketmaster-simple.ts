@@ -4,6 +4,7 @@ config({ path: '.env.local' });
 import { db } from '@/db';
 import { artists } from '@/db/schema';
 import { nanoid } from 'nanoid';
+import { isLikelyNonArtist } from '@/lib/non-artist';
 
 /**
  * Import popular music artists from Ticketmaster
@@ -67,6 +68,11 @@ async function importFromTicketmaster() {
   let skipped = 0;
 
   for (const artist of uniqueArtists) {
+    // Skip promoters / booking agencies / festival brands.
+    if (isLikelyNonArtist(artist.name)) {
+      skipped++;
+      continue;
+    }
     try {
       await db.insert(artists).values({
         id: nanoid(),
