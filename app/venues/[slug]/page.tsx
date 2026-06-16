@@ -133,7 +133,8 @@ const getVenuePastEvents = cache(async function getVenuePastEvents(venueIds: str
 export async function generateStaticParams() {
   const now = new Date();
 
-  // Get all venues with upcoming events
+  // Pre-render only the busiest venues (most upcoming events). The rest render
+  // on-demand via ISR (dynamicParams = true), keeping build CPU bounded.
   const topVenues = await db
     .select({
       venueName: venues.name,
@@ -142,7 +143,8 @@ export async function generateStaticParams() {
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now))
     .groupBy(venues.name)
-    .orderBy(sql`count(*) desc`);
+    .orderBy(sql`count(*) desc`)
+    .limit(150);
 
   return topVenues.map((row) => ({
     slug: slugify(row.venueName),

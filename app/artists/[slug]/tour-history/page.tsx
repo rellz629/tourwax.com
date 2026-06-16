@@ -22,15 +22,11 @@ interface Props {
   searchParams: Promise<{ year?: string }>;
 }
 
+// Tour-history pages are deep, rarely an entry point, and duplicated the full
+// ~3K artist set at build time. Render them all on-demand instead
+// (dynamicParams = true), ISR-cached for `revalidate` (24h).
 export async function generateStaticParams() {
-  const allArtists = await db
-    .select({ slug: artists.slug })
-    .from(artists)
-    .where(eq(artists.isActive, true));
-
-  return allArtists.map((artist) => ({
-    slug: artist.slug,
-  }));
+  return [];
 }
 
 const getArtist = cache(async function getArtist(slug: string) {

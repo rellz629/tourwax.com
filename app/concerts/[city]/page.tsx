@@ -106,7 +106,8 @@ const getCityEvents = cache(async function getCityEvents(cityName: string) {
 export async function generateStaticParams() {
   const now = new Date();
 
-  // Get all cities with upcoming events
+  // Pre-render only the busiest cities (most upcoming events). The rest render
+  // on-demand via ISR (dynamicParams = true), keeping build CPU bounded.
   const topCities = await db
     .select({
       city: venues.city,
@@ -115,7 +116,8 @@ export async function generateStaticParams() {
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now))
     .groupBy(venues.city)
-    .orderBy(sql`count(*) desc`);
+    .orderBy(sql`count(*) desc`)
+    .limit(100);
 
   return topCities
     .filter((row) => row.city)

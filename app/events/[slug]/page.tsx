@@ -23,38 +23,13 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// Generate static params for past events (the long-tail SEO pages)
+// Past-event pages are archival and low-traffic, so we no longer pre-render the
+// ~8K of them at build time (that alone dominated Build CPU Minutes). With
+// dynamicParams defaulting to true, each page renders on first request and is
+// then ISR-cached for `revalidate` (24h), keeping build CPU flat as the event
+// history grows.
 export async function generateStaticParams() {
-  const now = new Date();
-
-  // Get past events with artist and venue info to generate slugs
-  const pastEvents = await db
-    .select({
-      artistName: artists.name,
-      eventName: events.name,
-      venueName: venues.name,
-      eventDate: events.eventDate,
-    })
-    .from(events)
-    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
-    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
-    .leftJoin(venues, eq(events.venueId, venues.id))
-    .where(lt(events.eventDate, now));
-
-  // Deduplicate slugs (multiple source events produce the same slug)
-  const slugSet = new Set<string>();
-  const params: { slug: string }[] = [];
-
-  for (const row of pastEvents) {
-    if (isPackage(row.eventName)) continue;
-    const slug = eventSlug(row.artistName, row.venueName, new Date(row.eventDate));
-    if (slug && !slugSet.has(slug)) {
-      slugSet.add(slug);
-      params.push({ slug });
-    }
-  }
-
-  return params;
+  return [];
 }
 
 interface EventData {

@@ -30,14 +30,25 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// Generate static params for all artists at build time
+// Pre-render only the most in-demand artists (those with the most upcoming
+// events) at build time. The long tail renders on-demand via ISR
+// (dynamicParams = true), which keeps Build CPU Minutes flat as the catalog
+// grows instead of scaling with every imported artist.
+const PRERENDER_ARTIST_LIMIT = 150;
+
 export async function generateStaticParams() {
-  const allArtists = await db
+  const now = new Date();
+  const topArtists = await db
     .select({ slug: artists.slug })
     .from(artists)
-    .where(eq(artists.isActive, true));
+    .innerJoin(eventArtists, eq(eventArtists.artistId, artists.id))
+    .innerJoin(events, eq(events.id, eventArtists.eventId))
+    .where(and(eq(artists.isActive, true), gte(events.eventDate, now)))
+    .groupBy(artists.slug)
+    .orderBy(sql`count(${events.id}) desc`)
+    .limit(PRERENDER_ARTIST_LIMIT);
 
-  return allArtists.map((artist) => ({
+  return topArtists.map((artist) => ({
     slug: artist.slug,
   }));
 }
