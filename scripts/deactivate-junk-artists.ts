@@ -21,24 +21,26 @@ config({ path: '.env.local' });
 import { db } from '@/db';
 import { artists, events, eventArtists } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
+import { nonArtistReason } from '@/lib/non-artist';
 
 /**
  * Classify a name's "non-artist-ness":
- *   - 'strong': name ends in "Festival" or "Fest" / starts with "A Tribute to"
- *     etc. These are virtually always not-an-artist regardless of any imported
- *     metadata, because Spotify and Ticketmaster will assign Spotify IDs to
- *     festival accounts and images to event-poster art.
- *   - 'weak': contains "presents" / "concert" / "symphony" / "classical".
- *     Could be a real artist ("Lang Lang plays the symphony", etc.) so we keep
- *     the metadata gate for these.
+ *   - 'strong': a festival brand, booking agency/promoter, tribute act, or tour
+ *     bus. These are virtually always not-an-artist regardless of any imported
+ *     metadata, because Spotify and Ticketmaster assign Spotify IDs to festival
+ *     accounts and images to event-poster art. The festival/promoter/tribute
+ *     check is shared with the import guard (lib/non-artist) and is unanchored,
+ *     so it catches mid-name brands like "Discovery Festival - Dundee" that the
+ *     old end-anchored pattern missed.
+ *   - 'weak': contains "concert" / "symphony" / "classical". Could be a real
+ *     artist ("Lang Lang plays the symphony", etc.) so we keep the metadata gate.
  *   - null: looks like a normal artist name.
  */
 function classifyName(name: string): 'strong' | 'weak' | null {
+  if (nonArtistReason(name)) return 'strong';
   const lower = name.toLowerCase().trim();
-  if (/\b(festival|fest)$/i.test(lower)) return 'strong';
-  if (/^a tribute to\b|\btribute show\b|\btribute band\b/i.test(lower)) return 'strong';
   if (/\btour bus\b/i.test(lower)) return 'strong';
-  if (/\bpresents\b|\bconcert\b|\bsymphony\b|\bclassical\b/i.test(lower)) return 'weak';
+  if (/\bconcert\b|\bsymphony\b|\bclassical\b/i.test(lower)) return 'weak';
   return null;
 }
 
