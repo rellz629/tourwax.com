@@ -29,6 +29,14 @@
     "reattribute:promoter": "dotenv -e .env.local -- tsx scripts/reattribute-promoter-events.ts",
     "find:nonartists": "dotenv -e .env.local -- tsx scripts/find-nonartist-artists.ts"
   },
+  "browserslist": [
+    "chrome >= 90",
+    "edge >= 90",
+    "firefox >= 90",
+    "safari >= 16",
+    "ios_saf >= 16",
+    "not dead"
+  ],
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
     "@tailwindcss/typography": "^0.5.19",

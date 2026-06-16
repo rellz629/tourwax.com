@@ -8,7 +8,7 @@ import SearchBar from "@/components/SearchBar";
 import MobileNav from "@/components/MobileNav";
 import NavLinks from "@/components/NavLinks";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: "optional" });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.tourwax.com'),

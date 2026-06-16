@@ -71,13 +71,26 @@ export default function HomepageNearMe() {
   if (hidden) return null;
 
   if (loading) {
+    // Mirror the loaded layout's height exactly (two-line header + PREVIEW_LIMIT
+    // rows + ticket button) so swapping in real data does not shift the page (CLS).
     return (
       <section className="mb-16" aria-label="Concerts near you">
         <div className="bg-gradient-to-br from-orange-50 via-white to-red-50 rounded-2xl border border-orange-100 p-6 md:p-8">
-          <div className="h-6 w-48 bg-orange-100 rounded animate-pulse mb-4"></div>
-          <div className="space-y-3">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="h-14 bg-white/60 rounded-lg animate-pulse"></div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+            <div>
+              <div className="h-8 md:h-9 w-56 bg-orange-100 rounded animate-pulse"></div>
+              <div className="h-4 w-44 bg-orange-100/70 rounded animate-pulse mt-2"></div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-orange-100 divide-y divide-orange-50">
+            {Array.from({ length: PREVIEW_LIMIT }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 px-4 py-3">
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="h-4 w-40 bg-gray-100 rounded animate-pulse"></div>
+                  <div className="h-3 w-28 bg-gray-100 rounded animate-pulse"></div>
+                </div>
+                <div className="h-9 w-16 bg-orange-50 rounded-lg animate-pulse"></div>
+              </div>
             ))}
           </div>
         </div>
