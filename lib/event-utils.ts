@@ -2,6 +2,8 @@
  * Shared event filtering utilities for deduplication across pages and scripts.
  */
 
+import { getAffiliateUrl } from '@/lib/affiliate';
+
 export const PACKAGE_KEYWORDS = [
   'vip', 'package', 'upgrade', 'comfort seat', 'lounge', 'meet & greet',
   'meet and greet', 'premium', 'platinum', 'gold circle', 'early entry',
@@ -53,4 +55,45 @@ const TOUR_STOP_PATTERNS: RegExp[] = [
 
 export function looksLikeTourStopName(name: string): boolean {
   return TOUR_STOP_PATTERNS.some((rx) => rx.test(name));
+}
+
+/**
+ * Decides the primary clickable label for an event row in a listing.
+ *
+ * Festivals are stored as one event record per lineup artist, so after dedup
+ * the surviving row carries an arbitrary artist. For those, label with the
+ * festival name itself and link to tickets (affiliate-wrapped) rather than an
+ * artist page. Every other event labels with the headlining artist and links
+ * to that artist's page.
+ *
+ * Pass explicit fields (not a row object) so it works across the flat homepage
+ * shape and the nested `row.event` shape used by the other listing pages.
+ */
+export interface EventLabelInput {
+  name: string;
+  ticketUrl?: string | null;
+  source?: string | null;
+  artistName: string;
+  artistSlug: string;
+}
+
+export interface EventLabel {
+  text: string;
+  href: string | null;
+  external: boolean;
+}
+
+export function eventPrimaryLabel(input: EventLabelInput): EventLabel {
+  if (isFestival(input.name)) {
+    return {
+      text: input.name,
+      href: input.ticketUrl ? getAffiliateUrl(input.ticketUrl, input.source ?? '') : null,
+      external: true,
+    };
+  }
+  return {
+    text: input.artistName,
+    href: `/artists/${input.artistSlug}`,
+    external: false,
+  };
 }

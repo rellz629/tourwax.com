@@ -9,11 +9,16 @@ interface PaginationProps {
 export default function Pagination({ currentPage, totalPages, basePath }: PaginationProps) {
   if (totalPages <= 1) return null;
 
-  const separator = basePath.includes('?') ? '&' : '?';
-
   function pageUrl(page: number) {
-    if (page === 1) return basePath.split('?')[0] || basePath;
-    return `${basePath}${separator}page=${page}`;
+    const [path, query = ''] = basePath.split('?');
+    const params = new URLSearchParams(query);
+    if (page === 1) {
+      params.delete('page');
+    } else {
+      params.set('page', String(page));
+    }
+    const qs = params.toString();
+    return qs ? `${path}?${qs}` : path;
   }
 
   // Build page number list with ellipsis

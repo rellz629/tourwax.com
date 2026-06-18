@@ -13,7 +13,8 @@ import { generateBreadcrumbSchema, generateVenueSchema, generateVenueEventListSc
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { isPackage } from '@/lib/event-utils';
+import { isPackage, eventPrimaryLabel } from '@/lib/event-utils';
+import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 import Pagination from '@/components/Pagination';
 import type { Venue } from '@/db/schema';
@@ -79,10 +80,12 @@ const getVenueEvents = cache(async function getVenueEvents(venueIds: string[]) {
     ))
     .orderBy(events.eventDate);
 
-  // Deduplicate: keep one event per artist+date, preferring non-package events
+  // Deduplicate: collapse rows that are the same show (festival lineups arrive
+  // as one event record per artist, all sharing name/venue/date), preferring
+  // non-package events.
   const groups = new Map<string, typeof venueEvents[0]>();
   for (const row of venueEvents) {
-    const key = row.event.id;
+    const key = `${row.event.name.trim().toLowerCase()}|${row.event.venueId ?? ''}|${row.event.eventDate.getTime()}`;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);
@@ -119,7 +122,7 @@ const getVenuePastEvents = cache(async function getVenuePastEvents(venueIds: str
 
   const groups = new Map<string, typeof venueEvents[0]>();
   for (const row of venueEvents) {
-    const key = row.event.id;
+    const key = `${row.event.name.trim().toLowerCase()}|${row.event.venueId ?? ''}|${row.event.eventDate.getTime()}`;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);
@@ -463,21 +466,23 @@ export default async function VenuePage({ params, searchParams }: Props) {
                   <div className="h-px flex-1 bg-gray-200"></div>
                 </div>
                 <div className="space-y-4">
-                  {dateEvents.map((row) => (
+                  {dateEvents.map((row) => {
+                    const label = eventPrimaryLabel({ name: row.event.name, ticketUrl: row.event.ticketUrl, source: row.event.source, artistName: row.artistName, artistSlug: row.artistSlug });
+                    return (
                     <div
                       key={row.event.id}
                       className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100"
                     >
                       <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                         <div className="flex items-start gap-4 flex-1">
-                          <Link
-                            href={`/artists/${row.artistSlug}`}
+                          <EventLink
+                            label={label}
                             className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-500 to-red-500"
                           >
                             {row.artistImageUrl ? (
                               <Image
                                 src={row.artistImageUrl}
-                                alt={row.artistName}
+                                alt={label.text}
                                 width={64}
                                 height={64}
                                 className="w-full h-full object-cover"
@@ -485,18 +490,19 @@ export default async function VenuePage({ params, searchParams }: Props) {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-white text-xl font-bold">
-                                {row.artistName.charAt(0)}
+                                {label.text.charAt(0)}
                               </div>
                             )}
-                          </Link>
+                          </EventLink>
                           <div className="flex-1">
-                            <Link
-                              href={`/artists/${row.artistSlug}`}
+                            <EventLink
+                              label={label}
+                              showNewTabHint
                               className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg"
                             >
-                              {row.artistName}
-                            </Link>
-                            <h3 className="text-sm text-gray-600 mt-1">{row.event.name}</h3>
+                              {label.text}
+                            </EventLink>
+                            {label.text !== row.event.name && <h3 className="text-sm text-gray-600 mt-1">{row.event.name}</h3>}
                             <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-500">
                               <span className="flex items-center gap-1">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -537,7 +543,8 @@ export default async function VenuePage({ params, searchParams }: Props) {
                         </div>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
             ))}
@@ -567,20 +574,22 @@ export default async function VenuePage({ params, searchParams }: Props) {
                     <div className="h-px flex-1 bg-gray-200"></div>
                   </div>
                   <div className="space-y-2">
-                    {dateEvents.map((row) => (
+                    {dateEvents.map((row) => {
+                      const label = eventPrimaryLabel({ name: row.event.name, ticketUrl: row.event.ticketUrl, source: row.event.source, artistName: row.artistName, artistSlug: row.artistSlug });
+                      return (
                       <div
                         key={row.event.id}
                         className="bg-gray-50 rounded-lg border border-gray-100 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <Link
-                            href={`/artists/${row.artistSlug}`}
+                          <EventLink
+                            label={label}
                             className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-300 to-gray-400"
                           >
                             {row.artistImageUrl ? (
                               <Image
                                 src={row.artistImageUrl}
-                                alt={row.artistName}
+                                alt={label.text}
                                 width={40}
                                 height={40}
                                 className="w-full h-full object-cover"
@@ -588,28 +597,32 @@ export default async function VenuePage({ params, searchParams }: Props) {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
-                                {row.artistName.charAt(0)}
+                                {label.text.charAt(0)}
                               </div>
                             )}
-                          </Link>
+                          </EventLink>
                           <div className="min-w-0">
-                            <Link
-                              href={`/artists/${row.artistSlug}`}
+                            <EventLink
+                              label={label}
+                              showNewTabHint
                               className="font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate block"
                             >
-                              {row.artistName}
-                            </Link>
-                            <p className="text-xs text-gray-500 truncate">{row.event.name}</p>
+                              {label.text}
+                            </EventLink>
+                            {label.text !== row.event.name && <p className="text-xs text-gray-500 truncate">{row.event.name}</p>}
                           </div>
                         </div>
-                        <Link
-                          href={`/artists/${row.artistSlug}`}
-                          className="text-sm font-medium text-orange-500 hover:text-orange-600 whitespace-nowrap"
-                        >
-                          See current tour →
-                        </Link>
+                        {!label.external && (
+                          <Link
+                            href={`/artists/${row.artistSlug}`}
+                            className="text-sm font-medium text-orange-500 hover:text-orange-600 whitespace-nowrap"
+                          >
+                            See current tour →
+                          </Link>
+                        )}
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </section>
               ))}

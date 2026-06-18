@@ -6,7 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { generateOrganizationSchema, generateWebsiteSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { SITE_URL } from '@/lib/seo';
-import { isPackage } from '@/lib/event-utils';
+import { isPackage, isFestival, eventPrimaryLabel } from '@/lib/event-utils';
+import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
@@ -57,6 +58,8 @@ async function getUpcomingEvents() {
       id: events.id,
       name: events.name,
       eventDate: events.eventDate,
+      ticketUrl: events.ticketUrl,
+      source: events.source,
       artistName: artists.name,
       artistId: artists.id,
       artistSlug: artists.slug,
@@ -76,10 +79,14 @@ async function getUpcomingEvents() {
     ))
     .orderBy(events.eventDate);
 
-  // Deduplicate: keep one event per event id, preferring non-package events
+  // Deduplicate festivals/shared shows: collapse rows that are the same event
+  // (same name + venue + date/time) but stored as separate records per artist.
+  // Festival lineups arrive from Ticketmaster/SeatGeek as one event record per
+  // artist, all sharing name/venue/time, so keying on event id alone leaves a
+  // row per artist. Prefer the non-package version when names collide.
   const groups = new Map<string, typeof upcomingEvents[0]>();
   for (const e of upcomingEvents) {
-    const key = e.id;
+    const key = `${e.name.trim().toLowerCase()}|${e.venueId ?? ''}|${e.eventDate.getTime()}`;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, e);
@@ -260,14 +267,29 @@ export default async function HomePage() {
                       className="group flex items-center gap-4 px-4 py-3 hover:bg-gradient-to-r hover:from-orange-50 hover:to-transparent transition-colors first:rounded-t-xl last:rounded-b-xl"
                     >
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-baseline gap-2">
-                          <Link href={`/artists/${event.artistSlug}`} className="font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate">
-                            {event.artistName}
-                          </Link>
-                          <span className="text-gray-500 hidden sm:inline">&middot;</span>
-                          <span className="text-gray-500 text-sm truncate hidden sm:inline">{event.name}</span>
-                        </div>
-                        <p className="text-sm text-gray-500 sm:hidden truncate">{event.name}</p>
+                        {isFestival(event.name) ? (
+                          // Festivals list one event record per artist, so show the
+                          // festival name itself as the label (linking to tickets)
+                          // rather than an arbitrary artist from the lineup.
+                          <EventLink
+                            label={eventPrimaryLabel(event)}
+                            showNewTabHint
+                            className="font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate block"
+                          >
+                            {event.name}
+                          </EventLink>
+                        ) : (
+                          <>
+                            <div className="flex items-baseline gap-2">
+                              <Link href={`/artists/${event.artistSlug}`} className="font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate">
+                                {event.artistName}
+                              </Link>
+                              <span className="text-gray-500 hidden sm:inline">&middot;</span>
+                              <span className="text-gray-500 text-sm truncate hidden sm:inline">{event.name}</span>
+                            </div>
+                            <p className="text-sm text-gray-500 sm:hidden truncate">{event.name}</p>
+                          </>
+                        )}
                         {(event.venueCity || event.venueState || event.venueCountry) && (
                           <p className="text-sm text-gray-500 truncate">
                             {event.venueCity ? (

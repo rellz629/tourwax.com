@@ -9,7 +9,8 @@ import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { isPackage } from '@/lib/event-utils';
+import { isPackage, eventPrimaryLabel } from '@/lib/event-utils';
+import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 
 export const dynamic = 'force-static';
@@ -43,10 +44,11 @@ async function getOnSaleTodayEvents() {
     ))
     .orderBy(sql`(${events.metadata}->>'onsaleStart')::timestamptz`);
 
-  // Deduplicate
+  // Deduplicate: collapse festival/joint-headliner rows (one event record per
+  // artist, all sharing name/venue/date) into a single show.
   const groups = new Map<string, typeof results[0]>();
   for (const row of results) {
-    const key = row.event.id;
+    const key = `${row.event.name.trim().toLowerCase()}|${row.event.venueId ?? ''}|${row.event.eventDate.getTime()}`;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);
@@ -87,10 +89,11 @@ async function getOnSaleThisWeekEvents() {
     ))
     .orderBy(sql`(${events.metadata}->>'onsaleStart')::timestamptz`);
 
-  // Deduplicate
+  // Deduplicate: collapse festival/joint-headliner rows (one event record per
+  // artist, all sharing name/venue/date) into a single show.
   const groups = new Map<string, typeof results[0]>();
   for (const row of results) {
-    const key = row.event.id;
+    const key = `${row.event.name.trim().toLowerCase()}|${row.event.venueId ?? ''}|${row.event.eventDate.getTime()}`;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);
@@ -188,20 +191,21 @@ export default async function OnSaleTodayPage() {
           <div className="space-y-4 mb-16">
             {onSaleEvents.map((row) => {
               const onsaleTime = formatOnsaleTime(row.event.metadata as Record<string, unknown> | null);
+              const label = eventPrimaryLabel({ name: row.event.name, ticketUrl: row.event.ticketUrl, source: row.event.source, artistName: row.artistName, artistSlug: row.artistSlug });
               return (
                 <div key={row.event.id} className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100">
                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                     <div className="flex items-start gap-4 flex-1">
-                      <Link href={`/artists/${row.artistSlug}`} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-500 to-red-500">
+                      <EventLink label={label} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-500 to-red-500">
                         {row.artistImageUrl ? (
-                          <Image src={row.artistImageUrl} alt={row.artistName} width={56} height={56} className="w-full h-full object-cover" sizes="56px" />
+                          <Image src={row.artistImageUrl} alt={label.text} width={56} height={56} className="w-full h-full object-cover" sizes="56px" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">{row.artistName.charAt(0)}</div>
+                          <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">{label.text.charAt(0)}</div>
                         )}
-                      </Link>
+                      </EventLink>
                       <div className="flex-1">
-                        <Link href={`/artists/${row.artistSlug}`} className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg">{row.artistName}</Link>
-                        <p className="text-sm text-gray-600 mt-1">{row.event.name}</p>
+                        <EventLink label={label} showNewTabHint className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg">{label.text}</EventLink>
+                        {label.text !== row.event.name && <p className="text-sm text-gray-600 mt-1">{row.event.name}</p>}
                         {row.venue && (
                           <p className="text-sm text-gray-500 mt-1">
                             <Link href={`/venues/${slugify(row.venue.name)}`} className="hover:text-orange-600 transition-colors">{row.venue.name}</Link>
@@ -260,20 +264,21 @@ export default async function OnSaleTodayPage() {
             <div className="space-y-4">
               {comingSoonEvents.map((row) => {
                 const onsaleDate = formatOnsaleDate(row.event.metadata as Record<string, unknown> | null);
+                const label = eventPrimaryLabel({ name: row.event.name, ticketUrl: row.event.ticketUrl, source: row.event.source, artistName: row.artistName, artistSlug: row.artistSlug });
                 return (
                   <div key={row.event.id} className="group bg-white rounded-xl shadow-md hover:shadow-lg p-6 border border-gray-100">
                     <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                       <div className="flex items-start gap-4 flex-1">
-                        <Link href={`/artists/${row.artistSlug}`} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-400 to-gray-500">
+                        <EventLink label={label} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-400 to-gray-500">
                           {row.artistImageUrl ? (
-                            <Image src={row.artistImageUrl} alt={row.artistName} width={56} height={56} className="w-full h-full object-cover" sizes="56px" />
+                            <Image src={row.artistImageUrl} alt={label.text} width={56} height={56} className="w-full h-full object-cover" sizes="56px" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">{row.artistName.charAt(0)}</div>
+                            <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">{label.text.charAt(0)}</div>
                           )}
-                        </Link>
+                        </EventLink>
                         <div className="flex-1">
-                          <Link href={`/artists/${row.artistSlug}`} className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg">{row.artistName}</Link>
-                          <p className="text-sm text-gray-600 mt-1">{row.event.name}</p>
+                          <EventLink label={label} showNewTabHint className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg">{label.text}</EventLink>
+                          {label.text !== row.event.name && <p className="text-sm text-gray-600 mt-1">{row.event.name}</p>}
                           {row.venue && (
                             <p className="text-sm text-gray-500 mt-1">
                               <Link href={`/venues/${slugify(row.venue.name)}`} className="hover:text-orange-600 transition-colors">{row.venue.name}</Link>

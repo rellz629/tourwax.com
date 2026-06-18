@@ -15,22 +15,31 @@ export const revalidate = 1800;
 const VENUES_PER_PAGE = 120;
 
 interface Props {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; q?: string; state?: string }>;
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const { page } = await searchParams;
-  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
-  const base = await generateVenuesIndexMetadata();
+  const sp = await searchParams;
+  const currentPage = Math.max(1, parseInt(sp.page || '1', 10) || 1);
+  const q = (sp.q || '').trim();
+  const state = (sp.state || '').trim();
+  const base: Metadata = await generateVenuesIndexMetadata();
   if (currentPage > 1) {
     base.title = `Concert Venues ${new Date().getFullYear()} - Page ${currentPage}`;
+  }
+  // Search/state views are navigational: keep them out of the index and
+  // consolidate on the canonical /venues URL (set in generateVenuesIndexMetadata).
+  if (q || state) {
+    base.robots = { index: false, follow: true };
   }
   return base;
 }
 
 export default async function VenuesPage({ searchParams }: Props) {
-  const { page } = await searchParams;
-  const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+  const sp = await searchParams;
+  const currentPage = Math.max(1, parseInt(sp.page || '1', 10) || 1);
+  const q = (sp.q || '').trim();
+  const state = (sp.state || '').trim();
   const now = new Date();
 
   const venuesWithCounts = await db
@@ -46,9 +55,22 @@ export default async function VenuesPage({ searchParams }: Props) {
     .groupBy(sql`lower(${venues.name})`)
     .orderBy(sql`count(*) desc`);
 
-  const totalVenues = venuesWithCounts.length;
+  // Distinct states present (full set) for the filter dropdown.
+  const stateOptions = Array.from(
+    new Set(venuesWithCounts.map((v) => v.state).filter((s): s is string => Boolean(s)))
+  ).sort();
+
+  // Apply filters.
+  let filtered = venuesWithCounts;
+  if (state) filtered = filtered.filter((v) => v.state === state);
+  if (q) {
+    const lq = q.toLowerCase();
+    filtered = filtered.filter((v) => v.venueName.toLowerCase().includes(lq));
+  }
+
+  const totalVenues = filtered.length;
   const totalPages = Math.ceil(totalVenues / VENUES_PER_PAGE);
-  const paginatedVenues = venuesWithCounts.slice(
+  const paginatedVenues = filtered.slice(
     (currentPage - 1) * VENUES_PER_PAGE,
     currentPage * VENUES_PER_PAGE
   );
@@ -68,6 +90,15 @@ export default async function VenuesPage({ searchParams }: Props) {
     a.localeCompare(b)
   );
 
+  const hasFilter = Boolean(q || state);
+
+  // Preserve the active filter across pagination links.
+  const filterParams = new URLSearchParams();
+  if (q) filterParams.set('q', q);
+  if (state) filterParams.set('state', state);
+  const filterQs = filterParams.toString();
+  const basePath = filterQs ? `/venues?${filterQs}` : '/venues';
+
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },
     { name: 'Venues', url: `${SITE_URL}/venues` },
@@ -84,15 +115,50 @@ export default async function VenuesPage({ searchParams }: Props) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <div className="mb-12">
+        <div className="mb-8">
           <h1 className="text-5xl md:text-6xl font-black mb-4">
             <span className="gradient-text">Concert Venues</span>
           </h1>
           <p className="text-xl text-gray-600">
-            Browse {totalVenues} venues with upcoming shows
+            {hasFilter
+              ? `${totalVenues} venue${totalVenues === 1 ? '' : 's'} match your filters`
+              : `Browse ${totalVenues} venues with upcoming shows`}
             {totalPages > 1 && ` — Page ${currentPage} of ${totalPages}`}
           </p>
         </div>
+
+        {/* Filters */}
+        <form action="/venues" method="GET" role="search" className="mb-10 flex flex-col sm:flex-row gap-2 max-w-2xl">
+          <label htmlFor="venue-search" className="sr-only">Search venues by name</label>
+          <input
+            id="venue-search"
+            type="search"
+            name="q"
+            defaultValue={q}
+            placeholder="Search venues by name…"
+            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+          <label htmlFor="venue-state" className="sr-only">Filter by state</label>
+          <select
+            id="venue-state"
+            name="state"
+            defaultValue={state}
+            className="px-4 py-2 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="">All states</option>
+            {stateOptions.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+          <button type="submit" className="px-4 py-2 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors">
+            Search
+          </button>
+          {hasFilter && (
+            <Link href="/venues" className="px-4 py-2 rounded-lg text-orange-600 font-medium hover:text-orange-700 self-center whitespace-nowrap">
+              Clear
+            </Link>
+          )}
+        </form>
 
         {sortedCities.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
@@ -102,7 +168,9 @@ export default async function VenuesPage({ searchParams }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            <p className="text-gray-500 text-lg">No venues with upcoming shows found. Check back soon!</p>
+            <p className="text-gray-500 text-lg">
+              {hasFilter ? 'No venues match your filters. Try a different search or state.' : 'No venues with upcoming shows found. Check back soon!'}
+            </p>
           </div>
         ) : (
           <div className="space-y-10">
@@ -149,7 +217,7 @@ export default async function VenuesPage({ searchParams }: Props) {
           </div>
         )}
 
-        <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/venues" />
+        <Pagination currentPage={currentPage} totalPages={totalPages} basePath={basePath} />
       </div>
     </>
   );

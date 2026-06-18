@@ -13,7 +13,8 @@ import { generateBreadcrumbSchema, generateCityEventListSchema, generateFAQSchem
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { isPackage } from '@/lib/event-utils';
+import { isPackage, eventPrimaryLabel } from '@/lib/event-utils';
+import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 import { CITY_LONG_CONTENT } from '@/lib/city-content';
 import Pagination from '@/components/Pagination';
@@ -89,10 +90,12 @@ const getCityEvents = cache(async function getCityEvents(cityName: string) {
     )
     .orderBy(events.eventDate);
 
-  // Deduplicate: keep one row per event (joint-headliner shows have multiple artist rows)
+  // Deduplicate: collapse rows that are the same show (joint-headliner and
+  // festival lineups arrive as one event record per artist, all sharing
+  // name/venue/date). Keying on event id alone leaves a row per artist.
   const groups = new Map<string, typeof cityEvents[0]>();
   for (const row of cityEvents) {
-    const key = row.event.id;
+    const key = `${row.event.name.trim().toLowerCase()}|${row.event.venueId ?? ''}|${row.event.eventDate.getTime()}`;
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);
@@ -412,21 +415,23 @@ export default async function CityPage({ params, searchParams }: Props) {
                   <div className="h-px flex-1 bg-gray-200"></div>
                 </div>
                 <div className="space-y-4">
-                  {dateEvents.map((row) => (
+                  {dateEvents.map((row) => {
+                    const label = eventPrimaryLabel({ name: row.event.name, ticketUrl: row.event.ticketUrl, source: row.event.source, artistName: row.artistName, artistSlug: row.artistSlug });
+                    return (
                     <div
                       key={row.event.id}
                       className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100"
                     >
                       <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                         <div className="flex items-start gap-4 flex-1">
-                          <Link
-                            href={`/artists/${row.artistSlug}`}
+                          <EventLink
+                            label={label}
                             className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-500 to-red-500"
                           >
                             {row.artistImageUrl ? (
                               <Image
                                 src={row.artistImageUrl}
-                                alt={row.artistName}
+                                alt={label.text}
                                 width={64}
                                 height={64}
                                 className="w-full h-full object-cover"
@@ -434,18 +439,19 @@ export default async function CityPage({ params, searchParams }: Props) {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-white text-xl font-bold">
-                                {row.artistName.charAt(0)}
+                                {label.text.charAt(0)}
                               </div>
                             )}
-                          </Link>
+                          </EventLink>
                           <div className="flex-1">
-                            <Link
-                              href={`/artists/${row.artistSlug}`}
+                            <EventLink
+                              label={label}
+                              showNewTabHint
                               className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg"
                             >
-                              {row.artistName}
-                            </Link>
-                            <h3 className="text-sm text-gray-600 mt-1">{row.event.name}</h3>
+                              {label.text}
+                            </EventLink>
+                            {label.text !== row.event.name && <h3 className="text-sm text-gray-600 mt-1">{row.event.name}</h3>}
                             {row.venue && (
                               <div className="mt-2 text-sm text-gray-500 flex items-center gap-2">
                                 <svg className="w-4 h-4 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -495,7 +501,8 @@ export default async function CityPage({ params, searchParams }: Props) {
                         </div>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
             ))}
