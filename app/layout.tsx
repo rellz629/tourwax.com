@@ -7,6 +7,7 @@ import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
 import MobileNav from "@/components/MobileNav";
 import NavLinks from "@/components/NavLinks";
+import AffiliateClickTracker from "@/components/AffiliateClickTracker";
 
 const inter = Inter({ subsets: ["latin"], display: "optional" });
 
@@ -137,6 +138,7 @@ export default function RootLayout({
                   <li><Link href="/blog" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Blog</Link></li>
                   <li><Link href="/about" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">About TourWax</Link></li>
                   <li><Link href="/blog/feed.xml" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">RSS Feed</Link></li>
+                  <li><Link href="/affiliate-disclosure" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Affiliate Disclosure</Link></li>
                 </ul>
               </div>
             </nav>
@@ -152,9 +154,14 @@ export default function RootLayout({
               <p className="text-gray-400 text-xs">
                 © {new Date().getFullYear()} TourWax. All rights reserved. Concert data from Ticketmaster and SeatGeek.
               </p>
+              <p className="text-gray-400 text-xs mt-2">
+                TourWax may earn a commission from ticket links, at no extra cost to you.{' '}
+                <Link href="/affiliate-disclosure" className="underline hover:text-orange-400">Learn more</Link>.
+              </p>
             </div>
           </div>
         </footer>
+        <AffiliateClickTracker />
         <Analytics />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-SBN01WP17J"
