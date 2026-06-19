@@ -11,7 +11,7 @@ import { generateBreadcrumbSchema, generateGenreEventListSchema, generateFAQSche
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { isPackage, eventPrimaryLabel } from '@/lib/event-utils';
+import { isPackage, eventPrimaryLabel, eventDedupeKey } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { normalizeGenre, genreSlug, GENRE_DESCRIPTIONS, GENRE_DISPLAY_NAMES, GENRE_LONG_CONTENT } from '@/lib/genres';
 import { slugify } from '@/lib/slugify';
@@ -76,7 +76,7 @@ async function getGenreEvents(artistIds: string[]) {
   // non-package events.
   const groups = new Map<string, typeof genreEvents[0]>();
   for (const row of genreEvents) {
-    const key = `${row.event.name.trim().toLowerCase()}|${row.event.venueId ?? ''}|${row.event.eventDate.getTime()}`;
+    const key = eventDedupeKey(row.event.name, row.venue?.city, row.event.eventDate);
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);

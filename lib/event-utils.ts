@@ -58,6 +58,31 @@ export function looksLikeTourStopName(name: string): boolean {
 }
 
 /**
+ * Reduces an event name to a stable base for dedup matching: drops
+ * parenthetical qualifiers ("(18+)", "(18 and Over...)") and package-only
+ * segments ("- payment plan at checkout", "VIP Package"), then lowercases and
+ * strips punctuation. So "Parklife - Saturday", "Parklife - Saturday - payment
+ * plan at checkout", and "Parklife (Sold Out) - Saturday" all share one base.
+ */
+export function eventBaseName(name: string): string {
+  const withoutParens = name.replace(/\([^)]*\)/g, ' ');
+  const segments = withoutParens.split(/\s+[-–:|]\s+/).map((s) => s.trim()).filter(Boolean);
+  const kept = segments.filter((seg) => !isPackage(seg));
+  const base = (kept.length ? kept : segments).join(' ');
+  return base.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+/**
+ * Dedup key that collapses the same real-world show regardless of how it was
+ * ingested. Uses city rather than venueId so cross-source duplicates merge
+ * (Ticketmaster and SeatGeek each mint their own venue record for one event),
+ * and the normalized base name so package/qualifier variants merge too.
+ */
+export function eventDedupeKey(name: string, city: string | null | undefined, eventDate: Date): string {
+  return `${eventBaseName(name)}|${(city ?? '').toLowerCase().trim()}|${eventDate.getTime()}`;
+}
+
+/**
  * Decides the primary clickable label for an event row in a listing.
  *
  * Festivals are stored as one event record per lineup artist, so after dedup

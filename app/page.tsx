@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { generateOrganizationSchema, generateWebsiteSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { SITE_URL } from '@/lib/seo';
-import { isPackage, isFestival, eventPrimaryLabel } from '@/lib/event-utils';
+import { isPackage, isFestival, eventPrimaryLabel, eventDedupeKey } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
@@ -86,7 +86,7 @@ async function getUpcomingEvents() {
   // row per artist. Prefer the non-package version when names collide.
   const groups = new Map<string, typeof upcomingEvents[0]>();
   for (const e of upcomingEvents) {
-    const key = `${e.name.trim().toLowerCase()}|${e.venueId ?? ''}|${e.eventDate.getTime()}`;
+    const key = eventDedupeKey(e.name, e.venueCity, e.eventDate);
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, e);

@@ -9,7 +9,7 @@ import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { isPackage, eventPrimaryLabel } from '@/lib/event-utils';
+import { isPackage, eventPrimaryLabel, eventDedupeKey } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 
@@ -48,7 +48,7 @@ async function getOnSaleTodayEvents() {
   // artist, all sharing name/venue/date) into a single show.
   const groups = new Map<string, typeof results[0]>();
   for (const row of results) {
-    const key = `${row.event.name.trim().toLowerCase()}|${row.event.venueId ?? ''}|${row.event.eventDate.getTime()}`;
+    const key = eventDedupeKey(row.event.name, row.venue?.city, row.event.eventDate);
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);
@@ -93,7 +93,7 @@ async function getOnSaleThisWeekEvents() {
   // artist, all sharing name/venue/date) into a single show.
   const groups = new Map<string, typeof results[0]>();
   for (const row of results) {
-    const key = `${row.event.name.trim().toLowerCase()}|${row.event.venueId ?? ''}|${row.event.eventDate.getTime()}`;
+    const key = eventDedupeKey(row.event.name, row.venue?.city, row.event.eventDate);
     const existing = groups.get(key);
     if (!existing) {
       groups.set(key, row);
