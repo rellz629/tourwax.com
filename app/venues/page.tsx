@@ -8,6 +8,7 @@ import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { slugify } from '@/lib/slugify';
+import { clusterVenues } from '@/lib/venue-cluster';
 import Pagination from '@/components/Pagination';
 
 export const revalidate = 1800;
@@ -42,18 +43,37 @@ export default async function VenuesPage({ searchParams }: Props) {
   const state = (sp.state || '').trim();
   const now = new Date();
 
-  const venuesWithCounts = await db
+  // Per-venue-record counts, then collapse duplicate venue records (same place
+  // from Ticketmaster + SeatGeek under different names) into one canonical card.
+  const venueRows = await db
     .select({
-      venueName: sql<string>`max(${venues.name})`,
-      city: sql<string>`min(${venues.city})`,
-      state: sql<string>`min(${venues.state})`,
+      id: venues.id,
+      name: venues.name,
+      city: venues.city,
+      state: venues.state,
+      latitude: venues.latitude,
+      longitude: venues.longitude,
       eventCount: sql<number>`count(*)::int`,
     })
     .from(events)
     .innerJoin(venues, eq(events.venueId, venues.id))
     .where(gte(events.eventDate, now))
-    .groupBy(sql`lower(${venues.name})`)
-    .orderBy(sql`count(*) desc`);
+    .groupBy(venues.id, venues.name, venues.city, venues.state, venues.latitude, venues.longitude);
+
+  const counts = new Map(venueRows.map((v) => [v.id, v.eventCount]));
+  const clusters = clusterVenues(venueRows, (id) => counts.get(id) ?? 0);
+  const byCanonical = new Map<string, { venueName: string; city: string | null; state: string | null; eventCount: number }>();
+  for (const v of venueRows) {
+    const cluster = clusters.get(v.id)!;
+    let agg = byCanonical.get(cluster.canonicalId);
+    if (!agg) {
+      const canon = venueRows.find((r) => r.id === cluster.canonicalId)!;
+      agg = { venueName: cluster.canonicalName, city: canon.city, state: canon.state, eventCount: 0 };
+      byCanonical.set(cluster.canonicalId, agg);
+    }
+    agg.eventCount += v.eventCount;
+  }
+  const venuesWithCounts = Array.from(byCanonical.values()).sort((a, b) => b.eventCount - a.eventCount);
 
   // Distinct states present (full set) for the filter dropdown.
   const stateOptions = Array.from(

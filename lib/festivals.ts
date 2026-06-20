@@ -4,6 +4,7 @@ import { artists, events, venues, eventArtists } from '@/db/schema';
 import { and, eq, gte, lt } from 'drizzle-orm';
 import { slugify } from './slugify';
 import { isPackage, isFestival, looksLikeTourStopName } from './event-utils';
+import { clusterVenues } from './venue-cluster';
 import type { Artist, Event, Venue } from '@/db/schema';
 
 export const MIN_ARTISTS_FOR_FESTIVAL = 3;
@@ -368,13 +369,22 @@ async function fetchFestivals({ from, to }: FetchOptions): Promise<Festival[]> {
     .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(events.eventDate);
 
-  // Step 1: bucket raw rows into per-day groups keyed by venueSlug + date.
+  // Collapse duplicate venue records first, so the same festival ingested from
+  // two sources (or under two venue names) buckets into a single day group
+  // instead of splitting its lineup below the 3-artist detection threshold.
+  const venueById = new Map<string, Venue>();
+  for (const row of rows) venueById.set(row.venue.id, row.venue);
+  const venueClusters = clusterVenues([...venueById.values()]);
+
+  // Step 1: bucket raw rows into per-day groups keyed by canonical venue + date.
   const dayGroups = new Map<string, DayGroup>();
   for (const row of rows) {
     if (!row.venue.name) continue;
     if (isPackage(row.event.name)) continue;
 
-    const venueSlug = slugify(row.venue.name);
+    const cluster = venueClusters.get(row.venue.id);
+    const venueSlug = cluster ? cluster.canonicalSlug : slugify(row.venue.name);
+    const canonicalVenue = (cluster && venueById.get(cluster.canonicalId)) || row.venue;
     const dateKey = new Date(row.event.eventDate).toISOString().slice(0, 10);
     const groupKey = `${venueSlug}_${dateKey}`;
 
@@ -383,7 +393,7 @@ async function fetchFestivals({ from, to }: FetchOptions): Promise<Festival[]> {
       group = {
         venueSlug,
         date: dateKey,
-        venue: row.venue,
+        venue: canonicalVenue,
         rawRows: [],
         artistsById: new Map(),
         allEventNames: new Set(),

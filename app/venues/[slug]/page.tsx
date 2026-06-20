@@ -14,6 +14,7 @@ import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
+import { clusterVenues } from '@/lib/venue-cluster';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 import Pagination from '@/components/Pagination';
@@ -39,23 +40,36 @@ interface Props {
 interface VenueMatch {
   venue: Venue;
   allVenueIds: string[];
+  canonicalSlug: string;
 }
 
 const getVenueBySlug = cache(async function getVenueBySlug(venueSlug: string): Promise<VenueMatch | null> {
-  // Find ALL matching venues by slug (same venue can have multiple DB records from different sources)
-  const allVenues = await db
-    .select({ venue: venues })
-    .from(venues);
+  const now = new Date();
+  // Load every venue with its upcoming-event count, then cluster duplicate
+  // records (same physical place from different sources / under different
+  // names) so the page resolves to one canonical venue with all its events.
+  const rows = await db
+    .select({
+      venue: venues,
+      cnt: sql<number>`count(${events.id}) filter (where ${events.eventDate} >= ${now.toISOString()})::int`,
+    })
+    .from(venues)
+    .leftJoin(events, eq(events.venueId, venues.id))
+    .groupBy(venues.id);
 
-  const matches = allVenues.filter(
-    (row) => slugify(row.venue.name) === venueSlug
-  );
+  const venueList = rows.map((r) => r.venue);
+  const counts = new Map(rows.map((r) => [r.venue.id, r.cnt]));
+  const clusters = clusterVenues(venueList, (id) => counts.get(id) ?? 0);
 
-  if (matches.length === 0) return null;
+  const hit = venueList.find((v) => slugify(v.name) === venueSlug);
+  if (!hit) return null;
 
+  const cluster = clusters.get(hit.id)!;
+  const canonical = venueList.find((v) => v.id === cluster.canonicalId) ?? hit;
   return {
-    venue: matches[0].venue,
-    allVenueIds: matches.map((m) => m.venue.id),
+    venue: canonical,
+    allVenueIds: cluster.memberIds,
+    canonicalSlug: cluster.canonicalSlug,
   };
 });
 
@@ -163,7 +177,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const metadata = generateVenueMetadata({
     venueName: match.venue.name,
-    venueSlug,
+    venueSlug: match.canonicalSlug,
     city: match.venue.city,
     state: match.venue.state,
     eventCount: venueEvents.length,
@@ -243,14 +257,14 @@ export default async function VenuePage({ params, searchParams }: Props) {
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },
     { name: 'Venues', url: `${SITE_URL}/venues` },
-    { name: venue.name, url: `${SITE_URL}/venues/${venueSlug}` },
+    { name: venue.name, url: `${SITE_URL}/venues/${match.canonicalSlug}` },
   ]);
 
   const venueSchema = generateVenueSchema(venue);
 
   const eventListSchema = generateVenueEventListSchema(
     venue,
-    venueSlug,
+    match.canonicalSlug,
     allVenueEvents.slice(0, 50).map((row) => ({
       event: row.event,
       artist: {
@@ -265,7 +279,7 @@ export default async function VenuePage({ params, searchParams }: Props) {
   const breadcrumbItems = [
     { name: 'Home', url: '/' },
     { name: 'Venues', url: '/venues' },
-    { name: venue.name, url: `/venues/${venueSlug}` },
+    { name: venue.name, url: `/venues/${match.canonicalSlug}` },
   ];
 
   const year = new Date().getFullYear();
@@ -540,7 +554,7 @@ export default async function VenuePage({ params, searchParams }: Props) {
           </div>
         )}
 
-        <Pagination currentPage={currentPage} totalPages={totalPages} basePath={`/venues/${venueSlug}`} />
+        <Pagination currentPage={currentPage} totalPages={totalPages} basePath={`/venues/${match.canonicalSlug}`} />
 
         {/* Past Concerts Archive */}
         {pastVenueEvents.length > 0 && (

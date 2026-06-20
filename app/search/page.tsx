@@ -9,6 +9,7 @@ import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { slugify } from '@/lib/slugify';
+import { clusterVenues } from '@/lib/venue-cluster';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,11 +42,14 @@ async function searchArtists(query: string) {
 
 async function searchVenues(query: string) {
   const now = new Date();
-  return db
-    .selectDistinct({
+  const rows = await db
+    .select({
+      id: venues.id,
       name: venues.name,
       city: venues.city,
       state: venues.state,
+      latitude: venues.latitude,
+      longitude: venues.longitude,
     })
     .from(venues)
     .innerJoin(events, eq(events.venueId, venues.id))
@@ -53,7 +57,22 @@ async function searchVenues(query: string) {
       ilike(venues.name, `%${query}%`),
       gte(events.eventDate, now)
     ))
-    .limit(20);
+    .groupBy(venues.id)
+    .limit(60);
+
+  // Collapse duplicate venue records (same place from different sources/names).
+  const clusters = clusterVenues(rows);
+  const seen = new Set<string>();
+  const out: { name: string; city: string | null; state: string | null }[] = [];
+  for (const v of rows) {
+    const cluster = clusters.get(v.id)!;
+    if (seen.has(cluster.canonicalId)) continue;
+    seen.add(cluster.canonicalId);
+    const canon = rows.find((r) => r.id === cluster.canonicalId)!;
+    out.push({ name: cluster.canonicalName, city: canon.city, state: canon.state });
+    if (out.length >= 20) break;
+  }
+  return out;
 }
 
 async function searchCities(query: string) {

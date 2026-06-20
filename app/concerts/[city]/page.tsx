@@ -14,6 +14,7 @@ import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
 import { eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
+import { clusterVenues } from '@/lib/venue-cluster';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 import { CITY_LONG_CONTENT } from '@/lib/city-content';
@@ -227,18 +228,30 @@ export default async function CityPage({ params, searchParams }: Props) {
   const uniqueArtistNames = [...new Set(allCityEvents.map((e) => e.artistName))];
   const uniqueVenueNames = [...new Set(allCityEvents.filter((e) => e.venue).map((e) => e.venue!.name))];
 
-  // Venue stats: name, slug, event count
-  const venueStats = Object.values(
-    allCityEvents.reduce((acc, row) => {
-      if (!row.venue) return acc;
-      const name = row.venue.name;
-      if (!acc[name]) {
-        acc[name] = { name, slug: slugify(name), count: 0, address: row.venue.address };
-      }
-      acc[name].count++;
-      return acc;
-    }, {} as Record<string, { name: string; slug: string; count: number; address: string | null }>)
-  ).sort((a, b) => b.count - a.count);
+  // Venue stats: count events per venue record, then collapse duplicate venue
+  // records (same place from different sources / names) into one canonical card.
+  const venueRecords = new Map<string, { venue: NonNullable<typeof allCityEvents[0]['venue']>; count: number }>();
+  for (const row of allCityEvents) {
+    if (!row.venue) continue;
+    const existing = venueRecords.get(row.venue.id);
+    if (existing) existing.count++;
+    else venueRecords.set(row.venue.id, { venue: row.venue, count: 1 });
+  }
+  const venueList = [...venueRecords.values()].map((r) => r.venue);
+  const venueCounts = new Map([...venueRecords.values()].map((r) => [r.venue.id, r.count]));
+  const venueClusters = clusterVenues(venueList, (id) => venueCounts.get(id) ?? 0);
+  const venueStatsByCanonical = new Map<string, { name: string; slug: string; count: number; address: string | null }>();
+  for (const { venue, count } of venueRecords.values()) {
+    const cluster = venueClusters.get(venue.id)!;
+    let agg = venueStatsByCanonical.get(cluster.canonicalId);
+    if (!agg) {
+      const canon = venueList.find((v) => v.id === cluster.canonicalId)!;
+      agg = { name: cluster.canonicalName, slug: cluster.canonicalSlug, count: 0, address: canon.address };
+      venueStatsByCanonical.set(cluster.canonicalId, agg);
+    }
+    agg.count += count;
+  }
+  const venueStats = [...venueStatsByCanonical.values()].sort((a, b) => b.count - a.count);
 
   // Genre breakdown from artists
   const genreCounts = allCityEvents.reduce((acc, row) => {
