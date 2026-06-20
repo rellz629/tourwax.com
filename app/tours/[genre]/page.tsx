@@ -11,7 +11,7 @@ import { generateBreadcrumbSchema, generateGenreEventListSchema, generateFAQSche
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { isPackage, eventPrimaryLabel, eventDedupeKey } from '@/lib/event-utils';
+import { eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { normalizeGenre, genreSlug, GENRE_DESCRIPTIONS, GENRE_DISPLAY_NAMES, GENRE_LONG_CONTENT } from '@/lib/genres';
 import { slugify } from '@/lib/slugify';
@@ -71,20 +71,13 @@ async function getGenreEvents(artistIds: string[]) {
     ))
     .orderBy(events.eventDate);
 
-  // Deduplicate: collapse rows that are the same show (festival lineups arrive
-  // as one event record per artist, all sharing name/venue/date), preferring
-  // non-package events.
-  const groups = new Map<string, typeof genreEvents[0]>();
-  for (const row of genreEvents) {
-    const key = eventDedupeKey(row.event.name, row.venue?.city, row.event.eventDate);
-    const existing = groups.get(key);
-    if (!existing) {
-      groups.set(key, row);
-    } else if (isPackage(existing.event.name) && !isPackage(row.event.name)) {
-      groups.set(key, row);
-    }
-  }
-  return Array.from(groups.values());
+  // Collapse festival lineups, package variants, and cross-source duplicates.
+  return dedupeEvents(genreEvents, (row) => ({
+    name: row.event.name,
+    artistName: row.artistName,
+    city: row.venue?.city,
+    eventDate: row.event.eventDate,
+  }));
 }
 
 /** Build a slug → displayName map from all active artists */

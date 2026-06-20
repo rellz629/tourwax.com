@@ -9,7 +9,7 @@ import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { isPackage, eventPrimaryLabel, eventDedupeKey } from '@/lib/event-utils';
+import { eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 
@@ -36,19 +36,13 @@ async function getTonightEvents() {
     .where(and(gte(events.eventDate, now), lte(events.eventDate, endOfDay)))
     .orderBy(events.eventDate);
 
-  // Deduplicate: collapse festival/joint-headliner rows (one event record per
-  // artist, all sharing name/venue/date) into a single show.
-  const groups = new Map<string, typeof results[0]>();
-  for (const row of results) {
-    const key = eventDedupeKey(row.event.name, row.venue?.city, row.event.eventDate);
-    const existing = groups.get(key);
-    if (!existing) {
-      groups.set(key, row);
-    } else if (isPackage(existing.event.name) && !isPackage(row.event.name)) {
-      groups.set(key, row);
-    }
-  }
-  return Array.from(groups.values());
+  // Collapse festival lineups, package variants, and cross-source duplicates.
+  return dedupeEvents(results, (row) => ({
+    name: row.event.name,
+    artistName: row.artistName,
+    city: row.venue?.city,
+    eventDate: row.event.eventDate,
+  }));
 }
 
 export async function generateMetadata(): Promise<Metadata> {

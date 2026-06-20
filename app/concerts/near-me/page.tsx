@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { db } from '@/db';
 import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, and, gte, sql } from 'drizzle-orm';
-import { isPackage } from '@/lib/event-utils';
+import { dedupeEvents } from '@/lib/event-utils';
 import {
   boundingBox,
   getLocationFromHeaders,
@@ -59,17 +59,12 @@ async function getNearbyEvents(lat: number, lng: number, radius: number) {
     .orderBy(events.eventDate)
     .limit(RESULT_LIMIT * 6);
 
-  const grouped = new Map<string, typeof rows[0]>();
-  for (const row of rows) {
-    const existing = grouped.get(row.eventId);
-    if (!existing) {
-      grouped.set(row.eventId, row);
-    } else if (isPackage(existing.eventName) && !isPackage(row.eventName)) {
-      grouped.set(row.eventId, row);
-    }
-  }
-
-  return Array.from(grouped.values())
+  return dedupeEvents(rows, (row) => ({
+    name: row.eventName,
+    artistName: row.artistName,
+    city: row.venueCity,
+    eventDate: row.eventDate,
+  }))
     .map((row) => {
       const vLat = parseFloat(row.venueLat ?? '');
       const vLng = parseFloat(row.venueLng ?? '');

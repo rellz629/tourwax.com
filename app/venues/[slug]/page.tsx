@@ -13,7 +13,7 @@ import { generateBreadcrumbSchema, generateVenueSchema, generateVenueEventListSc
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { isPackage, eventPrimaryLabel, eventDedupeKey } from '@/lib/event-utils';
+import { eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 import Pagination from '@/components/Pagination';
@@ -80,20 +80,13 @@ const getVenueEvents = cache(async function getVenueEvents(venueIds: string[]) {
     ))
     .orderBy(events.eventDate);
 
-  // Deduplicate: collapse rows that are the same show (festival lineups arrive
-  // as one event record per artist, all sharing name/venue/date), preferring
-  // non-package events.
-  const groups = new Map<string, typeof venueEvents[0]>();
-  for (const row of venueEvents) {
-    const key = eventDedupeKey(row.event.name, row.venue?.city, row.event.eventDate);
-    const existing = groups.get(key);
-    if (!existing) {
-      groups.set(key, row);
-    } else if (isPackage(existing.event.name) && !isPackage(row.event.name)) {
-      groups.set(key, row);
-    }
-  }
-  return Array.from(groups.values());
+  // Collapse festival lineups, package variants, and cross-source duplicates.
+  return dedupeEvents(venueEvents, (row) => ({
+    name: row.event.name,
+    artistName: row.artistName,
+    city: row.venue?.city,
+    eventDate: row.event.eventDate,
+  }));
 });
 
 const getVenuePastEvents = cache(async function getVenuePastEvents(venueIds: string[]) {
@@ -120,17 +113,13 @@ const getVenuePastEvents = cache(async function getVenuePastEvents(venueIds: str
     ))
     .orderBy(sql`${events.eventDate} desc`);
 
-  const groups = new Map<string, typeof venueEvents[0]>();
-  for (const row of venueEvents) {
-    const key = eventDedupeKey(row.event.name, row.venue?.city, row.event.eventDate);
-    const existing = groups.get(key);
-    if (!existing) {
-      groups.set(key, row);
-    } else if (isPackage(existing.event.name) && !isPackage(row.event.name)) {
-      groups.set(key, row);
-    }
-  }
-  return Array.from(groups.values()).slice(0, PAST_EVENTS_LIMIT);
+  // Collapse festival lineups, package variants, and cross-source duplicates.
+  return dedupeEvents(venueEvents, (row) => ({
+    name: row.event.name,
+    artistName: row.artistName,
+    city: row.venue?.city,
+    eventDate: row.event.eventDate,
+  })).slice(0, PAST_EVENTS_LIMIT);
 });
 
 export async function generateStaticParams() {

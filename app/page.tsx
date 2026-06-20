@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { generateOrganizationSchema, generateWebsiteSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import { SITE_URL } from '@/lib/seo';
-import { isPackage, isFestival, eventPrimaryLabel, eventDedupeKey } from '@/lib/event-utils';
+import { isFestival, eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
@@ -79,22 +79,13 @@ async function getUpcomingEvents() {
     ))
     .orderBy(events.eventDate);
 
-  // Deduplicate festivals/shared shows: collapse rows that are the same event
-  // (same name + venue + date/time) but stored as separate records per artist.
-  // Festival lineups arrive from Ticketmaster/SeatGeek as one event record per
-  // artist, all sharing name/venue/time, so keying on event id alone leaves a
-  // row per artist. Prefer the non-package version when names collide.
-  const groups = new Map<string, typeof upcomingEvents[0]>();
-  for (const e of upcomingEvents) {
-    const key = eventDedupeKey(e.name, e.venueCity, e.eventDate);
-    const existing = groups.get(key);
-    if (!existing) {
-      groups.set(key, e);
-    } else if (isPackage(existing.name) && !isPackage(e.name)) {
-      groups.set(key, e);
-    }
-  }
-  return Array.from(groups.values());
+  // Collapse festival lineups, package variants, and cross-source duplicates.
+  return dedupeEvents(upcomingEvents, (e) => ({
+    name: e.name,
+    artistName: e.artistName,
+    city: e.venueCity,
+    eventDate: e.eventDate,
+  }));
 }
 
 function groupEventsByDay(eventsList: Awaited<ReturnType<typeof getUpcomingEvents>>) {

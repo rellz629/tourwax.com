@@ -13,7 +13,7 @@ import { generateBreadcrumbSchema, generateCityEventListSchema, generateFAQSchem
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { isPackage, eventPrimaryLabel, eventDedupeKey } from '@/lib/event-utils';
+import { eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 import { CITY_LONG_CONTENT } from '@/lib/city-content';
@@ -90,20 +90,13 @@ const getCityEvents = cache(async function getCityEvents(cityName: string) {
     )
     .orderBy(events.eventDate);
 
-  // Deduplicate: collapse rows that are the same show (joint-headliner and
-  // festival lineups arrive as one event record per artist, all sharing
-  // name/venue/date). Keying on event id alone leaves a row per artist.
-  const groups = new Map<string, typeof cityEvents[0]>();
-  for (const row of cityEvents) {
-    const key = eventDedupeKey(row.event.name, row.venue?.city, row.event.eventDate);
-    const existing = groups.get(key);
-    if (!existing) {
-      groups.set(key, row);
-    } else if (isPackage(existing.event.name) && !isPackage(row.event.name)) {
-      groups.set(key, row);
-    }
-  }
-  return Array.from(groups.values());
+  // Collapse festival lineups, package variants, and cross-source duplicates.
+  return dedupeEvents(cityEvents, (row) => ({
+    name: row.event.name,
+    artistName: row.artistName,
+    city: row.venue?.city,
+    eventDate: row.event.eventDate,
+  }));
 });
 
 export async function generateStaticParams() {
