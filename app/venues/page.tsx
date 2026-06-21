@@ -9,6 +9,8 @@ import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { slugify } from '@/lib/slugify';
 import { clusterVenues } from '@/lib/venue-cluster';
+import TopStrip from '@/components/TopStrip';
+import { getTopVenues } from '@/lib/top-lists';
 import Pagination from '@/components/Pagination';
 
 export const revalidate = 1800;
@@ -122,6 +124,10 @@ export default async function VenuesPage({ searchParams }: Props) {
 
   const hasFilter = Boolean(q || state);
 
+  // National "busiest venues" ranking only makes sense on the unfiltered first
+  // page; once the user filters or paginates, the alphabetical grid takes over.
+  const topVenues = !hasFilter && currentPage === 1 ? await getTopVenues() : [];
+
   // Preserve the active filter across pagination links.
   const filterParams = new URLSearchParams();
   if (q) filterParams.set('q', q);
@@ -189,6 +195,19 @@ export default async function VenuesPage({ searchParams }: Props) {
             </Link>
           )}
         </form>
+
+        {topVenues.length > 0 && (
+          <TopStrip
+            title="Busiest Venues in the Next 60 Days"
+            items={topVenues.map((v) => ({
+              href: `/venues/${v.slug}`,
+              title: v.name,
+              subtitle: v.location ?? undefined,
+              badgeValue: v.showCount,
+              badgeLabel: v.showCount === 1 ? 'show' : 'shows',
+            }))}
+          />
+        )}
 
         {sortedCities.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">

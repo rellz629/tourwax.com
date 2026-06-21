@@ -7,6 +7,8 @@ import { generateConcertsIndexMetadata, SITE_URL } from '@/lib/seo';
 import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import TopStrip from '@/components/TopStrip';
+import { getTopConcerts } from '@/lib/top-lists';
 import { slugify } from '@/lib/slugify';
 
 export const dynamic = 'force-static';
@@ -34,6 +36,8 @@ export default async function ConcertsPage() {
     .orderBy(sql`count(*) desc`);
 
   const cities = citiesWithCounts.filter((row) => row.city);
+
+  const topConcerts = await getTopConcerts();
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },
@@ -66,6 +70,18 @@ export default async function ConcertsPage() {
             <Link href="/concerts/on-sale-today" className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-4 py-2 rounded-lg transition-colors">On Sale Today</Link>
           </div>
         </div>
+
+        <TopStrip
+          title="Top Concerts in the Next 60 Days"
+          items={topConcerts.map((c) => ({
+            href: `/artists/${c.artistSlug}`,
+            title: c.artistName,
+            subtitle: c.venueName ?? undefined,
+            meta: [c.location, c.formattedDate].filter(Boolean).join(' · ') || undefined,
+            badgeValue: c.tourDates,
+            badgeLabel: c.tourDates === 1 ? 'date' : 'dates',
+          }))}
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {cities.map((row) => {

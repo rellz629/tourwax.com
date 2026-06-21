@@ -7,6 +7,8 @@ import { generateToursIndexMetadata, SITE_URL } from '@/lib/seo';
 import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import TopStrip from '@/components/TopStrip';
+import { getTopTours } from '@/lib/top-lists';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
 
 export const dynamic = 'force-static';
@@ -53,6 +55,8 @@ export default async function ToursPage() {
   const genres = Object.entries(genreData)
     .sort((a, b) => b[1].eventCount - a[1].eventCount);
 
+  const topTours = await getTopTours();
+
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },
     { name: 'Tours', url: `${SITE_URL}/tours` },
@@ -77,6 +81,17 @@ export default async function ToursPage() {
             Browse upcoming tours across {genres.length} genres
           </p>
         </div>
+
+        <TopStrip
+          title="Top Tours in the Next 60 Days"
+          items={topTours.map((t) => ({
+            href: `/artists/${t.slug}`,
+            title: t.name,
+            subtitle: t.genre ? normalizeGenre(t.genre) : undefined,
+            badgeValue: t.dateCount,
+            badgeLabel: t.dateCount === 1 ? 'date' : 'dates',
+          }))}
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {genres.map(([genre, data]) => {

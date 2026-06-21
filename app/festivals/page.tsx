@@ -5,7 +5,8 @@ import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAllFestivals } from '@/lib/festivals';
-import { slugify } from '@/lib/slugify';
+import TopStrip from '@/components/TopStrip';
+import { getTopFestivals } from '@/lib/top-lists';
 import Pagination from '@/components/Pagination';
 
 export const revalidate = 1800;
@@ -29,6 +30,9 @@ export default async function FestivalsPage({ searchParams }: Props) {
     (currentPage - 1) * FESTIVALS_PER_PAGE,
     currentPage * FESTIVALS_PER_PAGE
   );
+
+  // Biggest-lineups ranking only headlines the first page.
+  const topFestivals = currentPage === 1 ? await getTopFestivals() : [];
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: SITE_URL },
@@ -60,6 +64,20 @@ export default async function FestivalsPage({ searchParams }: Props) {
             </div>
           )}
         </div>
+
+        {topFestivals.length > 0 && (
+          <TopStrip
+            title="Biggest Festival Lineups in the Next 60 Days"
+            items={topFestivals.map((f) => ({
+              href: `/festivals/${f.slug}`,
+              title: f.name,
+              subtitle: f.location ?? undefined,
+              meta: f.formattedDateRange,
+              badgeValue: f.artistCount,
+              badgeLabel: f.artistCount === 1 ? 'artist' : 'artists',
+            }))}
+          />
+        )}
 
         {festivals.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
