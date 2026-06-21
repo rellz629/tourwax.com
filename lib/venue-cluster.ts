@@ -48,7 +48,12 @@ const SAME_COORD_METERS = 60;
 const JACCARD_THRESHOLD = 0.6;
 
 function normalizeName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  return name
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // strip diacritics so "Café" == "Cafe"
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
 }
 
 function nameTokens(s: string): string[] {
@@ -56,22 +61,22 @@ function nameTokens(s: string): string[] {
 }
 
 interface Fingerprint {
-  norm: string;        // normalized full name, for exact-equality matching
+  norm: string;        // normalized name with the city/state suffix removed, for exact matching
   core: Set<string>;   // identity tokens: name minus stopwords, city/state, and generic words
 }
 
 /**
- * Builds a venue fingerprint. The core is the venue's identity tokens with
- * stopwords, the venue's own city/state, and generic venue-type words removed,
- * so "The Chicago Theatre" in Chicago reduces to nothing matchable (won't be
- * swallowed by "Riviera Theatre - Chicago"), while "Wolf Trap" keeps {wolf, trap}.
+ * Builds a venue fingerprint. `norm` drops the venue's own city/state tokens so
+ * "The National - Richmond" matches "The National". `core` further drops
+ * stopwords and generic venue-type words, so "The Chicago Theatre" in Chicago
+ * reduces to nothing matchable (won't be swallowed by "Riviera Theatre -
+ * Chicago"), while "Wolf Trap" keeps {wolf, trap}.
  */
 function fingerprint(v: VenueLike): Fingerprint {
   const cityState = new Set([...nameTokens(v.city ?? ''), ...nameTokens(v.state ?? '')]);
-  const core = new Set(
-    nameTokens(v.name).filter((t) => !STOPWORDS.has(t) && !cityState.has(t) && !GENERIC.has(t))
-  );
-  return { norm: normalizeName(v.name), core };
+  const nameWithoutCity = nameTokens(v.name).filter((t) => !cityState.has(t));
+  const core = new Set(nameWithoutCity.filter((t) => !STOPWORDS.has(t) && !GENERIC.has(t)));
+  return { norm: nameWithoutCity.join(' '), core };
 }
 
 function isSubset(a: Set<string>, b: Set<string>): boolean {

@@ -89,26 +89,36 @@ export default async function VenuesPage({ searchParams }: Props) {
   }
 
   const totalVenues = filtered.length;
-  const totalPages = Math.ceil(totalVenues / VENUES_PER_PAGE);
-  const paginatedVenues = filtered.slice(
-    (currentPage - 1) * VENUES_PER_PAGE,
-    currentPage * VENUES_PER_PAGE
-  );
 
-  // Group paginated venues by city
-  const venuesByCity = new Map<string, typeof paginatedVenues>();
-  for (const row of paginatedVenues) {
+  // Group every filtered venue by city, order cities A->Z and each city's
+  // venues by event count, then pack whole city groups into pages. Paginating
+  // by city (rather than slicing a flat list) keeps each page a continuous
+  // alphabetical range and never splits one city across two pages.
+  const cityGroups = new Map<string, typeof filtered>();
+  for (const row of filtered) {
     const cityKey = row.state ? `${row.city}, ${row.state}` : (row.city || 'Other');
-    if (!venuesByCity.has(cityKey)) {
-      venuesByCity.set(cityKey, []);
-    }
-    venuesByCity.get(cityKey)!.push(row);
+    if (!cityGroups.has(cityKey)) cityGroups.set(cityKey, []);
+    cityGroups.get(cityKey)!.push(row);
   }
+  const allCities = Array.from(cityGroups.entries()).sort(([a], [b]) => a.localeCompare(b));
+  for (const [, vs] of allCities) vs.sort((a, b) => b.eventCount - a.eventCount);
 
-  // Sort cities alphabetically
-  const sortedCities = Array.from(venuesByCity.entries()).sort(([a], [b]) =>
-    a.localeCompare(b)
-  );
+  const pages: (typeof allCities)[] = [];
+  let currentGroup: typeof allCities = [];
+  let currentGroupCount = 0;
+  for (const entry of allCities) {
+    if (currentGroup.length && currentGroupCount + entry[1].length > VENUES_PER_PAGE) {
+      pages.push(currentGroup);
+      currentGroup = [];
+      currentGroupCount = 0;
+    }
+    currentGroup.push(entry);
+    currentGroupCount += entry[1].length;
+  }
+  if (currentGroup.length) pages.push(currentGroup);
+
+  const totalPages = Math.max(1, pages.length);
+  const sortedCities = pages[currentPage - 1] ?? [];
 
   const hasFilter = Boolean(q || state);
 
