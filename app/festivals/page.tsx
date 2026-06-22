@@ -67,7 +67,8 @@ export default async function FestivalsPage({ searchParams }: Props) {
 
         {topFestivals.length > 0 && (
           <TopStrip
-            title="Biggest Festival Lineups in the Next 60 Days"
+            title="Biggest Festival Lineups"
+            subtitle="Most artists in the next 60 days"
             items={topFestivals.map((f) => ({
               href: `/festivals/${f.slug}`,
               title: f.name,

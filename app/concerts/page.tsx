@@ -72,7 +72,8 @@ export default async function ConcertsPage() {
         </div>
 
         <TopStrip
-          title="Top Concerts in the Next 60 Days"
+          title="Top Concerts"
+          subtitle="Marquee shows in the next 60 days, by tour size"
           items={topConcerts.map((c) => ({
             href: `/artists/${c.artistSlug}`,
             title: c.artistName,

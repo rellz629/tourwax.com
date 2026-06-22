@@ -6,6 +6,8 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateCanonicalUrl } from '@/lib/seo';
 import { normalizeGenre, genreSlug, GENRE_DISPLAY_NAMES } from '@/lib/genres';
+import TopStrip from '@/components/TopStrip';
+import { getTopTours } from '@/lib/top-lists';
 import Pagination from '@/components/Pagination';
 
 export const revalidate = 3600;
@@ -102,6 +104,10 @@ export default async function ArtistsPage({ searchParams }: Props) {
 
   const hasFilter = Boolean(genre || letter || q);
 
+  // "Top Artists on Tour" only headlines the unfiltered first page; once the user
+  // filters or paginates, the A-Z genre grid takes over.
+  const topArtists = !hasFilter && currentPage === 1 ? await getTopTours() : [];
+
   // Preserve the active filter across pagination links.
   const filterParams = new URLSearchParams();
   if (genre) filterParams.set('genre', genre);
@@ -182,6 +188,20 @@ export default async function ArtistsPage({ searchParams }: Props) {
           </Link>
         )}
       </div>
+
+      {topArtists.length > 0 && (
+        <TopStrip
+          title="Top Artists on Tour"
+          subtitle="Most dates in the next 60 days"
+          items={topArtists.map((t) => ({
+            href: `/artists/${t.slug}`,
+            title: t.name,
+            subtitle: t.genre ? normalizeGenre(t.genre) : undefined,
+            badgeValue: t.dateCount,
+            badgeLabel: t.dateCount === 1 ? 'date' : 'dates',
+          }))}
+        />
+      )}
 
       {totalCount === 0 ? (
         <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">

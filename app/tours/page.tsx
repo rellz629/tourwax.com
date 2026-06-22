@@ -83,7 +83,8 @@ export default async function ToursPage() {
         </div>
 
         <TopStrip
-          title="Top Tours in the Next 60 Days"
+          title="Top Tours"
+          subtitle="Artists with the most dates in the next 60 days"
           items={topTours.map((t) => ({
             href: `/artists/${t.slug}`,
             title: t.name,

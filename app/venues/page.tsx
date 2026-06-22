@@ -198,7 +198,8 @@ export default async function VenuesPage({ searchParams }: Props) {
 
         {topVenues.length > 0 && (
           <TopStrip
-            title="Busiest Venues in the Next 60 Days"
+            title="Busiest Venues"
+            subtitle="Most upcoming shows in the next 60 days"
             items={topVenues.map((v) => ({
               href: `/venues/${v.slug}`,
               title: v.name,
