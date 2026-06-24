@@ -1,5 +1,6 @@
 ---
 title: "Who Is Opening for The Black Keys on the 2026 Peaches 'N Kream World Tour?"
+metaTitle: "Who Is Opening for The Black Keys in 2026?"
 slug: "who-is-opening-for-the-black-keys-2026-tour"
 excerpt: "The Black Keys' 2026 Peaches 'N Kream World Tour rotates openers from Dan Auerbach's Easy Eye Sound label, with Eddie 9V on the summer US dates and Jeremie Albino closing the fall Canadian leg."
 author: "TourWax Team"

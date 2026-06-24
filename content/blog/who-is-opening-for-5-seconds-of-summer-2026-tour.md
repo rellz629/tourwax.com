@@ -1,7 +1,9 @@
 ---
 title: "Who Is Opening for 5 Seconds of Summer on the 2026 EVERYONE'S A STAR! Tour?"
+metaTitle: "Who Is Opening for 5 Seconds of Summer in 2026?"
 slug: "who-is-opening-for-5-seconds-of-summer-2026-tour"
 excerpt: "The Band Camino is the opening act for 5 Seconds of Summer's 2026 EVERYONE'S A STAR! World Tour across North America, with South Arcade, Master Peace, and Haiden Henderson supporting the European leg and Cub Sport in Asia-Pacific."
+metaDescription: "The Band Camino opens for 5 Seconds of Summer's 2026 EVERYONE'S A STAR! World Tour in North America, with South Arcade and Cub Sport supporting overseas."
 author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/5sos-NZ4A4323.jpg/1280px-5sos-NZ4A4323.jpg"

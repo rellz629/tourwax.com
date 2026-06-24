@@ -1,5 +1,6 @@
 ---
 title: "Casino Concert Guide 2026: Best Resort and Casino Venues for Live Music"
+metaTitle: "Casino Concert Guide 2026: Best Venues for Live Music"
 slug: "casino-concert-guide-2026"
 excerpt: "The best casino and resort concert venues in America, from Hard Rock Live and Mohegan Sun to WinStar and Yaamava. Full 2026 schedules, venue details, and tips for catching a show."
 author: "TourWax Team"

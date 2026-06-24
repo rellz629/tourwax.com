@@ -1,5 +1,6 @@
 ---
 title: "Pittsburgh Concert Guide 2026: Best Venues, Upcoming Shows & Ticket Tips"
+metaTitle: "Pittsburgh Concert Guide 2026: Venues & Upcoming Shows"
 slug: "concerts-in-pittsburgh-2026-guide"
 excerpt: "Your complete guide to concerts in Pittsburgh in 2026. Discover the best venues from PPG Paints Arena to Stage AE, upcoming shows, and how to find the best ticket deals."
 author: "TourWax Team"

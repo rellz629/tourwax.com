@@ -1,5 +1,6 @@
 ---
 title: "Who Is Opening for Luke Combs 2026? Dierks Bentley, Thomas Rhett, The Script & More"
+metaTitle: "Who Is Opening for Luke Combs in 2026?"
 slug: "who-is-opening-for-luke-combs-2026-tour"
 excerpt: "Luke Combs' My Kinda Saturday Night World Tour rolls through stadiums in North America and Europe in 2026 with a rotating opener bill that includes Dierks Bentley, Thomas Rhett, The Script, Ty Myers, The Castellows, and more. Here's the full date-by-date lineup."
 author: "TourWax Team"

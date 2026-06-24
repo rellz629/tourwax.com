@@ -1,5 +1,6 @@
 ---
 title: "The Strokes 'Reality Awaits' Tour 2026: Dates, Tickets & What to Expect"
+metaTitle: "The Strokes Reality Awaits Tour 2026: Dates & Tickets"
 slug: "the-strokes-tour-2026"
 excerpt: "The Strokes are touring North America and Europe in 2026 on the Reality Awaits tour. Full date list, ticket links, and what fans can expect from one of indie rock's most iconic live acts."
 author: "TourWax Team"

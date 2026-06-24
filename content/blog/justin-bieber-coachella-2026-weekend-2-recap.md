@@ -1,5 +1,6 @@
 ---
 title: "Justin Bieber's Coachella 2026 Weekend 2 Performance: Guests, Setlist, and Highlights"
+metaTitle: "Justin Bieber Coachella 2026 Weekend 2: Recap & Setlist"
 slug: "justin-bieber-coachella-2026-weekend-2-recap"
 excerpt: "Justin Bieber headlined Coachella's Weekend 2 on April 18, bringing out Billie Eilish, SZA, Big Sean, and Sexyy Red in a revised set that answered critics of his Weekend 1 showing."
 author: "TourWax Team"

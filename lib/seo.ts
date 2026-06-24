@@ -14,9 +14,32 @@ export function generateCanonicalUrl(path: string): string {
   return `${SITE_URL}${cleanPath}`;
 }
 
+// ---- Shared metadata-length helpers ----
+// Search engines flag <title> over ~70 chars and meta descriptions outside
+// ~25-160 chars. The root layout applies a "%s | TourWax" template, so every
+// plain-string title returned here gets " | TourWax" (10 chars) appended.
+const TITLE_SUFFIX = ' | TourWax';
+
+// Keep the branded suffix only when the full string still fits 70 chars;
+// otherwise return an absolute title (no suffix) to claw back those 10 chars.
+// Returns a value suitable for Next's Metadata `title` field.
+export function pageTitle(raw: string): string | { absolute: string } {
+  return (raw + TITLE_SUFFIX).length <= 70 ? raw : { absolute: raw };
+}
+
+// Trim prose to a max length on a word boundary, appending an ellipsis. Used to
+// keep meta descriptions within the ~160-char window without truncating the
+// longer on-page copy generators may produce.
+export function trimForMeta(text: string, max = 160): string {
+  if (text.length <= max) return text;
+  const slice = text.slice(0, max - 1);
+  const lastSpace = slice.lastIndexOf(' ');
+  return `${(lastSpace > 40 ? slice.slice(0, lastSpace) : slice).trimEnd()}…`;
+}
+
 export function generateArtistTitle(artistName: string, eventCount: number, year: number = new Date().getFullYear()): string {
   if (eventCount > 0) {
-    return `${artistName} Tour ${year} - Concert Dates & Tickets (${eventCount} Shows)`;
+    return `${artistName} Tour ${year}: Dates & Tickets`;
   }
   return `${artistName} Tour Dates & Concerts ${year}`;
 }
@@ -118,19 +141,19 @@ export function generateArtistMetadata(data: ArtistWithEvents) {
   const lowestPrice = prices.length > 0 ? Math.min(...prices) : null;
 
   const title = generateArtistTitle(artist.name, events.length, year);
-  const description = generateArtistDescription(
+  const description = trimForMeta(generateArtistDescription(
     artist.name,
     artist.genre,
     events.length,
     cities,
     nextEventDate,
     lowestPrice
-  );
+  ));
   const url = generateCanonicalUrl(`/artists/${artist.slug}`);
   const image = artist.imageUrl || `${SITE_URL}/og-default.jpg`;
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -151,11 +174,9 @@ export function generateArtistMetadata(data: ArtistWithEvents) {
 }
 
 export function generateCityTitle(cityName: string, state: string | null, eventCount: number, year: number = new Date().getFullYear()): string {
+  void eventCount; // no longer in the title; kept for call-site compatibility
   const location = state ? `${cityName}, ${state}` : cityName;
-  if (eventCount > 0) {
-    return `Concerts in ${location} ${year}: ${eventCount} Upcoming Shows & Tickets`;
-  }
-  return `Concerts in ${location} ${year}: Upcoming Shows & Tickets`;
+  return `Concerts in ${location} ${year}: Shows & Tickets`;
 }
 
 export function generateCityDescription(
@@ -199,11 +220,11 @@ export function generateCityMetadata(data: {
   const year = new Date().getFullYear();
 
   const title = generateCityTitle(cityName, state, eventCount, year);
-  const description = generateCityDescription(cityName, state, eventCount, artistNames, venueNames, nextEventDate);
+  const description = trimForMeta(generateCityDescription(cityName, state, eventCount, artistNames, venueNames, nextEventDate));
   const url = generateCanonicalUrl(`/concerts/${citySlug}`);
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -226,7 +247,7 @@ export function generateConcertsIndexMetadata() {
   const url = generateCanonicalUrl('/concerts');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -277,11 +298,11 @@ export function generateGenreMetadata(data: {
   const year = new Date().getFullYear();
 
   const title = generateGenreTitle(genreName, artistCount, year, artistNames);
-  const description = generateGenreDescription(genreName, artistCount, eventCount, artistNames);
+  const description = trimForMeta(generateGenreDescription(genreName, artistCount, eventCount, artistNames));
   const url = generateCanonicalUrl(`/tours/${genreSlug}`);
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -304,7 +325,7 @@ export function generateToursIndexMetadata() {
   const url = generateCanonicalUrl('/tours');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -322,11 +343,11 @@ export function generateToursIndexMetadata() {
 }
 
 export function generateVenueTitle(venueName: string, city: string | null, eventCount: number, year: number = new Date().getFullYear()): string {
-  const location = city ? ` (${city})` : '';
+  void city; // city is carried in the description; kept out of the title for length
   if (eventCount > 0) {
-    return `${venueName} Upcoming Events ${year}${location}: ${eventCount} Concerts & Tickets`;
+    return `${venueName} ${year} Concerts & Tickets`;
   }
-  return `${venueName} Upcoming Events & Concert Schedule ${year}${location}`;
+  return `${venueName} Concert Schedule ${year}`;
 }
 
 export function generateVenueDescription(
@@ -366,11 +387,11 @@ export function generateVenueMetadata(data: {
   const year = new Date().getFullYear();
 
   const title = generateVenueTitle(venueName, city, eventCount, year);
-  const description = generateVenueDescription(venueName, city, eventCount, artistNames, nextEventDate);
+  const description = trimForMeta(generateVenueDescription(venueName, city, eventCount, artistNames, nextEventDate));
   const url = generateCanonicalUrl(`/venues/${venueSlug}`);
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -393,7 +414,7 @@ export function generateVenuesIndexMetadata() {
   const url = generateCanonicalUrl('/venues');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -416,7 +437,7 @@ export function generateBlogIndexMetadata() {
   const url = generateCanonicalUrl('/blog');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -441,14 +462,17 @@ export function generateBlogPostMetadata(post: {
   publishedAt: string;
   updatedAt: string;
   author: string;
+  metaTitle?: string;
+  metaDescription?: string;
 }) {
-  const title = post.title;
-  const description = post.excerpt;
+  // Visible H1/excerpt stay as authored; metadata uses tighter overrides.
+  const title = post.metaTitle || post.title;
+  const description = trimForMeta(post.metaDescription || post.excerpt);
   const url = generateCanonicalUrl(`/blog/${post.slug}`);
   const image = post.featuredImage || undefined;
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -479,7 +503,7 @@ export function generateInsightsIndexMetadata() {
   const url = generateCanonicalUrl('/insights');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -502,25 +526,26 @@ export function generateInsightMetadata(data: {
   slug: string;
 }) {
   const title = data.title;
+  const description = trimForMeta(data.description);
   const url = generateCanonicalUrl(`/insights/${data.slug}`);
 
   return {
-    title,
-    description: data.description,
+    title: pageTitle(title),
+    description,
     alternates: {
       canonical: url,
     },
     openGraph: {
       ...generateOpenGraphTags({
         title,
-        description: data.description,
+        description,
         url,
         type: 'article',
       }),
     },
     twitter: generateTwitterCardTags({
       title,
-      description: data.description,
+      description,
     }),
   };
 }
@@ -531,7 +556,7 @@ export function generateFestivalsIndexMetadata() {
   const url = generateCanonicalUrl('/festivals');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -568,14 +593,14 @@ export function generateFestivalMetadata(data: {
     ? `${data.festivalName}${location} | Lineup & Recap (Archived)`
     : `${data.festivalName}${location} ${year} | Lineup & Tickets`;
 
-  const description = data.isPast
+  const description = trimForMeta(data.isPast
     ? `${data.festivalName} took place ${data.date} at ${data.venueName}${location}.${artistText} See the full lineup and browse current tour dates.`
-    : `${data.festivalName} ${year}:${artistText} ${data.date} at ${data.venueName}${location}. Full lineup & tickets.`;
+    : `${data.festivalName} ${year}:${artistText} ${data.date} at ${data.venueName}${location}. Full lineup & tickets.`);
 
   const url = generateCanonicalUrl(`/festivals/${data.slug}`);
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: {
       canonical: url,
@@ -600,7 +625,7 @@ export function generateThisWeekendMetadata(eventCount: number) {
   const url = generateCanonicalUrl('/concerts/this-weekend');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url }),
@@ -616,7 +641,7 @@ export function generateTonightMetadata(eventCount: number) {
   const url = generateCanonicalUrl('/concerts/tonight');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url }),
@@ -632,7 +657,7 @@ export function generateThisWeekMetadata(eventCount: number) {
   const url = generateCanonicalUrl('/concerts/this-week');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url }),
@@ -652,13 +677,13 @@ export function generateStateMetadata(data: {
   const artistText = data.artistNames.length > 0
     ? ` See ${data.artistNames.slice(0, 3).join(', ')}${data.artistNames.length > 3 ? ' & more' : ''}.`
     : '';
-  const description = data.eventCount > 0
+  const description = trimForMeta(data.eventCount > 0
     ? `${data.eventCount} upcoming concert${data.eventCount === 1 ? '' : 's'} across ${data.cityCount} cities in ${data.stateName}.${artistText} Browse shows & buy tickets.`
-    : `Find upcoming concerts in ${data.stateName} for ${year}. Browse shows by city and buy tickets.`;
+    : `Find upcoming concerts in ${data.stateName} for ${year}. Browse shows by city and buy tickets.`);
   const url = generateCanonicalUrl(`/concerts/state/${data.stateSlug}`);
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url }),
@@ -675,7 +700,7 @@ export function generateOnSaleMetadata(eventCount: number) {
   const url = generateCanonicalUrl('/concerts/on-sale-today');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url }),
@@ -700,15 +725,15 @@ export function generateTourHistoryMetadata(data: {
     ? `${artistName} Tour History - ${totalShows} Shows${yearRange ? ` (${yearRange})` : ''}`
     : `${artistName} Tour History`;
 
-  const description = totalShows > 0
+  const description = trimForMeta(totalShows > 0
     ? `${artistName} has played ${totalShows} shows across ${cityCount} cities${yearRange ? ` from ${yearRange}` : ''}. Browse the complete concert archive with venues, dates, and cities visited.`
-    : `${artistName} tour history and past concert archive. Check back as tour dates are added regularly.`;
+    : `${artistName} tour history and past concert archive. Check back as tour dates are added regularly.`);
 
   const url = generateCanonicalUrl(`/artists/${slug}/tour-history`);
   const image = imageUrl || undefined;
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url, image }),
@@ -740,15 +765,15 @@ export function generateEventPageMetadata(data: {
     : `${artistName} Tickets${venueText} ${dateStr}`;
 
   const priceText = minPrice ? ` Tickets from $${minPrice}.` : '';
-  const description = isPast
+  const description = trimForMeta(isPast
     ? `${artistName} performed${venueText}${locationText} on ${dateStr}. Browse the full ${artistName} tour history and upcoming concert dates.`
-    : `Buy ${artistName} tickets for ${dateStr}${venueText}${locationText}.${priceText} Compare prices from Ticketmaster & SeatGeek.`;
+    : `Buy ${artistName} tickets for ${dateStr}${venueText}${locationText}.${priceText} Compare prices from Ticketmaster & SeatGeek.`);
 
   const url = generateCanonicalUrl(`/events/${slug}`);
   const image = imageUrl || undefined;
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url, image }),
@@ -766,7 +791,7 @@ export function generateNearMeMetadata(cityName?: string | null) {
   const url = generateCanonicalUrl('/concerts/near-me');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url }),
@@ -784,7 +809,7 @@ export function generateSearchMetadata(query: string | null) {
   const url = generateCanonicalUrl('/search');
 
   return {
-    title,
+    title: pageTitle(title),
     description,
     alternates: { canonical: url },
     openGraph: generateOpenGraphTags({ title, description, url }),

@@ -1,5 +1,6 @@
 ---
 title: "Stagecoach 2026 Recap: Best Sets, Surprise Guests, and the Wind That Stopped the Show"
+metaTitle: "Stagecoach 2026 Recap: Best Sets and Surprise Guests"
 slug: "stagecoach-2026-recap-best-moments"
 excerpt: "Cody Johnson, Lainey Wilson, and Post Malone headlined a Stagecoach 2026 weekend defined by genre-bending guest spots, a wind evacuation, and one of the year's most-talked-about country lineups. Here are the best moments from Indio."
 author: "TourWax Team"

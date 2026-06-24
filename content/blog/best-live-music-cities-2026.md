@@ -1,5 +1,6 @@
 ---
 title: "Best Cities for Live Music in 2026: Where to Catch Concerts Across the US"
+metaTitle: "Best Cities for Live Music in 2026"
 slug: "best-live-music-cities-2026"
 excerpt: "From Nashville to New York, these are the best US cities for live music in 2026. Find out which cities have the most concerts, best venues, and upcoming tours."
 author: "TourWax Team"

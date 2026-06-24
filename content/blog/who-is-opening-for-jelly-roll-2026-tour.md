@@ -1,5 +1,6 @@
 ---
 title: "Who Is Opening for Jelly Roll 2026? Post Malone, Carter Faith & Kashus Culpepper"
+metaTitle: "Who Is Opening for Jelly Roll in 2026?"
 slug: "who-is-opening-for-jelly-roll-2026-tour"
 excerpt: "Jelly Roll is splitting his 2026 schedule between Post Malone's BIG ASS Stadium Tour and his own Little Ass Shed amphitheater run. Here's the full opener lineup, including Carter Faith and Kashus Culpepper."
 author: "TourWax Team"

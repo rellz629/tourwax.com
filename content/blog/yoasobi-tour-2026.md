@@ -1,5 +1,6 @@
 ---
 title: "YOASOBI Announces 'Never Ending Stories' Tour: First North American Headlining Run, 8 Dates"
+metaTitle: "YOASOBI 2026 Tour: First North American Headlining Run"
 slug: "yoasobi-tour-2026"
 excerpt: "Japanese pop duo YOASOBI is bringing the Never Ending Stories Tour to North America with 8 dates, including a Lollapalooza appearance, headline arena shows, and a Hollywood Bowl finale."
 author: "TourWax Team"

@@ -13,6 +13,11 @@ export interface BlogPost {
   publishedAt: string;
   updatedAt: string;
   content: string;
+  // Optional SEO overrides. When set, these drive the <title> and meta
+  // description instead of the (often longer) on-page title/excerpt, keeping
+  // search-engine metadata within length limits without trimming visible copy.
+  metaTitle?: string;
+  metaDescription?: string;
 }
 
 type BlogPostMeta = Omit<BlogPost, 'content'>;
@@ -59,6 +64,8 @@ export function getAllPosts(): BlogPostMeta[] {
       featuredImage: (data.featuredImage as string) || null,
       publishedAt: data.publishedAt as string,
       updatedAt: data.updatedAt as string,
+      metaTitle: (data.metaTitle as string) || undefined,
+      metaDescription: (data.metaDescription as string) || undefined,
     };
   });
 
@@ -91,6 +98,8 @@ export function getPostBySlug(slug: string): BlogPost | null {
     featuredImage: (data.featuredImage as string) || null,
     publishedAt: data.publishedAt as string,
     updatedAt: data.updatedAt as string,
+    metaTitle: (data.metaTitle as string) || undefined,
+    metaDescription: (data.metaDescription as string) || undefined,
     content: processYouTubeEmbeds(marked(content) as string),
   };
 }

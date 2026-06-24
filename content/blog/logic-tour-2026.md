@@ -1,5 +1,6 @@
 ---
 title: "Logic and G-Eazy Announce 'Endless Summer Tour Part II': 23 Co-Headlining Dates"
+metaTitle: "Logic & G-Eazy Endless Summer Tour Part II 2026"
 slug: "logic-tour-2026"
 excerpt: "Logic and G-Eazy are reuniting for Endless Summer Tour Part II, a 23-date co-headlining run hitting amphitheaters across North America from September through October 2026."
 author: "TourWax Team"

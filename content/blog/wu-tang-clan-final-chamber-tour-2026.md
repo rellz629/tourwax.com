@@ -1,5 +1,6 @@
 ---
 title: "Wu-Tang Clan Announces 'The Final Chamber' North American Tour With Bone Thugs-N-Harmony"
+metaTitle: "Wu-Tang Clan The Final Chamber 2026 North American Tour"
 slug: "wu-tang-clan-final-chamber-tour-2026"
 excerpt: "Wu-Tang Clan is hitting the road for a 26-city North American farewell tour with Bone Thugs-N-Harmony. Here's everything you need to know about The Final Chamber Tour."
 author: "TourWax Team"

@@ -1,5 +1,6 @@
 ---
 title: "Willie Nelson's Outlaw Music Festival Returns for 2026 With Stacked Lineup"
+metaTitle: "Willie Nelson Outlaw Music Festival 2026 Lineup"
 slug: "willie-nelson-outlaw-music-festival-2026"
 excerpt: "Willie Nelson announces a 12-date Outlaw Music Festival for summer 2026, featuring The Avett Brothers, Sheryl Crow, Wilco, and more across Texas, the Midwest, and Northeast."
 author: "TourWax Team"

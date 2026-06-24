@@ -1,5 +1,6 @@
 ---
 title: "Who Is Opening for Metallica 2026? Pantera, Gojira, Knocked Loose & Avatar"
+metaTitle: "Who Is Opening for Metallica in 2026?"
 slug: "who-is-opening-for-metallica-2026-tour"
 excerpt: "Metallica's 2026 M72 World Tour rotates Pantera, Gojira, Knocked Loose, and Avatar across European stadium dates. Suicidal Tendencies and Spiritbox join the Mohegan Sun shows. Full date-by-date opener lineup."
 author: "TourWax Team"

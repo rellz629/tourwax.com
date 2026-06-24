@@ -1,5 +1,6 @@
 ---
 title: "Usher and Chris Brown Announce 'The R&B Tour': Dates, Cities, and Tickets"
+metaTitle: "Usher & Chris Brown The R&B Tour 2026: Dates & Tickets"
 slug: "usher-chris-brown-rb-tour-2026"
 excerpt: "Usher and Chris Brown are hitting the road together for a 33-date stadium tour across North America. Here's the full schedule, every city, and when tickets go on sale."
 author: "TourWax Team"

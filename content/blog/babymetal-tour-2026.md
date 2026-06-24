@@ -1,5 +1,6 @@
 ---
 title: "BABYMETAL Announces 2026 North American Tour With Halestorm and Violent Vira"
+metaTitle: "BABYMETAL 2026 North American Tour: Dates & Support"
 slug: "babymetal-tour-2026"
 excerpt: "BABYMETAL is bringing their 2026 World Tour to North America with 20 dates across the U.S. and Canada. Halestorm and Violent Vira join as support. Here's the full list of dates, venues, and ticket info."
 author: "TourWax Team"
