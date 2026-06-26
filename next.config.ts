@@ -9,6 +9,24 @@ export default function config(phase: string): NextConfig {
   }
 
   return {
+    async redirects() {
+      return [
+        // Canonical host: force apex (tourwax.com) -> www with a permanent 308.
+        // The sitemap, robots.txt, and every canonical tag already point to
+        // www, so this removes the last apex/www ambiguity. `permanent: true`
+        // emits 308 (the platform default for this redirect is a 307, which
+        // signals a *temporary* move and muddies host canonicalization during
+        // the Google host-demotion recovery). The `host` condition never
+        // matches www or *.vercel.app, so there's no redirect loop and preview
+        // deploys are unaffected.
+        {
+          source: '/:path*',
+          has: [{ type: 'host', value: 'tourwax.com' }],
+          destination: 'https://www.tourwax.com/:path*',
+          permanent: true,
+        },
+      ];
+    },
     async headers() {
       return [
         {
