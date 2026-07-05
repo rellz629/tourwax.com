@@ -445,6 +445,15 @@ export function generateFestivalEventSchema(festival: {
   return schema;
 }
 
+/**
+ * Official TourWax profiles on other platforms. Google uses sameAs to
+ * consolidate the brand entity across the web. Add new profiles
+ * (Crunchbase, X, Instagram, etc.) here as they're created.
+ */
+const ORGANIZATION_SAME_AS = [
+  'https://www.linkedin.com/company/tourwax/',
+];
+
 export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',
@@ -453,9 +462,14 @@ export function generateOrganizationSchema() {
     url: SITE_URL,
     logo: {
       '@type': 'ImageObject',
-      url: `${SITE_URL}/logo.svg`,
+      // Square raster logo (512x512) per Google's Organization logo
+      // guidelines; the horizontal wordmark lives at /logo.svg.
+      url: `${SITE_URL}/logo-square.png`,
+      width: 512,
+      height: 512,
     },
     description: 'Discover upcoming concert tour dates, venues, and latest news for your favorite music artists.',
+    sameAs: ORGANIZATION_SAME_AS,
   };
 }
 
