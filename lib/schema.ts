@@ -452,6 +452,7 @@ export function generateFestivalEventSchema(festival: {
  */
 const ORGANIZATION_SAME_AS = [
   'https://www.linkedin.com/company/tourwax/',
+  'https://www.crunchbase.com/organization/tourwax',
 ];
 
 export function generateOrganizationSchema() {
