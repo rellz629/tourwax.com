@@ -104,6 +104,56 @@ export function getPostBySlug(slug: string): BlogPost | null {
   };
 }
 
+// Post meta plus the artist slugs each post links to, built once per process.
+// Blog files only change on deploy, so caching is safe; re-reading and parsing
+// every markdown file on each artist page render blocks the event loop enough
+// to time out unrelated pages during static generation.
+let artistMentionIndex: { meta: BlogPostMeta; artistSlugs: Set<string> }[] | null = null;
+
+function getArtistMentionIndex() {
+  if (artistMentionIndex) return artistMentionIndex;
+
+  artistMentionIndex = getMarkdownFiles().map((filename) => {
+    const raw = fs.readFileSync(path.join(BLOG_DIR, filename), 'utf-8');
+    const { data, content } = matter(raw);
+
+    const artistSlugs = new Set<string>();
+    for (const match of content.matchAll(/\/artists\/([\w-]+)/g)) {
+      artistSlugs.add(match[1]);
+    }
+
+    return {
+      meta: {
+        slug: data.slug as string,
+        title: data.title as string,
+        excerpt: data.excerpt as string,
+        author: data.author as string,
+        category: data.category as string,
+        featuredImage: (data.featuredImage as string) || null,
+        publishedAt: data.publishedAt as string,
+        updatedAt: data.updatedAt as string,
+        metaTitle: (data.metaTitle as string) || undefined,
+        metaDescription: (data.metaDescription as string) || undefined,
+      },
+      artistSlugs,
+    };
+  });
+
+  return artistMentionIndex;
+}
+
+// Published posts that link to a given artist page (e.g. opener guides that
+// mention the artist). The publish-date check stays at query time so
+// future-dated posts appear once ISR re-renders after their publish date.
+export function getPostsMentioningArtist(artistSlug: string): BlogPostMeta[] {
+  const now = new Date();
+
+  return getArtistMentionIndex()
+    .filter((e) => e.artistSlugs.has(artistSlug) && new Date(e.meta.publishedAt) <= now)
+    .map((e) => e.meta)
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+}
+
 export function getAllSlugs(): string[] {
   const now = new Date();
   const files = getMarkdownFiles();

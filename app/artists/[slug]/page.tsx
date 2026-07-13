@@ -19,6 +19,7 @@ import { getAffiliateUrl, getVividSeatsSearchUrl, getStubHubSearchUrl } from '@/
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import { getArtistSetlists } from '@/lib/setlistfm';
+import { getPostsMentioningArtist } from '@/lib/blog';
 import AddToCalendarButton from '@/components/AddToCalendarButton';
 import type { Metadata } from 'next';
 
@@ -521,6 +522,9 @@ export default async function ArtistPage({ params }: Props) {
 
   // Get Twitter handle for this artist
   const twitterHandle = ARTIST_TWITTER_HANDLES[artist.name];
+
+  // Blog guides that mention this artist (opener guides, tour roundups, etc.)
+  const relatedPosts = getPostsMentioningArtist(artist.slug).slice(0, 3);
 
   // Prepare FAQ data
   const nextEvent = artistEvents.length > 0
@@ -1194,6 +1198,42 @@ export default async function ArtistPage({ params }: Props) {
                     <p className="text-xs text-gray-500 mt-1">{related.eventCount} upcoming show{related.eventCount === 1 ? '' : 's'}</p>
                   ) : null}
                 </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Related Blog Guides */}
+      {relatedPosts.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold mb-2">
+            From the <span className="gradient-text">Blog</span>
+          </h2>
+          <p className="text-gray-500 mb-6">Guides and tour coverage featuring {artist.name}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {relatedPosts.map((post) => (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100 flex flex-col"
+              >
+                <span className="inline-flex self-start px-2 py-1 bg-orange-50 text-orange-600 rounded text-xs font-semibold mb-3">
+                  {post.category}
+                </span>
+                <h3 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors mb-2 line-clamp-2">
+                  {post.title}
+                </h3>
+                <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed mb-4">
+                  {post.excerpt}
+                </p>
+                <time dateTime={post.publishedAt} className="text-xs text-gray-500 mt-auto">
+                  {new Date(post.publishedAt + 'T12:00:00').toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </time>
               </Link>
             ))}
           </div>
