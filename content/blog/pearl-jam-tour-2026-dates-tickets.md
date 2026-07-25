@@ -2,13 +2,15 @@
 title: "Pearl Jam Tour 2026: Are They Still Touring? Dates, Tickets & What to Expect"
 metaTitle: "Pearl Jam Tour 2026: Dates, Tickets & Are They Touring?"
 slug: "pearl-jam-tour-2026-dates-tickets"
-excerpt: "Is Pearl Jam still touring in 2026? Here's everything we know about Pearl Jam tour dates, upcoming shows, ticket prices, and what to expect at a Pearl Jam concert."
+excerpt: "Is Pearl Jam still touring in 2026? No tour is announced, but they headline Ohana Festival on September 27. Here's what's real, what's rumor, and what to expect when they return."
 author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Pearl_Jam_2016.jpg/1280px-Pearl_Jam_2016.jpg"
 publishedAt: "2026-04-29"
-updatedAt: "2026-04-29"
+updatedAt: "2026-07-25"
 ---
+
+_Updated July 25, 2026._
 
 Pearl Jam has been one of the most reliably touring bands in rock for over three decades. But after the massive Dark Matter World Tour that ran through 2024 and into 2025, fans are naturally asking: is Pearl Jam still touring in 2026?
 
@@ -16,9 +18,13 @@ Here's what we know.
 
 ## Is Pearl Jam Touring in 2026?
 
-Pearl Jam's Dark Matter World Tour, which supported their eleventh studio album *Dark Matter* (released April 2024), was one of their most ambitious touring cycles. The tour ran from May 2024 through May 2025, covering North America, Europe, and Australia.
+**No full tour, but there is one confirmed show: Pearl Jam headlines Ohana Festival on September 27, 2026** at Doheny State Beach in Dana Point, California. Ohana is Eddie Vedder's own festival, and a Pearl Jam headline set there is the band's one confirmed 2026 performance so far.
 
-As of early 2026, Pearl Jam has not announced a formal new tour. However, the band has a long history of returning to the road — they've toured in virtually every year since the early 1990s, with only occasional breaks. A gap after a major world tour is normal. It would be surprising if they stayed off the road for more than a year or two.
+Pearl Jam's Dark Matter World Tour, which supported their eleventh studio album *Dark Matter* (released April 2024), was one of their most ambitious touring cycles. The tour ran from May 2024 and concluded in May 2025 in Pittsburgh, covering North America, Europe, and Australia.
+
+One warning while you search: several unofficial sites are currently claiming a 2026 Pearl Jam European stadium tour with specific cities and on-sale dates. Those claims do not come from the band or from any official ticketing outlet. If a date isn't on Ticketmaster or announced through the Ten Club, treat it as fake.
+
+Beyond Ohana, the band has a long history of returning to the road — they've toured in virtually every year since the early 1990s, with only occasional breaks. A gap after a major world tour is normal. It would be surprising if they stayed off the road for more than a year or two.
 
 [Check TourWax's Pearl Jam page](/artists/pearl-jam) for the most current information on any announced dates.
 

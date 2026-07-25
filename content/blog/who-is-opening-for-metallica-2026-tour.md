@@ -7,10 +7,12 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Metallica_March_2024.jpg/1280px-Metallica_March_2024.jpg"
 publishedAt: "2026-04-29"
-updatedAt: "2026-04-29"
+updatedAt: "2026-07-25"
 ---
 
-[Metallica](/artists/metallica) is back on the road in 2026 for another year of the M72 World Tour, and the support lineup is exactly the kind of stacked metal bill the band has built the M72 era around. The European stadium leg pairs Pantera with Avatar on one night and Gojira with Knocked Loose on the other, with Metallica playing a different setlist each evening. Suicidal Tendencies and Spiritbox split the two-night Mohegan Sun stand. The Las Vegas Sphere residency is a no-opener immersive run. Here's exactly who you'll see and on which night.
+_Updated July 25, 2026: the European stadium leg wrapped July 5 in London. What's left in 2026 is the Las Vegas Sphere residency (no openers) starting October 1 and the two Mohegan Sun shows in November with Suicidal Tendencies and Spiritbox._
+
+[Metallica](/artists/metallica) has been on the road all year for another chapter of the M72 World Tour, and the support lineup is exactly the kind of stacked metal bill the band has built the M72 era around. The European stadium leg paired Pantera with Avatar on one night and Gojira with Knocked Loose on the other, with Metallica playing a different setlist each evening. Suicidal Tendencies and Spiritbox split the two-night Mohegan Sun stand this November. The Las Vegas Sphere residency is a no-opener immersive run. Here's exactly who you'll see and on which night.
 
 ## The M72 Two-Night Format
 
@@ -50,7 +52,7 @@ Mike Muir's Suicidal Tendencies represents the L.A. crossover thrash/hardcore sc
 
 ## Sphere Las Vegas Residency: No Opener, Two Setlists
 
-Metallica's October-November 2026 Sphere Las Vegas residency is a different beast entirely. There's no opening act. Sphere shows are immersive headlining residencies, with the band taking the full evening to leverage the venue's wraparound 16K LED screen and spatial audio. The Sphere run alternates between two distinct setlists:
+Metallica's Sphere Las Vegas residency is a different beast entirely. It opens October 1, 2026, runs weekly pairs through November 8, and picks back up with a second block from late January through mid-March 2027. There's no opening act. Sphere shows are immersive headlining residencies, with the band taking the full evening to leverage the venue's wraparound 16K LED screen and spatial audio. The Sphere run alternates between two distinct setlists:
 
 - **"Metallica"** — the standard M72 set
 - **"Metallica: Life Burns Faster"** — a separate setlist that emphasizes different eras of the catalog, with bespoke Sphere visuals
@@ -59,7 +61,7 @@ Like the European leg, the residency rewards two-night attendance: the experienc
 
 ## Full 2026 Tour Dates and Lineups
 
-### European Stadium Leg
+### European Stadium Leg (completed July 5, 2026)
 
 | Date | City | Venue | Openers |
 |------|------|-------|---------|
