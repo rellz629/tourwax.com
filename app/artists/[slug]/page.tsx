@@ -721,6 +721,7 @@ export default async function ArtistPage({ params }: Props) {
                 <a
                   href={`/api/calendar?artistSlug=${artist.slug}`}
                   download
+                  rel="nofollow"
                   className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
                 >
                   <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
