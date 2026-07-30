@@ -8,6 +8,7 @@ import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getPostBySlug, getAllSlugs, getAllPosts } from '@/lib/blog';
 import FollowOnX from '@/components/FollowOnX';
+import AffiliateDisclosure from '@/components/AffiliateDisclosure';
 
 export const revalidate = 1800;
 
@@ -110,6 +111,7 @@ export default async function BlogPostPage({
           </header>
 
           <div className="px-6 sm:px-10 py-8">
+            {post.content.includes('rel="sponsored"') && <AffiliateDisclosure />}
             <div
               className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900"
               dangerouslySetInnerHTML={{ __html: post.content }}

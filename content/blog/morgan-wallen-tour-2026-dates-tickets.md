@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Morgan_Wallen_performing_at_Bank_of_America_Stadium.png/1280px-Morgan_Wallen_performing_at_Bank_of_America_Stadium.png"
 publishedAt: "2026-07-29"
-updatedAt: "2026-07-29"
+updatedAt: "2026-07-30"
 ---
 
 Morgan Wallen's Still the Problem Tour, the biggest country tour of 2026, comes to an end this weekend. The final two shows are Friday, July 31 and Saturday, August 1 at Lincoln Financial Field in Philadelphia. Here's everything you need to know about the last dates, tickets, and what happens after the tour wraps.
@@ -16,10 +16,10 @@ Morgan Wallen's Still the Problem Tour, the biggest country tour of 2026, comes 
 
 [Morgan Wallen](/artists/morgan-wallen) closes out the tour with two nights at [Lincoln Financial Field](/venues/lincoln-financial-field) in [Philadelphia](/concerts/philadelphia). Both shows start at 5:30 PM, and each night has a different support lineup:
 
-| Date | Openers |
-|------|---------|
-| Friday, July 31 | Brooks & Dunn, Hudson Westbrook, Blake Whiten |
-| Saturday, August 1 | Ella Langley, Hudson Westbrook, Blake Whiten |
+| Date | Openers | Tickets |
+|------|---------|---------|
+| Friday, July 31 | Brooks & Dunn, Hudson Westbrook, Blake Whiten | [Ticketmaster](https://www.ticketmaster.com/morgan-wallen-still-the-problem-tour-philadelphia-pennsylvania-07-31-2026/event/0200635DC72EC234) / [SeatGeek](https://seatgeek.com/morgan-wallen-tickets/philadelphia-pennsylvania-lincoln-financial-field-2026-07-31-5-30-pm/concert/17873142) |
+| Saturday, August 1 | Ella Langley, Hudson Westbrook, Blake Whiten | [Ticketmaster](https://www.ticketmaster.com/morgan-wallen-still-the-problem-tour-philadelphia-pennsylvania-08-01-2026/event/0200635DA084A7A9) / [SeatGeek](https://seatgeek.com/morgan-wallen-tickets/philadelphia-pennsylvania-lincoln-financial-field-2026-08-01-5-30-pm/concert/17873143) |
 
 Night 1 gets [Brooks & Dunn](/artists/brooks-dunn), the best-selling country duo of all time, in the main support slot. Night 2 belongs to [Ella Langley](/artists/ella-langley), Wallen's "You Look Like You Love Me" collaborator and one of the fastest-rising acts in country music. Hudson Westbrook and Blake Whiten open both nights.
 
@@ -29,11 +29,11 @@ If you want the full opener breakdown for every stop on the tour, see our comple
 
 Yes, though inventory is tight. The Friday show has been near sell-out status for months, and the Saturday show added upper-level sections due to demand. Your options:
 
-- **Primary**: Check Ticketmaster for released production holds and verified resale. Stadiums often release additional seats in the final days before a show once the stage configuration is final.
-- **Resale**: SeatGeek and other resale platforms have inventory for both nights. Prices for closing-night shows can swing sharply in the final 48 hours, so set alerts and be patient.
+- **Primary**: Check Ticketmaster for released production holds and verified resale on the [July 31](https://www.ticketmaster.com/morgan-wallen-still-the-problem-tour-philadelphia-pennsylvania-07-31-2026/event/0200635DC72EC234) and [August 1](https://www.ticketmaster.com/morgan-wallen-still-the-problem-tour-philadelphia-pennsylvania-08-01-2026/event/0200635DA084A7A9) event pages. Stadiums often release additional seats in the final days before a show once the stage configuration is final.
+- **Resale**: SeatGeek has resale inventory for both nights ([July 31](https://seatgeek.com/morgan-wallen-tickets/philadelphia-pennsylvania-lincoln-financial-field-2026-07-31-5-30-pm/concert/17873142), [August 1](https://seatgeek.com/morgan-wallen-tickets/philadelphia-pennsylvania-lincoln-financial-field-2026-08-01-5-30-pm/concert/17873143)). Prices for closing-night shows can swing sharply in the final 48 hours, so set alerts and be patient.
 - **Day-of**: If you're flexible, resale prices on tour closers sometimes dip after the show starts. Risky, but it happens.
 
-For direct ticket links, check the [Morgan Wallen page on TourWax](/artists/morgan-wallen), which pulls live listings from Ticketmaster and SeatGeek.
+For a combined view of live listings from both platforms, check the [Morgan Wallen page on TourWax](/artists/morgan-wallen).
 
 ## The Tour by the Numbers
 

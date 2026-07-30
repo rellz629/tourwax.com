@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Jamie_xx_performing_at_Red_Rocks%2C_2016.jpg/1280px-Jamie_xx_performing_at_Red_Rocks%2C_2016.jpg"
 publishedAt: "2026-07-29"
-updatedAt: "2026-07-29"
+updatedAt: "2026-07-30"
 ---
 
 Red Rocks Amphitheatre in Morrison, Colorado is deep into its 2026 season, and the back half of the calendar is stacked: LCD Soundsystem, Santana, Goose, Brandi Carlile, Andrea Bocelli, Zac Brown Band, and deadmau5 all play the rocks between now and mid-November. Here's the full remaining 2026 schedule, month by month, plus what to know before you go.
@@ -20,16 +20,16 @@ August is the heart of the season, with shows nearly every night:
 
 | Date | Show |
 |------|------|
-| Aug 1 | [Tedeschi Trucks Band](/artists/tedeschi-trucks-band) with Lukas Nelson (night 2 of 2) |
+| Aug 1 | [Tedeschi Trucks Band](/artists/tedeschi-trucks-band) with Lukas Nelson (night 2 of 2) · [Tickets](https://seatgeek.com/tedeschi-trucks-band-tickets/morrison-colorado-red-rocks-amphitheatre-2026-08-01-7-pm/concert/18028977) |
 | Aug 2 | Wynonna Judd & Melissa Etheridge with the Colorado Symphony |
 | Aug 4-5 | K-LOVE Live |
-| Aug 6 | [Of Monsters and Men](/artists/of-monsters-and-men) |
+| Aug 6 | [Of Monsters and Men](/artists/of-monsters-and-men) · [Tickets](https://seatgeek.com/of-monsters-and-men-tickets/morrison-colorado-red-rocks-amphitheatre-2026-08-06-8-pm/concert/18157446) |
 | Aug 7 | beabadoobee with Wisp and Been Stellar |
 | Aug 8 | [Slightly Stoopid](/artists/slightly-stoopid) with The Movement and Pepper |
 | Aug 9 | [Motionless In White](/artists/motionless-in-white) with Lorna Shore, Fit For A King, Static Dress |
 | Aug 11 | [Empire of the Sun](/artists/empire-of-the-sun) |
 | Aug 12 | [Sierra Ferrell](/artists/sierra-ferrell) |
-| Aug 13-14 | [Mt. Joy](/artists/mt-joy) |
+| Aug 13-14 | [Mt. Joy](/artists/mt-joy) · Tickets: [Aug 13](https://seatgeek.com/mt-joy-tickets/morrison-colorado-red-rocks-amphitheatre-2026-08-13-7-pm/concert/17919355), [Aug 14](https://seatgeek.com/mt-joy-tickets/morrison-colorado-red-rocks-amphitheatre-2026-08-14-7-pm/concert/17919356) |
 | Aug 15-16 | [LCD Soundsystem](/artists/lcd-soundsystem) |
 | Aug 17 | Train |
 | Aug 18 | [Nathaniel Rateliff](/artists/nathaniel-rateliff) with the Colorado Symphony |
@@ -53,13 +53,13 @@ September mixes multi-night residencies with some of the biggest single nights o
 | Date | Show |
 |------|------|
 | Sep 1 | An Evening With Goose (night 3) |
-| Sep 2-3 | [GRiZ](/artists/griz) |
+| Sep 2-3 | [GRiZ](/artists/griz) · Tickets: [Sep 2](https://seatgeek.com/griz-tickets/morrison-colorado-red-rocks-amphitheatre-2026-09-02-5-30-pm/concert/18319934), [Sep 3](https://seatgeek.com/griz-tickets/morrison-colorado-red-rocks-amphitheatre-2026-09-03-5-30-pm/concert/18319932) |
 | Sep 4-5 | Maná |
 | Sep 6-7 | Gregory Alan Isakov with the Colorado Symphony |
-| Sep 8 | [Five Finger Death Punch](/artists/five-finger-death-punch) with Cody Jinks |
+| Sep 8 | [Five Finger Death Punch](/artists/five-finger-death-punch) with Cody Jinks · [Tickets](https://seatgeek.com/five-finger-death-punch-tickets/morrison-colorado-red-rocks-amphitheatre-2026-09-08-6-45-pm/concert/18010557) |
 | Sep 9 | Cole Swindell with BlackHawk and Zach John King |
 | Sep 10 | [SOFI TUKKER](/artists/sofi-tukker) |
-| Sep 11-13 | [Brandi Carlile](/artists/brandi-carlile) (three nights) |
+| Sep 11-13 | [Brandi Carlile](/artists/brandi-carlile) (three nights) · Tickets: [Sep 11](https://seatgeek.com/brandi-carlile-tickets/morrison-colorado-red-rocks-amphitheatre-2026-09-11-7-30-pm/concert/18122876), [Sep 12](https://seatgeek.com/brandi-carlile-tickets/morrison-colorado-red-rocks-amphitheatre-2026-09-12-7-30-pm/concert/18122878), [Sep 13](https://seatgeek.com/brandi-carlile-tickets/morrison-colorado-red-rocks-amphitheatre-2026-09-13-6-30-pm/concert/18122879) |
 | Sep 14 | NEEDTOBREATHE |
 | Sep 15 | Acid Bath & Ministry |
 | Sep 16 | ROLE MODEL: Chuck On Tour |
@@ -88,12 +88,12 @@ October is the venue's late-season stretch, heavy on electronic, country, and Ha
 | Oct 3 | Deorro |
 | Oct 4 | for KING + COUNTRY |
 | Oct 6 | [Big Thief](/artists/big-thief) |
-| Oct 7 | [Ella Langley](/artists/ella-langley) with Kameron Marlowe |
+| Oct 7 | [Ella Langley](/artists/ella-langley) with Kameron Marlowe · [Tickets](https://seatgeek.com/ella-langley-tickets/morrison-colorado-red-rocks-amphitheatre-2026-10-07-7-pm/concert/18324400) |
 | Oct 8-9 | Tape B presents Hallow Rocks |
 | Oct 10 | [Sara Landry](/artists/sara-landry) with Pendulum |
 | Oct 11 | Cement Gardens with Pouya, Paleface Swiss, Freddie Dredd |
 | Oct 12 | [Rise Against](/artists/rise-against) with Alkaline Trio |
-| Oct 13 | [Shaboozey](/artists/shaboozey) with [Noah Cyrus](/artists/noah-cyrus) |
+| Oct 13 | [Shaboozey](/artists/shaboozey) with [Noah Cyrus](/artists/noah-cyrus) · [Tickets](https://seatgeek.com/shaboozey-tickets/morrison-colorado-red-rocks-amphitheatre-2026-10-13-7-pm/concert/18208363) |
 | Oct 14 | [Taking Back Sunday](/artists/taking-back-sunday) with Thrice and Saves The Day |
 | Oct 15 | Charles Wesley Godwin |
 | Oct 16 | [Sammy Virji](/artists/sammy-virji) |
@@ -105,10 +105,10 @@ October is the venue's late-season stretch, heavy on electronic, country, and Ha
 | Oct 23 | [Mersiv](/artists/mersiv) |
 | Oct 24 | Jade Cicada & Mickman |
 | Oct 25 | Stardew Valley: Symphony of Seasons |
-| Oct 26 | Evanescence with Spiritbox and Nova Twins |
+| Oct 26 | Evanescence with Spiritbox and Nova Twins · [Tickets](https://www.ticketmaster.com/event/Z7r9jZ1A7r9fs) |
 | Oct 27 | [Tucker Wetmore](/artists/tucker-wetmore) |
 | Oct 28 | Koe Wetzel with Wade Bowen and Kolby Cooper |
-| Oct 29 | [Cypress Hill](/artists/cypress-hill) & Method Man and Redman: Haunted Rocks with De La Soul, Digable Planets |
+| Oct 29 | [Cypress Hill](/artists/cypress-hill) & Method Man and Redman: Haunted Rocks with De La Soul, Digable Planets · [Tickets](https://seatgeek.com/cypress-hill-tickets/morrison-colorado-red-rocks-amphitheatre-2026-10-29-6-pm/concert/18011718) |
 | Oct 30-31 | deadmau5 |
 
 One change to note: **Rezz Rocks VIII, originally set for October 3, has been canceled.** Deorro now holds that date. If you bought Rezz tickets, refunds process through your point of purchase.
@@ -126,7 +126,7 @@ The season winds down in November, weather permitting:
 | Nov 6 | Dabin |
 | Nov 7 | ATLiens |
 | Nov 8 | Face Vocal Band |
-| Nov 12 | [Clipse](/artists/clipse) & [J.I.D](/artists/jid) with Samara Cyn |
+| Nov 12 | [Clipse](/artists/clipse) & [J.I.D](/artists/jid) with Samara Cyn · [Tickets](https://seatgeek.com/clipse-tickets/morrison-colorado-red-rocks-amphitheatre-2026-11-12-6-pm/concert/18285515) |
 | Nov 13 | Gryffin with Oliver Heldens |
 | Nov 14-15 | mike. |
 
@@ -136,7 +136,7 @@ More shows may still be announced. The venue adds dates throughout the season, s
 
 **Where it is.** Red Rocks Amphitheatre sits in Morrison, Colorado, about 15 miles west of [Denver](/concerts/denver). Most concertgoers stay in Denver or Golden and drive or shuttle in.
 
-**Tickets.** Primary tickets for Red Rocks shows sell through AXS rather than Ticketmaster for most events, with resale available on SeatGeek and other platforms. Artist pages on TourWax link to current listings for tracked shows.
+**Tickets.** Primary tickets for Red Rocks shows sell through AXS rather than Ticketmaster for most events, with resale available on SeatGeek and other platforms. The Tickets links in the tables above go straight to listings for that show, and artist pages on TourWax link to current listings for every tracked date.
 
 **The altitude is real.** The amphitheatre sits at roughly 6,450 feet, and your seats are up a serious set of stairs. Hydrate before and during the show, pace yourself on alcohol, and give yourself extra time to climb if you're coming from sea level.
 

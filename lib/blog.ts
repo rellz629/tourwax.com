@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { marked, Renderer } from 'marked';
+import { getAffiliateUrl } from './affiliate';
 
 export interface BlogPost {
   slug: string;
@@ -32,6 +33,23 @@ renderer.image = function ({ href, title, text }) {
   const alt = text || '';
   const titleAttr = title ? ` title="${title}"` : '';
   return `<img src="${href}" alt="${alt}"${titleAttr} loading="lazy" />`;
+};
+// Wrap outbound ticket links with affiliate tracking at render time. Posts
+// link plain ticketmaster.com / seatgeek.com URLs; tracking IDs stay in
+// lib/affiliate.ts. rel="sponsored" is required for paid/affiliate links.
+const origLink = Renderer.prototype.link;
+renderer.link = function (token) {
+  const href = token.href || '';
+  const source = href.includes('ticketmaster.com')
+    ? 'ticketmaster'
+    : href.includes('seatgeek.com')
+      ? 'seatgeek'
+      : null;
+  if (!source) return origLink.call(this, token);
+
+  const text = this.parser.parseInline(token.tokens);
+  const titleAttr = token.title ? ` title="${token.title}"` : '';
+  return `<a href="${getAffiliateUrl(href, source)}"${titleAttr} target="_blank" rel="sponsored noopener">${text}</a>`;
 };
 marked.use({ renderer });
 
