@@ -138,6 +138,7 @@ export default function RootLayout({
                   <li><Link href="/blog" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Blog</Link></li>
                   <li><Link href="/about" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">About TourWax</Link></li>
                   <li><Link href="/blog/feed.xml" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">RSS Feed</Link></li>
+                  <li><a href="https://x.com/TourWaxUpdates" target="_blank" rel="noopener" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Follow us on X</a></li>
                   <li><Link href="/affiliate-disclosure" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Affiliate Disclosure</Link></li>
                 </ul>
               </div>
@@ -150,6 +151,17 @@ export default function RootLayout({
                   </svg>
                 </div>
                 <span className="text-white font-bold text-sm">TourWax</span>
+                <a
+                  href="https://x.com/TourWaxUpdates"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="TourWax on X"
+                  className="ml-2 inline-flex items-center justify-center w-11 h-11 text-gray-300 hover:text-orange-400 transition-colors"
+                >
+                  <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z" />
+                  </svg>
+                </a>
               </div>
               <p className="text-gray-400 text-xs">
                 © {new Date().getFullYear()} TourWax. All rights reserved. Concert data from Ticketmaster and SeatGeek.

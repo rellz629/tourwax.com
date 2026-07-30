@@ -7,6 +7,7 @@ import { generateBreadcrumbSchema, generateBlogPostingSchema } from '@/lib/schem
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getPostBySlug, getAllSlugs, getAllPosts } from '@/lib/blog';
+import FollowOnX from '@/components/FollowOnX';
 
 export const revalidate = 1800;
 
@@ -115,6 +116,8 @@ export default async function BlogPostPage({
             />
           </div>
         </article>
+
+        <FollowOnX />
 
         <div className="mt-8 flex justify-between items-center">
           <Link
