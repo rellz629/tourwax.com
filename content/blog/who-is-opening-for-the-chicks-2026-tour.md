@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Dixie_Chicks_in_Austin%2C_Texas.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-08"
+updatedAt: "2026-07-30"
 ---
 
 The Chicks are back on the road in 2026 with a mix of headline shows, stadium dates with Tim McGraw, and festival appearances. If you're wondering who's opening for The Chicks this year, or who they're sharing a stage with, here's the full breakdown.
@@ -111,6 +111,8 @@ Whether you catch them headlining a casino, sharing a stadium with Tim McGraw an
 - **Boots and Hearts:** BootsandHearts.com
 
 Check the [The Chicks page on TourWax](/artists/the-chicks) for direct ticket links and updated tour information.
+
+**Get tickets:** Buy The Chicks tickets on [Ticketmaster](https://www.ticketmaster.com/the-chicks-tickets/artist/758656) or compare prices on [SeatGeek](https://seatgeek.com/the-chicks-tickets). Full dates and venue details are on the [The Chicks page on TourWax](/artists/the-chicks).
 
 ---
 

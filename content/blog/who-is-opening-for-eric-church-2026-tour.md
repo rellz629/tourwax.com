@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Eric_Church_2012_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-08"
+updatedAt: "2026-07-30"
 ---
 
 Eric Church has never been one to do things the conventional way. His 2026 **Free the Machine Tour**, extended in support of the album *Evangeline vs. the Machine*, is no exception. Rather than bringing a single opening act along for the entire run, [Church](/artists/eric-church) has assembled a rotating cast of openers, each one handpicked to set the tone for a different leg of the 24-date arena tour.
@@ -102,3 +102,7 @@ If this is your first [Eric Church](/artists/eric-church) show, a few things to 
 We will update this page as March and April opener assignments are officially confirmed. Check the [Eric Church artist page](/artists/eric-church) on TourWax for the latest ticket links and show details.
 
 Browse more [Country tours](/tours/country) or explore all [upcoming concerts](/concerts) on TourWax.
+
+---
+
+**Get tickets:** Buy Eric Church tickets on [Ticketmaster](https://www.ticketmaster.com/eric-church-tickets/artist/1020885) or compare prices on [SeatGeek](https://seatgeek.com/eric-church-tickets). Full dates and venue details are on the [Eric Church page on TourWax](/artists/eric-church).

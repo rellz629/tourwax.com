@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Post_Malone_July_2021_%28cropped%29.jpg/1280px-Post_Malone_July_2021_%28cropped%29.jpg"
 publishedAt: "2026-04-17"
-updatedAt: "2026-04-17"
+updatedAt: "2026-07-30"
 ---
 
 Post Malone's Big Ass Stadium Tour Part 2 is one of the biggest stadium runs of summer 2026: 18 stadium dates plus festival appearances, a country-rap crossover bill, and a lineup that brings together artists from wildly different backgrounds. Here's the full breakdown of who's opening and what to expect at each show.
@@ -75,6 +75,8 @@ The Nashville date on June 30 is worth flagging. Playing Nissan Stadium in his h
 ## How to Get Tickets
 
 Tickets are available through Ticketmaster and major resale platforms. Check the [Post Malone page on TourWax](/artists/post-malone) for direct ticket links and show updates as the summer dates approach.
+
+**Get tickets:** Buy Post Malone tickets on [Ticketmaster](https://www.ticketmaster.com/post-malone-tickets/artist/2119390). Full dates and venue details are on the [Post Malone page on TourWax](/artists/post-malone).
 
 ---
 

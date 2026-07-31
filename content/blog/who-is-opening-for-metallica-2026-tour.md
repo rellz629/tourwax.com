@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Metallica_March_2024.jpg/1280px-Metallica_March_2024.jpg"
 publishedAt: "2026-04-29"
-updatedAt: "2026-07-25"
+updatedAt: "2026-07-30"
 ---
 
 _Updated July 25, 2026: the European stadium leg wrapped July 5 in London. What's left in 2026 is the Las Vegas Sphere residency (no openers) starting October 1 and the two Mohegan Sun shows in November with Suicidal Tendencies and Spiritbox._
@@ -110,6 +110,8 @@ The Sphere residency is the splash. Metallica becomes the first metal band to ta
 For European fans, the two-night format remains the M72 calling card. If you're going to one show, pick your night based on the openers. If you're going to two, you're getting four bands and zero repeat songs from Metallica.
 
 Check the [Metallica page on TourWax](/artists/metallica) for direct ticket links and updated show details as more openers are confirmed for the TBA dates.
+
+**Get tickets:** Buy Metallica tickets on [Ticketmaster](https://www.ticketmaster.com/metallica-tickets/artist/735647) or compare prices on [SeatGeek](https://seatgeek.com/metallica-tickets). Full dates and venue details are on the [Metallica page on TourWax](/artists/metallica).
 
 ---
 

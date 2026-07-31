@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Ariana_Grande_promoting_Wicked_%282024%29.jpg/1280px-Ariana_Grande_promoting_Wicked_%282024%29.jpg"
 publishedAt: "2026-06-15"
-updatedAt: "2026-06-15"
+updatedAt: "2026-07-30"
 ---
 
 If you are searching for who opens for [Ariana Grande](/artists/ariana-grande) on the Eternal Sunshine Tour, here is the short answer: no one. For the first time in her touring career, Grande is running a headline tour with no opening act. There is no traditional support slot on any date of the 2026 run. Here is what that means for the night, why she made the call, and what to expect when you go.
@@ -38,3 +38,7 @@ Each market gets multiple nights, so if one date is sold out, check whether the 
 ## The Bottom Line
 
 There is no opening act on the Eternal Sunshine Tour, and that is intentional. It is Grande's first tour without support, built as a residency-style, production-first run she has described as a one-time event. Show up on time, because the night starts when she does.
+
+---
+
+**Get tickets:** Buy Ariana Grande tickets on [Ticketmaster](https://www.ticketmaster.com/ariana-grande-tickets/artist/1688071) or compare prices on [SeatGeek](https://seatgeek.com/ariana-grande-tickets). Full dates and venue details are on the [Ariana Grande page on TourWax](/artists/ariana-grande).

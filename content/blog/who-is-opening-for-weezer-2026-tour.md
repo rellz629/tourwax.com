@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Weezer_-_Tons_of_Rock_2025_compilation.jpg/1280px-Weezer_-_Tons_of_Rock_2025_compilation.jpg"
 publishedAt: "2026-07-25"
-updatedAt: "2026-07-25"
+updatedAt: "2026-07-30"
 ---
 
 [Weezer](/artists/weezer) is taking over arenas this fall with **The Gathering**, a North American tour running from September 9 in Sacramento through October 25 in Los Angeles. The support bill is the same every night, and it's a good one: **The Shins and Silversun Pickups open all dates.** Three bands, three distinct eras of alternative rock, one ticket.
@@ -50,6 +50,8 @@ Expect Weezer's set to lean on the classics: "Buddy Holly," "Say It Ain't So," "
 3. **Check resale the week of.** Alternative-rock package tours historically see prices drop close to show day in all but the biggest markets.
 
 Current availability and direct links are on the [Weezer artist page](/artists/weezer).
+
+**Get tickets:** Buy Weezer tickets on [Ticketmaster](https://www.ticketmaster.com/weezer-tickets/artist/766591) or compare prices on [SeatGeek](https://seatgeek.com/weezer-tickets). Full dates and venue details are on the [Weezer page on TourWax](/artists/weezer).
 
 ---
 

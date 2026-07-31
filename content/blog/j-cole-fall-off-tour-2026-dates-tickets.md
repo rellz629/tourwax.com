@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/6/69/HOTSPOTATL_-_21_Savage_%26_J.Cole_Light_Birthday_Bash_ATL_2023_On_FIRE_%28xu6HKf40MX0_-_2m38s%29_%28cropped%29.jpg"
 publishedAt: "2026-07-25"
-updatedAt: "2026-07-25"
+updatedAt: "2026-07-30"
 ---
 
 [J. Cole](/artists/j-cole) is on the road for what he's calling the last one. The Fall-Off Tour supports *The Fall-Off*, released February 6, 2026 and billed as his seventh and final studio album, and the routing matches the stakes: 73 shows across North America, Europe, Australia, New Zealand, and South Africa, running from July 10 through December 12. It's his first solo headlining arena tour in five years and his first global run since 2017.
@@ -80,3 +80,7 @@ Current prices and direct ticket links for every show are on the [J. Cole page o
 ---
 
 Browse all [Hip-Hop tours](/tours/hip-hop) or check [upcoming concerts near you](/concerts) on TourWax.
+
+---
+
+**Get tickets:** Buy J. Cole tickets on [Ticketmaster](https://www.ticketmaster.com/j-cole-tickets/artist/1474871) or compare prices on [SeatGeek](https://seatgeek.com/j-cole-tickets). Full dates and venue details are on the [J. Cole page on TourWax](/artists/j-cole).

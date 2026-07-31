@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Thomas_Rhett_%28cropped%29.jpg/1280px-Thomas_Rhett_%28cropped%29.jpg"
 publishedAt: "2026-06-21"
-updatedAt: "2026-06-21"
+updatedAt: "2026-07-30"
 ---
 
 [Thomas Rhett](/artists/thomas-rhett) heads out on the Soundtrack to Life Tour in 2026, a 24-date summer-into-fall run that starts July 9 in Nashville and wraps October 24 in Omaha. The support bill is built two ways: one anchor opener every single night, plus a rotating set of rising country names who join for different stretches. Here's who's on the bill and what to expect.
@@ -44,6 +44,8 @@ Thomas Rhett's live show leans on a long string of country radio hits and an upb
 ## How to Get Tickets
 
 Tickets went on sale March 13, 2026 through Ticketmaster, with availability varying by market. Check the [Thomas Rhett page on TourWax](/artists/thomas-rhett) for current dates and direct ticket links as resale and additional inventory appear.
+
+**Get tickets:** Buy Thomas Rhett tickets on [Ticketmaster](https://www.ticketmaster.com/thomas-rhett-tickets/artist/1592857) or compare prices on [SeatGeek](https://seatgeek.com/thomas-rhett-tickets). Full dates and venue details are on the [Thomas Rhett page on TourWax](/artists/thomas-rhett).
 
 ---
 

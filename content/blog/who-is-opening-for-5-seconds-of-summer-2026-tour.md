@@ -8,7 +8,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/5sos-NZ4A4323.jpg/1280px-5sos-NZ4A4323.jpg"
 publishedAt: "2026-06-17"
-updatedAt: "2026-06-17"
+updatedAt: "2026-07-30"
 ---
 
 [5 Seconds of Summer](/artists/5-seconds-of-summer) are out on their sixth headlining run, the EVERYONE'S A STAR! World Tour, supporting their 2026 album of the same name. Unlike a lot of festival-heavy summers, this is a true headline tour with a clear support act, so if you are wondering who you will catch before 5SOS take the stage, the answer is straightforward. Here is who is opening, what they bring, and where the tour goes next.
@@ -34,3 +34,7 @@ You can see the full, current routing on the [5 Seconds of Summer artist page](/
 ## Getting Tickets
 
 Since The Band Camino open the entire North American run, there is no need to chase a specific city for the opener: every US and Canadian date carries the same bill. The arena nights and the bigger amphitheater shows tend to move fastest, so check the date you want on the artist page and grab seats early. If you are seeing the tour in Europe or Asia-Pacific, confirm the local support act before you buy, since it changes by region.
+
+---
+
+**Get tickets:** Buy 5 Seconds of Summer tickets on [Ticketmaster](https://www.ticketmaster.com/5-seconds-of-summer-tickets/artist/1778118) or compare prices on [SeatGeek](https://seatgeek.com/5-seconds-of-summer-tickets). Full dates and venue details are on the [5 Seconds of Summer page on TourWax](/artists/5-seconds-of-summer).

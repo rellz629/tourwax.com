@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Tour Announcement"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logic_%2853617872408%29.jpg/1280px-Logic_%2853617872408%29.jpg"
 publishedAt: "2026-04-29"
-updatedAt: "2026-04-29"
+updatedAt: "2026-07-30"
 ---
 
 Logic and G-Eazy are taking the Endless Summer Tour back out for Part II. The co-headlining run picks up where their original 2018 outing left off, with 23 amphitheater dates across the U.S. and Canada. The tour kicks off Tuesday, September 15 in Kansas City, MO and closes out Wednesday, October 28 at Shoreline Amphitheatre in Mountain View, CA.
@@ -56,6 +56,8 @@ Presales have already kicked off, with general onsale rolling through April and 
 ## Cities on the Tour
 
 The 2026 tour hits 23 cities including [Kansas City, MO](/concerts/kansas-city), [Shakopee, MN](/concerts/shakopee), [Indianapolis, IN](/concerts/indianapolis), [Chicago, IL](/concerts/chicago), [Clarkston, MI](/concerts/clarkston), and 18 more.
+
+**Get tickets:** Buy Endless Summer Tour tickets on [Ticketmaster](https://www.ticketmaster.com/logic-tickets/artist/1604590) or compare prices on [SeatGeek](https://seatgeek.com/logic-1-tickets). Full dates and venue details are on the [Logic page on TourWax](/artists/logic).
 
 ---
 

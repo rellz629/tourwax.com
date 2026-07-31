@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Gracie_Abrams_performs_at_2025_FireAid_Concert.png/1280px-Gracie_Abrams_performs_at_2025_FireAid_Concert.png"
 publishedAt: "2026-06-11"
-updatedAt: "2026-06-11"
+updatedAt: "2026-07-30"
 ---
 
 [Gracie Abrams](/artists/gracie-abrams) announced the Look at My Life Tour on May 28, 2026, and tickets hit general sale on June 5. The 64-date arena run supports her third studio album, *Daughter from Hell*, due July 17, 2026, and stretches from Denver on December 2, 2026 to Barcelona on May 28, 2027. Rather than carrying one opener for six months, Abrams booked ten different support acts, each covering a defined stretch of the calendar. Here's who opens each leg and what to expect from them.
@@ -97,6 +97,8 @@ This is Abrams' first arena-scale headline tour, following The Secret of Us Tour
 ## How to Get Tickets
 
 General on-sale began June 5, 2026 through Ticketmaster, with VIP packages available through VIP Nation. Check the [Gracie Abrams page on TourWax](/artists/gracie-abrams) for current dates and direct ticket links as additional inventory and resale options appear.
+
+**Get tickets:** Buy Gracie Abrams tickets on [Ticketmaster](https://www.ticketmaster.com/gracie-abrams-tickets/artist/2763148) or compare prices on [SeatGeek](https://seatgeek.com/gracie-abrams-tickets). Full dates and venue details are on the [Gracie Abrams page on TourWax](/artists/gracie-abrams).
 
 ---
 

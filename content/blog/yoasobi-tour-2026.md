@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Tour Announcement"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Yoasobi_at_the_2024_Melon_Music_Awards_%282%29.png/1280px-Yoasobi_at_the_2024_Melon_Music_Awards_%282%29.png"
 publishedAt: "2026-04-29"
-updatedAt: "2026-04-29"
+updatedAt: "2026-07-30"
 ---
 
 YOASOBI has announced their first North American headlining tour, dubbed the "Never Ending Stories" Tour. The Japanese pop duo, made up of producer Ayase and vocalist ikura, will play 8 dates across the U.S. and Canada, kicking off with a Lollapalooza set Thursday, July 30 in Chicago, IL and wrapping up Monday, August 17 at the Hollywood Bowl in Los Angeles, CA.
@@ -41,6 +41,8 @@ The Lollapalooza appearance on July 30 is technically separate from the headlini
 ## Cities on the Tour
 
 The 2026 tour hits 7 cities including [Chicago, IL](/concerts/chicago), [Boston, MA](/concerts/boston), [Brooklyn, NY](/concerts/brooklyn), [Hamilton, ON](/concerts/hamilton), [Seattle, WA](/concerts/seattle), and 2 more.
+
+**Get tickets:** Buy YOASOBI tickets on [Ticketmaster](https://www.ticketmaster.com/yoasobi-tickets/artist/3141283) or compare prices on [SeatGeek](https://seatgeek.com/yoasobi-tickets). Full dates and venue details are on the [YOASOBI page on TourWax](/artists/yoasobi).
 
 ---
 

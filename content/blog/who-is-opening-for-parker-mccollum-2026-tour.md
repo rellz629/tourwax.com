@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Parker_McCollum_picture_1.jpg/1280px-Parker_McCollum_picture_1.jpg"
 publishedAt: "2026-06-17"
-updatedAt: "2026-06-17"
+updatedAt: "2026-07-30"
 ---
 
 [Parker McCollum](/artists/parker-mccollum) is deep into his biggest headlining year yet, rolling through arenas and amphitheaters across 2026. Like most country tours at this size, the support slot is not one act for the whole run. McCollum rotates a deep bench of openers, so the undercard changes depending on which city and night you catch. Here is who is opening, what each act brings, and where the tour heads next.
@@ -66,3 +66,7 @@ You can see the full, current routing on the [Parker McCollum artist page](/arti
 ## Getting Tickets
 
 Because the openers rotate, the best approach is to pick the act you most want to see, then find the date and city where they are on the bill. Nights with Gary Allan or Gabby Barrett tend to draw extra interest, and the Red Rocks date is one of the marquee stops of the run. For everything else, check the specific date on the artist page before buying, since the undercard is the part of the night most likely to shift from city to city.
+
+---
+
+**Get tickets:** Buy Parker McCollum tickets on [Ticketmaster](https://www.ticketmaster.com/parker-mccollum-tickets/artist/2316027) or compare prices on [SeatGeek](https://seatgeek.com/parker-mccollum-tickets). Full dates and venue details are on the [Parker McCollum page on TourWax](/artists/parker-mccollum).

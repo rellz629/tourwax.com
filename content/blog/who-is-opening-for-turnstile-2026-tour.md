@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Turnstile_Full_Force_2019_15.jpg/1280px-Turnstile_Full_Force_2019_15.jpg"
 publishedAt: "2026-07-10"
-updatedAt: "2026-07-10"
+updatedAt: "2026-07-30"
 ---
 
 If you're trying to figure out who's opening for Turnstile in 2026, here's the short answer: there isn't one opener. [Turnstile](/artists/turnstile) announced the Never Enough Tour Pt. 2 on June 23, a fall North American headline run behind their album NEVER ENOUGH, and instead of locking in a standard support act for the whole trek, the Baltimore band built a completely different bill for nearly every city. Depending on your date, you could catch [Clipse](/artists/clipse), [Thundercat](/artists/thundercat), [Vince Staples](/artists/vince-staples), [Pennywise](/artists/pennywise), or [Hatebreed](/artists/hatebreed) sharing the stage before Turnstile headlines.
@@ -63,6 +63,8 @@ Ticket links for every stop live on the [Turnstile page on TourWax](/artists/tur
 ## Bottom Line
 
 There's no single answer to who's opening for Turnstile in 2026 because the band didn't want there to be one. Instead you get seventeen different nights built around Turnstile, each with its own curated supporting cast pulled from hardcore, rap, punk, electronic, and indie scenes. Whether your local date lands you [Thundercat](/artists/thundercat), [Hatebreed](/artists/hatebreed), or [Vince Staples](/artists/vince-staples), the constant across every show is Turnstile themselves, so check your city's listing and go in knowing you're seeing something genuinely built for that one night.
+
+**Get tickets:** Buy Turnstile tickets on [Ticketmaster](https://www.ticketmaster.com/turnstile-tickets/artist/1984721). Full dates and venue details are on the [Turnstile page on TourWax](/artists/turnstile).
 
 ---
 

@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Tim_McGraw_October_24_2015.jpg"
 publishedAt: "2026-07-09"
-updatedAt: "2026-07-09"
+updatedAt: "2026-07-30"
 ---
 
 If you've got tickets to [Tim McGraw](/artists/tim-mcgraw)'s Pawn Shop Guitar Tour and want to know who's opening, the answer on most nights is **49 Winchester**, the Appalachian roots-country band from Castlewood, Virginia. On select dates the opener is **Timothy Wayne**, a rising country singer who also happens to be McGraw's nephew, and a few shows feature both.
@@ -91,6 +91,8 @@ Support acts can shift city to city over a summer-long run, so check your venue'
 *\* Stadium show with The Chicks and Lady A*
 
 For direct ticket links and up-to-date show details, check the [Tim McGraw](/artists/tim-mcgraw) page on TourWax.
+
+**Get tickets:** Buy Tim McGraw tickets on [Ticketmaster](https://www.ticketmaster.com/tim-mcgraw-tickets/artist/762799) or compare prices on [SeatGeek](https://seatgeek.com/tim-mcgraw-tickets). Full dates and venue details are on the [Tim McGraw page on TourWax](/artists/tim-mcgraw).
 
 ---
 

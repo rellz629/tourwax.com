@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Luke_Combs_interview.jpg/1280px-Luke_Combs_interview.jpg"
 publishedAt: "2026-05-06"
-updatedAt: "2026-05-06"
+updatedAt: "2026-07-30"
 ---
 
 [Luke Combs](/artists/luke-combs) is in the middle of his biggest run yet: the My Kinda Saturday Night World Tour, a stadium-only operation that runs from March through August 2026. The opener bill is one of the deepest in country music this year, a rotating cast headlined by Dierks Bentley in North America and a European leg stacked with Thomas Rhett, The Script, and The Teskey Brothers. Here's exactly who you'll see on every date.
@@ -102,6 +102,8 @@ Curious who's opening for other 2026 headliners? See our full guides:
 - [Who Is Opening for Eric Church](/blog/who-is-opening-for-eric-church-2026-tour)
 - [Who Is Opening for The Chicks](/blog/who-is-opening-for-the-chicks-2026-tour)
 - [Who Is Opening for Bruno Mars](/blog/who-is-opening-for-bruno-mars-2026-tour)
+
+**Get tickets:** Buy Luke Combs tickets on [Ticketmaster](https://www.ticketmaster.com/luke-combs-tickets/artist/2150342). Full dates and venue details are on the [Luke Combs page on TourWax](/artists/luke-combs).
 
 ---
 

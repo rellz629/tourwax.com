@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/b/ba/2022_Gershwin_Prize_for_Popular_Song_%2851930843770%29_%28cropped%29.jpg"
 publishedAt: "2026-07-25"
-updatedAt: "2026-07-25"
+updatedAt: "2026-07-30"
 ---
 
 [Luke Bryan](/artists/luke-bryan)'s **Word On The Street Tour 2026** doesn't have one opening act. It has a bench. Unlike tours that carry the same support bill coast to coast, Bryan rotates a pool of rising country artists in and out by market, usually three per night. That means the answer to "who is opening for Luke Bryan" genuinely depends on which show you're going to. Here's the full breakdown.
@@ -59,6 +59,8 @@ There's also a **Luke Bryan & Friends** night at Nashville's Bridgestone Arena i
 ## What to Expect
 
 Bryan's headline set is a two-hour party: "Country Girl (Shake It for Me)," "Play It Again," "That's My Kind of Night," and enough crowd work to remind you he's spent a decade hosting award shows. The rotating openers keep the undercard fresh, and with three support acts most nights, gates-to-encore runs long. Get there early: the opener pool is stacked with artists likely to be headlining their own tours in a few years, which has always been the Luke Bryan tour formula.
+
+**Get tickets:** Buy Luke Bryan tickets on [Ticketmaster](https://www.ticketmaster.com/luke-bryan-tickets/artist/1044173) or compare prices on [SeatGeek](https://seatgeek.com/luke-bryan-tickets). Full dates and venue details are on the [Luke Bryan page on TourWax](/artists/luke-bryan).
 
 ---
 

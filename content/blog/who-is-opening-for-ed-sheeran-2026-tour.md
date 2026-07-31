@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Ed_Sheeran-6886_%28cropped%29.jpg/1280px-Ed_Sheeran-6886_%28cropped%29.jpg"
 publishedAt: "2026-06-17"
-updatedAt: "2026-06-17"
+updatedAt: "2026-07-30"
 ---
 
 [Ed Sheeran](/artists/ed-sheeran) brings the Loop Tour to North American stadiums through the back half of 2026, touring his 2025 album Play across a run that stretches from June into November. Like a lot of stadium tours at this scale, the support slot is not one act for the whole thing. Sheeran rotates a deep bench of openers, so the undercard changes depending on which city and night you catch. Here is who is opening, what each act brings, and where the tour heads next.
@@ -60,3 +60,7 @@ You can see the full, current routing on the [Ed Sheeran artist page](/artists/e
 ## Getting Tickets
 
 Because the openers rotate, the best approach is to pick the support act you most want to see, then find the date and city where they are on the bill. The big-name nights with Macklemore and the multi-act stadium shows tend to move fastest. For everything else, check the specific date on the artist page before buying, since the undercard is the part of the night most likely to shift from city to city.
+
+---
+
+**Get tickets:** Buy Ed Sheeran tickets on [Ticketmaster](https://www.ticketmaster.com/ed-sheeran-tickets/artist/1560779) or compare prices on [SeatGeek](https://seatgeek.com/ed-sheeran-tickets). Full dates and venue details are on the [Ed Sheeran page on TourWax](/artists/ed-sheeran).

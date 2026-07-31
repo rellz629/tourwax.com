@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Tour Announcement"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Dixie_Chicks_by_ViVr_016.jpg"
 publishedAt: "2026-04-21"
-updatedAt: "2026-04-21"
+updatedAt: "2026-07-30"
 ---
 
 The Chicks has announced 9 tour dates as part of the 'Tim McGraw with 49 Winchester, The Chicks, Lady A and more' tour. The run kicks off Saturday, June 13 in Highland, CA and wraps up Sunday, August 23 in Minneapolis, MN.
@@ -47,6 +47,8 @@ Recent headlines about The Chicks:
 ## Cities on the Tour
 
 The 2026 tour hits 9 cities including [Highland, CA](/concerts/highland), [Lincoln, CA](/concerts/lincoln), [Missoula, MT](/concerts/missoula), [Hershey, PA](/concerts/hershey), [Boston, MA](/concerts/boston), and 4 more.
+
+**Get tickets:** Buy The Chicks tickets on [Ticketmaster](https://www.ticketmaster.com/the-chicks-tickets/artist/758656) or compare prices on [SeatGeek](https://seatgeek.com/the-chicks-tickets). Full dates and venue details are on the [The Chicks page on TourWax](/artists/the-chicks).
 
 ---
 

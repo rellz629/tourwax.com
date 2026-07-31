@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Tour Announcement"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Babymetal_performing_at_AFAS_Live_in_Amsterdam_13_May_2025.jpg/1280px-Babymetal_performing_at_AFAS_Live_in_Amsterdam_13_May_2025.jpg"
 publishedAt: "2026-04-06"
-updatedAt: "2026-04-06"
+updatedAt: "2026-07-30"
 ---
 
 BABYMETAL has announced a massive 20-date North American leg of their 2026 World Tour, with Halestorm and Violent Vira joining as support. The run opens August 30 at Petco Park in San Diego, where they'll support My Chemical Romance, before the headline portion kicks off September 2 at Ball Arena in Denver. The tour wraps up with an appearance at Aftershock Festival in Sacramento on October 3.
@@ -66,6 +66,8 @@ With the *METAL FORTH* deluxe edition dropping alongside this tour cycle, expect
 ## Cities on the Tour
 
 The 2026 tour hits 18 cities including [Denver](/concerts/denver), [Chicago](/concerts/chicago), [Dallas](/concerts/dallas), [Austin](/concerts/austin), [Phoenix](/concerts/phoenix), and more, covering a wide sweep from the Northeast through the South and into the Southwest.
+
+**Get tickets:** Buy BABYMETAL tickets on [Ticketmaster](https://www.ticketmaster.com/babymetal-tickets/artist/1993807) or compare prices on [SeatGeek](https://seatgeek.com/babymetal-tickets). Full dates and venue details are on the [BABYMETAL page on TourWax](/artists/babymetal).
 
 ---
 

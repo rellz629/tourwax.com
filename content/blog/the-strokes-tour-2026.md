@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Tour Announcement"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/0/04/The-Strokes-on-the-rooftop-of-The-Chelsea-Hotel-in-NYC-2003.-Photograph-by-Jake-Chessum-.jpg"
 publishedAt: "2026-04-21"
-updatedAt: "2026-04-21"
+updatedAt: "2026-07-30"
 ---
 
 The Strokes are back on the road in 2026 with the Reality Awaits tour, a sweeping run across North America and Europe that includes amphitheaters, arenas, two nights at Red Rocks, and stops at major festivals including Bonnaroo and Outside Lands. The band also closed Coachella Weekend 2 with a set that made headlines for its pointed political commentary.
@@ -106,3 +106,7 @@ If you're a Strokes fan, these artists are also on the road in 2026:
 - [Vampire Weekend](/artists/vampire-weekend)
 
 Browse all [rock tours](/tours/rock) or check [concerts in Chicago](/concerts/chicago), [concerts in Boston](/concerts/boston), and [concerts in Los Angeles](/concerts/los-angeles) for full local schedules.
+
+---
+
+**Get tickets:** Buy The Strokes tickets on [Ticketmaster](https://www.ticketmaster.com/the-strokes-tickets/artist/807068) or compare prices on [SeatGeek](https://seatgeek.com/the-strokes-tickets). Full dates and venue details are on the [The Strokes page on TourWax](/artists/the-strokes).

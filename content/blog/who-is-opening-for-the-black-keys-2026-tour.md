@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Black-keys-sxsw-montage.jpg/1280px-Black-keys-sxsw-montage.jpg"
 publishedAt: "2026-06-17"
-updatedAt: "2026-06-17"
+updatedAt: "2026-07-30"
 ---
 
 [The Black Keys](/artists/the-black-keys) are back on the road with the Peaches 'N Kream World Tour, supporting their 2026 album Peaches!. There is a nice thread running through the support slot this time: rather than booking unrelated openers, Dan Auerbach and Patrick Carney are pulling from the roster of Auerbach's own Easy Eye Sound label, so the undercard doubles as a showcase for the gritty, roots-forward sound the band has championed. Here is who is opening, what they bring, and where the tour heads next.
@@ -45,3 +45,7 @@ You can see the full, current routing on the [Black Keys artist page](/artists/t
 ## Getting Tickets
 
 Since the openers rotate by leg, the best approach is to pick the support act you want to catch, then find the date and city where they are on the bill. Eddie 9V covers most of the summer US shows, while the October dates carry Jeremie Albino. Check the specific date on the artist page before buying, since the opener changes from one regional leg to the next.
+
+---
+
+**Get tickets:** Buy The Black Keys tickets on [Ticketmaster](https://www.ticketmaster.com/the-black-keys-tickets/artist/847164) or compare prices on [SeatGeek](https://seatgeek.com/the-black-keys-tickets). Full dates and venue details are on the [The Black Keys page on TourWax](/artists/the-black-keys).

@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/HarryStylesWembley170623_%2865_of_93%29_%2852982678051%29_%28cropped_2%29.jpg/1280px-HarryStylesWembley170623_%2865_of_93%29_%2852982678051%29_%28cropped_2%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-25"
+updatedAt: "2026-07-30"
 ---
 
 _Updated April 25, 2026 with the latest confirmed openers and dates._
@@ -95,6 +95,8 @@ Styles is playing 30 consecutive nights at Madison Square Garden. It's one of th
 - [Who Is Opening for Post Malone](/blog/who-is-opening-for-post-malone-2026-tour)
 - [Who Is Opening for Foo Fighters](/blog/who-is-opening-for-foo-fighters-2026-tour)
 - [Who Is Opening for Childish Gambino](/blog/who-is-opening-for-childish-gambino-2026-tour)
+
+**Get tickets:** Buy Harry Styles tickets on [Ticketmaster](https://www.ticketmaster.com/harry-styles-tickets/artist/2366444) or compare prices on [SeatGeek](https://seatgeek.com/harry-styles-tickets). Full dates and venue details are on the [Harry Styles page on TourWax](/artists/harry-styles).
 
 ---
 

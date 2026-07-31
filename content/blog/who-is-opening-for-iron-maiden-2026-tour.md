@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/e/ed/IronMaidencollage2.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-08"
+updatedAt: "2026-07-30"
 ---
 
 Iron Maiden's Run for Your Lives World Tour is one of the most ambitious metal tours in years, a global trek that launched in May 2025 in Budapest and won't wrap until November 2026 in Yokohama, Japan. For the 2026 North American leg running August through September, the support lineup reads like a metal fan's dream: **Megadeth** on most dates and **Anthrax** joining for select outdoor and stadium shows.
@@ -81,6 +81,8 @@ The North American dates are just one chapter of a massive global campaign. The 
 Tickets for most dates are available through Ticketmaster and venue box offices. Given the caliber of this lineup, several dates are expected to sell out. The two-night stands suggest that first shows in those markets moved quickly enough to justify adding a second.
 
 Visit the [Iron Maiden page on TourWax](/artists/iron-maiden) for direct ticket links and the latest tour updates.
+
+**Get tickets:** Buy Iron Maiden tickets on [Ticketmaster](https://www.ticketmaster.com/iron-maiden-tickets/artist/735341) or compare prices on [SeatGeek](https://seatgeek.com/iron-maiden-tickets). Full dates and venue details are on the [Iron Maiden page on TourWax](/artists/iron-maiden).
 
 ---
 

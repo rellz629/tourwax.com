@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/9/9c/Lynyrd_Skynyrd_%281977%29.jpg"
 publishedAt: "2026-07-25"
-updatedAt: "2026-07-25"
+updatedAt: "2026-07-30"
 ---
 
 Two of classic rock's most durable road bands are sharing a stage all summer. [Lynyrd Skynyrd](/artists/lynyrd-skynyrd) and [Foreigner](/artists/foreigner) are co-headlining the **Double Trouble Double Vision Tour**, a 19-city amphitheater run that started in Atlanta on July 23 and wraps in Rogers, Arkansas on August 29. Both bands play full co-headline sets every night, which makes the support question simple to answer.
@@ -52,6 +52,8 @@ If you can't catch the double bill, those fall dates are the last confirmed chan
 ## What the Co-Headline Show Looks Like
 
 Both bands play full sets, and both catalogs are wall-to-wall radio staples: "Sweet Home Alabama," "Free Bird," "Simple Man" on the Skynyrd side; "Cold as Ice," "Feels Like the First Time," "I Want to Know What Love Is" on Foreigner's. Between the two headliners and the opener, plan on a long evening, and note that most of these venues are lawn-and-pavilion amphitheaters: lawn tickets are the budget play, and this is exactly the kind of bill where the lawn is half the fun.
+
+**Get tickets:** Buy Lynyrd Skynyrd & Foreigner tickets on [Ticketmaster](https://www.ticketmaster.com/lynyrd-skynyrd-tickets/artist/735560) or compare prices on [SeatGeek](https://seatgeek.com/lynyrd-skynyrd-tickets). Full dates and venue details are on the [Lynyrd Skynyrd page on TourWax](/artists/lynyrd-skynyrd).
 
 ---
 

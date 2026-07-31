@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/0/07/Zach_Bryan_performing_at_Crypto.com_Arena_on_23_Aug_2023_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-17"
+updatedAt: "2026-07-30"
 ---
 
 [Zach Bryan](/artists/zach-bryan) is taking the With Heaven on Tour across North America in 2026, and the support lineup is one of the most impressive bills any artist has assembled this year. Kings of Leon, Alabama Shakes, Caamp, MJ Lenderman, Trampled by Turtles, Gregory Alan Isakov, and Dijon are all rotating through stadium dates in support of Bryan's sixth album *With Heaven on Top*. Here's who's playing at every show.
@@ -97,6 +97,8 @@ The With Heaven Tour is the clearest evidence yet that Zach Bryan has crossed fr
 The support bill is also worth watching on its own merits. Kings of Leon haven't played the support role in well over a decade. Alabama Shakes' return to live music is one of the most anticipated reunions of 2026. MJ Lenderman is in the middle of a breakout year. Any one of these acts would be a strong draw as an opener, and having all of them rotating through the same tour is rare.
 
 Check the [Zach Bryan page on TourWax](/artists/zach-bryan) for direct ticket links and updated show details as more openers are announced for the TBA dates.
+
+**Get tickets:** Buy Zach Bryan tickets on [Ticketmaster](https://www.ticketmaster.com/zach-bryan-tickets/artist/2811359) or compare prices on [SeatGeek](https://seatgeek.com/zach-bryan-tickets). Full dates and venue details are on the [Zach Bryan page on TourWax](/artists/zach-bryan).
 
 ---
 

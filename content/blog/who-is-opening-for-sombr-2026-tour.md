@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Sombr%2C_Islington_Academy%2C_London_%28cropped%29.jpg/1280px-Sombr%2C_Islington_Academy%2C_London_%28cropped%29.jpg"
 publishedAt: "2026-06-09"
-updatedAt: "2026-06-09"
+updatedAt: "2026-07-30"
 ---
 
 [sombr](/artists/sombr) is taking the You Are the Reason Tour across North America from July through November 2026, his first arena headline run after a breakout year. The support bill is one of the most varied of any tour this fall: legacy post-punk, baroque pop, a TikTok balladeer, and a Disney-pop star all take turns warming up the room. Here's who's opening each leg and what to expect when the doors open.
@@ -97,6 +97,8 @@ The two-night Madison Square Garden finale on November 23 and 24 is the centerpi
 ## How to Get Tickets
 
 Tickets for the You Are the Reason Tour went on sale in April 2026 through Ticketmaster, with resale inventory available on the secondary market for sold-out dates. Check the [sombr page on TourWax](/artists/sombr) for direct ticket links and venue details for every date on the tour.
+
+**Get tickets:** Buy sombr tickets on [Ticketmaster](https://www.ticketmaster.com/sombr-tickets/artist/3144534) or compare prices on [SeatGeek](https://seatgeek.com/sombr-tickets). Full dates and venue details are on the [sombr page on TourWax](/artists/sombr).
 
 ---
 

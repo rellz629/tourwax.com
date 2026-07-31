@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Chris_Stapleton_Concert_%2848519730107%29_%28cropped%29.jpg/1280px-Chris_Stapleton_Concert_%2848519730107%29_%28cropped%29.jpg"
 publishedAt: "2026-06-15"
-updatedAt: "2026-06-15"
+updatedAt: "2026-07-30"
 ---
 
 [Chris Stapleton](/artists/chris-stapleton) keeps the All-American Road Show rolling through 2026, with a leg that stretches from January into October across arenas, amphitheaters, and a run of stadium dates. Unlike a tour built around a single support act, the Road Show rotates a deep bench of openers, so the undercard changes depending on which night you catch. Here is who is opening, what each act brings, and where Stapleton is headed next.
@@ -72,3 +72,7 @@ You can see the full, current routing on the [Chris Stapleton artist page](/arti
 ## Getting Tickets
 
 Because the openers rotate, the best move is to pick the act you most want to see, then find the date and city where they are on the bill. Stadium nights with Lainey Wilson and Fenway with Zach Top are likely to move fastest. For everything else, check the specific date on the artist page before buying, since the support act is the part of the night most likely to change from city to city.
+
+---
+
+**Get tickets:** Buy Chris Stapleton tickets on [Ticketmaster](https://www.ticketmaster.com/chris-stapleton-tickets/artist/1828177) or compare prices on [SeatGeek](https://seatgeek.com/chris-stapleton-tickets). Full dates and venue details are on the [Chris Stapleton page on TourWax](/artists/chris-stapleton).

@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Glasto2023.jpg/1280px-Glasto2023.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-08"
+updatedAt: "2026-07-30"
 ---
 
 The [Foo Fighters](/artists/foo-fighters) are heading out on a 12-date North American stadium run this summer and fall as part of the Take Cover Tour 2026. The support bill reads like a who's who of modern rock: Queens of the Stone Age on nearly every date, plus Mannequin Pussy and Gouge Away rotating in as additional openers. Here's everything you need to know about who's playing when.
@@ -61,6 +61,8 @@ The Take Cover Tour marks the first Foo Fighters tour with drummer Ilan Rubin be
 The Take Cover Tour's North American stadium dates are part of a larger global run that included European, Australian, and Mexican legs earlier in 2026. General on-sale for North American dates was October 31, 2025, but tickets are still available across most dates through secondary markets and official channels.
 
 Check the [Foo Fighters page on TourWax](/artists/foo-fighters) for direct ticket links and updated show information.
+
+**Get tickets:** Buy Foo Fighters tickets on [Ticketmaster](https://www.ticketmaster.com/foo-fighters-tickets/artist/776005) or compare prices on [SeatGeek](https://seatgeek.com/foo-fighters-tickets). Full dates and venue details are on the [Foo Fighters page on TourWax](/artists/foo-fighters).
 
 ---
 

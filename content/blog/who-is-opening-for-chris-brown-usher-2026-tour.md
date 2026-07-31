@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Chris_Brown_in_Tampa%2C_2015.jpg"
 publishedAt: "2026-06-28"
-updatedAt: "2026-06-28"
+updatedAt: "2026-07-30"
 ---
 
 If you're heading to a show on Usher and Chris Brown's R&B Tour and wondering who's opening, the answer for the kickoff was two more R&B names: **Mario** and **Eric Bellinger**. They joined [Usher](/artists/usher) and [Chris Brown](/artists/chris-brown) for the tour's first night at Empower Field at Mile High in [Denver](/concerts/denver) on June 26.
@@ -92,6 +92,8 @@ Setlists evolve over a long stadium run, so expect the song order and guest mome
 | Dec 11 | [Tampa](/concerts/tampa), FL | Raymond James Stadium |
 
 For the full announcement, on-sale history, and ticket details, see our [R&B Tour breakdown](/blog/usher-chris-brown-rb-tour-2026). For direct ticket links, check the [Usher](/artists/usher) and [Chris Brown](/artists/chris-brown) pages on TourWax.
+
+**Get tickets:** Buy R&B Tour tickets on [Ticketmaster](https://www.ticketmaster.com/usher-tickets/artist/766722) or compare prices on [SeatGeek](https://seatgeek.com/usher-tickets). Full dates and venue details are on the [Usher page on TourWax](/artists/usher).
 
 ---
 

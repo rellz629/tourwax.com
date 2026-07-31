@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Noah_Kahan_at_Glastonbury_Festival_2025_04_%28cropped%29.jpg/1280px-Noah_Kahan_at_Glastonbury_Festival_2025_04_%28cropped%29.jpg"
 publishedAt: "2026-04-20"
-updatedAt: "2026-04-20"
+updatedAt: "2026-07-30"
 ---
 
 Noah Kahan is bringing The Great Divide Tour to some of the most storied venues in North America this summer: five nights at Fenway Park, two at Wrigley Field, the Rose Bowl, Citi Field, and a closer at T-Mobile Park in Seattle. It's a landmark run for a folk singer from Strafford, Vermont. Here's who's opening and the full schedule.
@@ -73,6 +73,8 @@ After the North American run closes in Seattle on August 30, the tour moves to E
 ## How to Get Tickets
 
 Tickets for all North American dates are available now through Ticketmaster and major resale platforms. Visit the [Noah Kahan page on TourWax](/artists/noah-kahan) for direct links and show updates.
+
+**Get tickets:** Buy Noah Kahan tickets on [Ticketmaster](https://www.ticketmaster.com/noah-kahan-tickets/artist/2385568) or compare prices on [SeatGeek](https://seatgeek.com/noah-kahan-tickets). Full dates and venue details are on the [Noah Kahan page on TourWax](/artists/noah-kahan).
 
 ---
 

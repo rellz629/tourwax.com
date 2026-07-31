@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Doja_Cat_x_Amazon1.1_%28cropped%29.jpg/1280px-Doja_Cat_x_Amazon1.1_%28cropped%29.jpg"
 publishedAt: "2026-05-10"
-updatedAt: "2026-05-10"
+updatedAt: "2026-07-30"
 ---
 
 [Doja Cat](/artists/doja-cat) is in the middle of one of the year's biggest arena runs: the Tour Ma Vie World Tour, in support of her 2025 album *Vie*. The tour kicked off late last year in Oceania and now hits Europe in May and June before a 38-show North American leg in the fall. Two openers have been confirmed so far. Here's everyone you'll see, leg by leg, and what's still TBA.
@@ -110,6 +110,8 @@ Curious who's opening for other 2026 headliners? See our full guides:
 - [Who Is Opening for Harry Styles](/blog/who-is-opening-for-harry-styles-2026-tour)
 - [Who Is Opening for Tyler, the Creator](/blog/who-is-opening-for-tyler-the-creator-2026-tour)
 - [Who Is Opening for Post Malone](/blog/who-is-opening-for-post-malone-2026-tour)
+
+**Get tickets:** Buy Doja Cat tickets on [Ticketmaster](https://www.ticketmaster.com/doja-cat-tickets/artist/2062205) or compare prices on [SeatGeek](https://seatgeek.com/doja-cat-tickets). Full dates and venue details are on the [Doja Cat page on TourWax](/artists/doja-cat).
 
 ---
 

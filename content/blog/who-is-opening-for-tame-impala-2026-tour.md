@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Tame_Impala_at_Flow_Festival_Helsinki_Aug_10_2019_-24.jpg/1280px-Tame_Impala_at_Flow_Festival_Helsinki_Aug_10_2019_-24.jpg"
 publishedAt: "2026-06-21"
-updatedAt: "2026-06-21"
+updatedAt: "2026-07-30"
 ---
 
 [Tame Impala](/artists/tame-impala) bring the Deadbeat Tour to North America in 2026, supporting Kevin Parker's latest record. The run opens July 7 in Miami and closes September 19 in Houston, and the support slot is split cleanly into two legs with two very different openers. Here's who plays which stretch and what to expect.
@@ -39,6 +39,8 @@ Tame Impala's live show is built around immersive visuals, lasers, and the kind 
 ## How to Get Tickets
 
 Tickets went on general sale February 20, 2026 through the venues' standard outlets, with availability varying by market and several arena dates selling quickly. Check the [Tame Impala page on TourWax](/artists/tame-impala) for current dates and direct ticket links as resale and additional inventory appear.
+
+**Get tickets:** Buy Tame Impala tickets on [Ticketmaster](https://www.ticketmaster.com/tame-impala-tickets/artist/1446562) or compare prices on [SeatGeek](https://seatgeek.com/tame-impala-tickets). Full dates and venue details are on the [Tame Impala page on TourWax](/artists/tame-impala).
 
 ---
 

@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Tour Announcement"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Wu-Tang_Clan_at_Exit_festival_2023.jpg/1280px-Wu-Tang_Clan_at_Exit_festival_2023.jpg"
 publishedAt: "2026-03-30"
-updatedAt: "2026-03-30"
+updatedAt: "2026-07-30"
 ---
 
 Wu-Tang Clan has announced a massive 26-city North American run as part of their "Wu-Tang Forever: The Final Chamber" farewell tour. The leg kicks off August 27 in Darien Center, New York and wraps up October 4 in Phoenix, Arizona, with Bone Thugs-N-Harmony joining as special guests.
@@ -68,3 +68,7 @@ Check out the [Wu-Tang Clan page](/artists/wu-tang-clan) on TourWax for ticket l
 ## Watch
 
 https://www.youtube.com/watch?v=PBwAxmrE194
+
+---
+
+**Get tickets:** Buy Wu-Tang Clan tickets on [Ticketmaster](https://www.ticketmaster.com/wutang-clan-tickets/artist/896829) or compare prices on [SeatGeek](https://seatgeek.com/wu-tang-clan-tickets). Full dates and venue details are on the [Wu-Tang Clan page on TourWax](/artists/wu-tang-clan).

@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Tour Announcement"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Usher_Cannes_2016_retusche.jpg"
 publishedAt: "2026-04-17"
-updatedAt: "2026-04-17"
+updatedAt: "2026-07-30"
 ---
 
 Two of R&B's biggest names are sharing a stage this summer. Usher and Chris Brown have announced The R&B Tour, a 33-date co-headlining stadium run across North America produced by Live Nation. The tour kicks off June 26 in Denver and wraps up December 11 in Tampa, making stops in virtually every major market along the way.
@@ -91,3 +91,7 @@ Check the [Usher page](/artists/usher) and [Chris Brown page](/artists/chris-bro
 ## Watch
 
 https://www.youtube.com/watch?v=GxBSyx85Kp8
+
+---
+
+**Get tickets:** Buy R&B Tour tickets on [Ticketmaster](https://www.ticketmaster.com/usher-tickets/artist/766722) or compare prices on [SeatGeek](https://seatgeek.com/usher-tickets). Full dates and venue details are on the [Usher page on TourWax](/artists/usher).

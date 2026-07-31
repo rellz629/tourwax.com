@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/GNR_Belgrade_2025_05_%28cropped%29.jpg/1280px-GNR_Belgrade_2025_05_%28cropped%29.jpg"
 publishedAt: "2026-06-21"
-updatedAt: "2026-06-21"
+updatedAt: "2026-07-30"
 ---
 
 [Guns N' Roses](/artists/guns-n-roses) are back on the road in 2026, and the North American leg carries one of the most eclectic support bills the band has ever assembled. Rather than a single opener for the whole run, GNR booked a rotating cast that swings from hip-hop to Southern rock to metalcore. The North American dates run from Raleigh on July 23 to Atlanta on September 19, after a spring start in Florida and a summer swing through Latin America and Europe. Here's who opens each stretch and what to expect.
@@ -62,6 +62,8 @@ GNR have leaned into a deep, career-spanning setlist on recent runs, mixing *App
 ## How to Get Tickets
 
 Tickets for the 2026 North American dates are on sale now through Ticketmaster, with availability varying by market. Check the [Guns N' Roses page on TourWax](/artists/guns-n-roses) for current dates and direct ticket links as resale and additional inventory appear.
+
+**Get tickets:** Buy Guns N' Roses tickets on [Ticketmaster](https://www.ticketmaster.com/guns-n-roses-tickets/artist/735218) or compare prices on [SeatGeek](https://seatgeek.com/guns-n-roses-tickets). Full dates and venue details are on the [Guns N' Roses page on TourWax](/artists/guns-n-roses).
 
 ---
 

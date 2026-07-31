@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/MCR820_%28cropped%29.jpg/1280px-MCR820_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-08"
+updatedAt: "2026-07-30"
 ---
 
 My Chemical Romance is taking the Long Live the Black Parade tour into its second year in 2026, celebrating the 20th anniversary of *The Black Parade* by performing the album in full at stadiums and festivals across North America. But the real talking point isn't just the setlist. It's the openers. Every single show has a different opening act, and the range of artists MCR has curated is genuinely impressive.
@@ -97,6 +97,8 @@ Twenty years later, the songs haven't lost their punch. MCR's 2022 reunion tour 
 Stadium shows are available through Ticketmaster and Live Nation. Festival dates (Welcome to Rockville, Sonic Temple, Louder Than Life, Aftershock) are sold separately through their respective festival websites. The Hollywood Bowl shows are available through Ticketmaster.
 
 Check the [My Chemical Romance page on TourWax](/artists/my-chemical-romance) for direct ticket links and updated tour information.
+
+**Get tickets:** Buy My Chemical Romance tickets on [Ticketmaster](https://www.ticketmaster.com/my-chemical-romance-tickets/artist/859324) or compare prices on [SeatGeek](https://seatgeek.com/my-chemical-romance-tickets). Full dates and venue details are on the [My Chemical Romance page on TourWax](/artists/my-chemical-romance).
 
 ---
 

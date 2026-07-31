@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Tour Announcement"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/0/03/Willie_UK2K7_2.JPG"
 publishedAt: "2026-03-30"
-updatedAt: "2026-03-30"
+updatedAt: "2026-07-30"
 ---
 
 Willie Nelson is bringing his beloved Outlaw Music Festival back for 2026 with one of the strongest lineups in the festival's history. The 12-date touring festival kicks off July 3 in Irving, Texas and wraps up August 30 in Saratoga Springs, New York.
@@ -69,3 +69,7 @@ Check the [Willie Nelson page](/artists/willie-nelson) on TourWax for the latest
 ## Watch
 
 https://www.youtube.com/watch?v=dBN86y30Ufc
+
+---
+
+**Get tickets:** Buy Outlaw Music Festival tickets on [Ticketmaster](https://www.ticketmaster.com/willie-nelson-tickets/artist/732878) or compare prices on [SeatGeek](https://seatgeek.com/outlaw-music-festival-tickets). Full dates and venue details are on the [Willie Nelson page on TourWax](/artists/willie-nelson).

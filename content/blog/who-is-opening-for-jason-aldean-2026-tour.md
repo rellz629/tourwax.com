@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/2/20/Jason_Aldean.jpg"
 publishedAt: "2026-07-25"
-updatedAt: "2026-07-25"
+updatedAt: "2026-07-30"
 ---
 
 [Jason Aldean](/artists/jason-aldean) is deep into the **Songs About Us Tour 2026**, an amphitheater and arena run that stretches into late September, with a handful of stadium blowouts alongside [Luke Bryan](/artists/luke-bryan) mixed in. The support lineup is steady on most nights with a couple of market-specific wrinkles. Here's exactly who's on the bill.
@@ -63,6 +63,8 @@ Exact dates and tickets for every show are on the [Jason Aldean artist page](/ar
 Aldean's set is built on two decades of radio dominance: "Dirt Road Anthem," "Big Green Tractor," "You Make It Easy," and the arena-country wall of sound he helped define. The undercard skews young and hungry, which is the standard Aldean formula: he's consistently used his tours to platform rising Nashville acts, and both Chase Matthew and Mackenzie Carpenter fit that mold.
 
 Amphitheater lawn tickets are the value play on this tour, frequently landing under $40 before fees in mid-size markets. Pavilion and pit pricing varies heavily by market; check current listings on the [Jason Aldean page](/artists/jason-aldean) for direct links.
+
+**Get tickets:** Buy Jason Aldean tickets on [Ticketmaster](https://www.ticketmaster.com/jason-aldean-tickets/artist/984829) or compare prices on [SeatGeek](https://seatgeek.com/jason-aldean-tickets). Full dates and venue details are on the [Jason Aldean page on TourWax](/artists/jason-aldean).
 
 ---
 

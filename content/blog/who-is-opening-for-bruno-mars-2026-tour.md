@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/b/b0/BrunoMars24KMagicWorldTourLive_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-04-25"
+updatedAt: "2026-07-30"
 ---
 
 Bruno Mars is taking his biggest tour yet across stadiums worldwide in 2026, and he's bringing serious talent along for the ride. The Romantic Tour features a rotating cast of openers that changes by leg, and here's who you'll see at every stop.
@@ -91,6 +91,8 @@ Curious who's opening for other 2026 headliners? See our full guides:
 - [Who Is Opening for Post Malone](/blog/who-is-opening-for-post-malone-2026-tour)
 - [Who Is Opening for Foo Fighters](/blog/who-is-opening-for-foo-fighters-2026-tour)
 - [Who Is Opening for My Chemical Romance](/blog/who-is-opening-for-my-chemical-romance-2026-tour)
+
+**Get tickets:** Buy Bruno Mars tickets on [Ticketmaster](https://www.ticketmaster.com/bruno-mars-tickets/artist/1466801) or compare prices on [SeatGeek](https://seatgeek.com/bruno-mars-tickets). Full dates and venue details are on the [Bruno Mars page on TourWax](/artists/bruno-mars).
 
 ---
 
