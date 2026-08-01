@@ -179,6 +179,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/concerts/tonight`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.8 },
     { url: `${SITE_URL}/concerts/this-weekend`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     { url: `${SITE_URL}/concerts/this-week`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+    { url: `${SITE_URL}/concerts/near-me`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+    { url: `${SITE_URL}/concerts/on-sale-today`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.7 },
   ];
 
   // ---- States ----

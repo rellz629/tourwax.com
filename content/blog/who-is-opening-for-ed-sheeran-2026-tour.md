@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Ed_Sheeran-6886_%28cropped%29.jpg/1280px-Ed_Sheeran-6886_%28cropped%29.jpg"
 publishedAt: "2026-06-17"
-updatedAt: "2026-07-30"
+updatedAt: "2026-07-31"
 ---
 
 [Ed Sheeran](/artists/ed-sheeran) brings the Loop Tour to North American stadiums through the back half of 2026, touring his 2025 album Play across a run that stretches from June into November. Like a lot of stadium tours at this scale, the support slot is not one act for the whole thing. Sheeran rotates a deep bench of openers, so the undercard changes depending on which city and night you catch. Here is who is opening, what each act brings, and where the tour heads next.
@@ -53,13 +53,23 @@ One of the up-and-coming names on the bill, Banke opens a handful of dates inclu
 
 ## Where Ed Sheeran Is Playing Next
 
-The North American run keeps Sheeran busy coast to coast. Upcoming stops include [Nashville](/concerts/nashville) on June 20 and 21, Milwaukee on June 26, [Chicago](/concerts/chicago) on June 27 and 28, and [Denver](/concerts/denver) on July 4 and 5. The West Coast swing runs through Las Vegas, San Diego, Santa Clara, Seattle, and Inglewood across July and early August. From there the tour moves through Minneapolis, a six-night Toronto stand, Detroit, a run at MetLife Stadium in East Rutherford, Philadelphia, and Foxborough, before closing out the year with [Atlanta](/concerts/atlanta), Indianapolis, [Charlotte](/concerts/charlotte), Arlington, and a pair of Florida dates in Hollywood and Tampa.
+The North American run keeps Sheeran busy coast to coast through early November. The remaining schedule picks up with [Seattle](/concerts/seattle) and Inglewood in early August, then moves through Minneapolis, a multi-night Toronto stand, and Detroit in the back half of the month. September brings MetLife Stadium in East Rutherford, [Philadelphia](/concerts/philadelphia), and Foxborough, and the tour closes out with [Atlanta](/concerts/atlanta), Indianapolis, [Charlotte](/concerts/charlotte), Arlington, and a pair of Florida stops in Hollywood and Tampa.
 
 You can see the full, current routing on the [Ed Sheeran artist page](/artists/ed-sheeran), which pulls live dates as they are announced.
 
 ## Getting Tickets
 
 Because the openers rotate, the best approach is to pick the support act you most want to see, then find the date and city where they are on the bill. The big-name nights with Macklemore and the multi-act stadium shows tend to move fastest. For everything else, check the specific date on the artist page before buying, since the undercard is the part of the night most likely to shift from city to city.
+
+## Frequently Asked Questions
+
+### Is Ed Sheeran playing Las Vegas in 2026?
+
+The Loop Tour's Las Vegas stop has already happened: Sheeran played Allegiant Stadium in July 2026 with Sigrid opening, and no additional Vegas dates are on the schedule. If you missed it, the closest remaining shows are SoFi Stadium in Inglewood in early August and AT&T Stadium in Arlington, Texas in late October.
+
+### How long does the Loop Tour run?
+
+The North American leg runs through early November 2026, wrapping with Florida shows in Hollywood and Tampa. The full current routing with ticket links is on the [Ed Sheeran artist page](/artists/ed-sheeran).
 
 ---
 

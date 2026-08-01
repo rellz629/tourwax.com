@@ -6,7 +6,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/b/b0/BrunoMars24KMagicWorldTourLive_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-07-30"
+updatedAt: "2026-07-31"
 ---
 
 Bruno Mars is taking his biggest tour yet across stadiums worldwide in 2026, and he's bringing serious talent along for the ride. The Romantic Tour features a rotating cast of openers that changes by leg, and here's who you'll see at every stop.
@@ -52,8 +52,8 @@ After a European run over the summer, Mars returns to North America with RAYE ta
 |------|------|-------|
 | August 21–26 | East Rutherford, NJ | MetLife Stadium (5 nights) |
 | August 29 | [Pittsburgh](/concerts/pittsburgh), PA | Acrisure Stadium |
-| September 1–9 | [Philadelphia](/concerts/philadelphia), PA | Lincoln Financial Field (multi-night) |
-| September 5–9 | Foxborough, MA | Gillette Stadium (multi-night) |
+| September 1–2 | [Philadelphia](/concerts/philadelphia), PA | Lincoln Financial Field (2 nights) |
+| September 5–6 | Foxborough, MA | Gillette Stadium (2 nights) |
 | September 9 | Indianapolis, IN | Lucas Oil Stadium |
 | September 12–16 | Tampa, FL | Raymond James Stadium (multi-night) |
 | September 16 | New Orleans, LA | Caesars Superdome |
@@ -63,7 +63,7 @@ After a European run over the summer, Mars returns to North America with RAYE ta
 | Sept 30–Oct 10 | Inglewood / Santa Clara, CA | SoFi Stadium & Levi's Stadium |
 | October 14–21 | Vancouver, BC | BC Place (multi-night) |
 
-DJ Pee .Wee and RAYE are confirmed for the East Rutherford dates.
+DJ Pee .Wee and RAYE are confirmed for the East Rutherford dates, and both are on the bill for the Gillette Stadium shows in Foxborough on Saturday, September 5 and Sunday, September 6, with doors at 6:00 PM and the show at 7:00 PM.
 
 ## The Scale of This Tour
 

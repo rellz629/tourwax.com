@@ -784,10 +784,10 @@ export function generateEventPageMetadata(data: {
 export function generateNearMeMetadata(cityName?: string | null) {
   const year = new Date().getFullYear();
   const locationLabel = cityName ? ` in ${cityName}` : ' Near Me';
-  const title = `Concerts${locationLabel} ${year}: Live Shows Near You`;
+  const title = `Concerts${locationLabel} ${year}: Live Shows & Tickets Near You`;
   const description = cityName
-    ? `Find concerts and live music near ${cityName}. Browse upcoming shows, last-minute tickets, and tour dates near you on ${SITE_NAME}.`
-    : `Find concerts and live music near you. Browse upcoming shows, last-minute tickets, and tour dates near your location on ${SITE_NAME}.`;
+    ? `Find concerts and live music near ${cityName} in ${year}. Browse upcoming shows, last-minute tickets, and tour dates near you on ${SITE_NAME}.`
+    : `Find concerts and live music near you in ${year}. Browse upcoming shows by distance, get last-minute tickets, and see the full schedule near your location on ${SITE_NAME}.`;
   const url = generateCanonicalUrl('/concerts/near-me');
 
   return {
