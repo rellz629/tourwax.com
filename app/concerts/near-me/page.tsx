@@ -83,6 +83,23 @@ async function getNearbyEvents(lat: number, lng: number, radius: number) {
     .slice(0, RESULT_LIMIT);
 }
 
+async function getTouringCountryArtists() {
+  const now = new Date();
+  return db
+    .select({
+      name: artists.name,
+      slug: artists.slug,
+      count: sql<number>`count(*)`,
+    })
+    .from(artists)
+    .innerJoin(eventArtists, eq(eventArtists.artistId, artists.id))
+    .innerJoin(events, eq(events.id, eventArtists.eventId))
+    .where(and(gte(events.eventDate, now), sql`${artists.genre} ILIKE '%country%'`))
+    .groupBy(artists.name, artists.slug)
+    .orderBy(sql`count(*) desc`)
+    .limit(10);
+}
+
 async function getPopularCities() {
   const now = new Date();
   return db
@@ -108,7 +125,7 @@ const FAQS = [
   {
     question: 'Are there country concerts near me in 2026?',
     answer:
-      'Very likely. Once your local shows load, scan the list for country headliners, or browse all current country tours on TourWax and check which stops land closest to you.',
+      'Very likely. Once your local shows load, scan the list for country headliners, or jump to the Country Concerts Near Me section below: it lists the country artists with the most upcoming 2026 tour dates, and each artist page shows every stop so you can find the one closest to you.',
   },
   {
     question: 'Can I see concerts happening tonight near me?',
@@ -131,7 +148,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function NearMePage() {
   const reqHeaders = await headers();
   const location = getLocationFromHeaders(reqHeaders);
-  const popularCities = await getPopularCities();
+  const [popularCities, countryArtists] = await Promise.all([
+    getPopularCities(),
+    getTouringCountryArtists(),
+  ]);
 
   const breadcrumbItems = [
     { name: 'Home', url: '/' },
@@ -221,6 +241,28 @@ export default async function NearMePage() {
                 <span className="font-semibold text-gray-900">{c.city}</span>
                 {c.state && <span className="text-gray-500 text-sm">, {c.state}</span>}
                 <p className="text-xs text-gray-500 mt-0.5">{c.count} upcoming shows</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Country Concerts Near Me in 2026</h2>
+          <p className="text-gray-600 mb-6 max-w-3xl">
+            Looking specifically for country concerts near you? These country artists have the most
+            upcoming 2026 tour dates on TourWax right now. Open an artist to see every scheduled
+            stop with tickets, then find the show closest to your city. You can also browse the
+            full list of <Link href="/tours/country" className="text-orange-500 hover:text-orange-600 font-medium">country tours in 2026</Link>.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {countryArtists.map((a) => (
+              <Link
+                key={a.slug}
+                href={`/artists/${a.slug}`}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-3 hover:shadow-md hover:border-orange-200 transition-all"
+              >
+                <span className="font-semibold text-gray-900">{a.name}</span>
+                <p className="text-xs text-gray-500 mt-0.5">{a.count} upcoming shows</p>
               </Link>
             ))}
           </div>

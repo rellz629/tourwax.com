@@ -93,7 +93,7 @@ Atlanta's fall calendar is one of the strongest in the country this year. [Brows
 |------|------|-------|
 | Aug 8 | i-dle | State Farm Arena |
 | Aug 16 | Dominic Fike | Coca-Cola Roxy |
-| Aug 22 | Haircut 100 | Fox Theatre |
+| Aug 22 | Squeeze with Adam Ant | Fox Theatre |
 | Sep 5 | Blues Traveler | Chastain Park |
 | Sep 17 | James Taylor | Chastain Park |
 | Sep 18-20 | Shaky Knees Festival | Piedmont Park |
