@@ -26,13 +26,13 @@ Pearl Jam's Dark Matter World Tour, which supported their eleventh studio album 
 
 One warning while you search: several unofficial sites are currently claiming a 2026 Pearl Jam European stadium tour with specific cities and on-sale dates. Those claims do not come from the band or from any official ticketing outlet. If a date isn't on Ticketmaster or announced through the Ten Club, treat it as fake.
 
-Beyond Ohana, the band has a long history of returning to the road — they've toured in virtually every year since the early 1990s, with only occasional breaks. A gap after a major world tour is normal. It would be surprising if they stayed off the road for more than a year or two.
+Beyond Ohana, the band has a long history of returning to the road: they've toured in virtually every year since the early 1990s, with only occasional breaks. A gap after a major world tour is normal. It would be surprising if they stayed off the road for more than a year or two.
 
 [Check TourWax's Pearl Jam page](/artists/pearl-jam) for the most current information on any announced dates.
 
 ## Pearl Jam's Dark Matter Tour: What We Learned
 
-Before looking ahead, it's worth noting what made the Dark Matter Tour special — because it signals what a future Pearl Jam tour would likely look like.
+Before looking ahead, it's worth noting what made the Dark Matter Tour special, because it signals what a future Pearl Jam tour would likely look like.
 
 The Dark Matter tour featured:
 
@@ -49,9 +49,9 @@ If you've never seen Pearl Jam live, here's what to expect:
 
 **Atmosphere:** The crowd is intense and deeply knowledgeable. Fans travel long distances to see multiple shows on the same tour. If you're in front of someone at a Pearl Jam show who seems to know every word to every song going back to 1991, that's standard.
 
-**Ticket demand:** Pearl Jam has one of the most committed fanbases in rock. Their ticketing approach has evolved over the years — they've tried to combat scalpers with fan club pre-sales, verified fan sales, and holding back tickets for fan club members. Despite this, popular shows sell out quickly.
+**Ticket demand:** Pearl Jam has one of the most committed fanbases in rock. Their ticketing approach has evolved over the years: they've tried to combat scalpers with fan club pre-sales, verified fan sales, and holding back tickets for fan club members. Despite this, popular shows sell out quickly.
 
-**Eddie Vedder:** At 61 (in 2026), Vedder's voice remains remarkable — lower and more weathered than in 1991, but powerful and expressive. He's one of the most charismatic frontmen in rock history, and his between-song storytelling adds context and humanity to shows.
+**Eddie Vedder:** At 61 (in 2026), Vedder's voice remains remarkable: lower and more weathered than in 1991, but powerful and expressive. He's one of the most charismatic frontmen in rock history, and his between-song storytelling adds context and humanity to shows.
 
 ## How to Get Pearl Jam Tickets
 
@@ -60,7 +60,7 @@ If you've never seen Pearl Jam live, here's what to expect:
 The best way to get Pearl Jam tickets is through the **Ten Club**, the band's official fan club. Ten Club members get access to:
 
 - **Ticket presales** before general on-sale
-- **Fan-allocated tickets** — often the best available seats at face value
+- **Fan-allocated tickets**, often the best available seats at face value
 - Priority seating in many markets
 
 Annual Ten Club membership is relatively inexpensive and pays for itself immediately if you attend even one Pearl Jam show. Sign up at the band's official website.
@@ -102,7 +102,7 @@ If you're going to your first Pearl Jam show, knowing their catalog makes the ex
 
 ## Seattle: Pearl Jam's Home Market
 
-If you want to see Pearl Jam in the most electric possible setting, Seattle is it. The hometown crowd connection is real — Vedder often references Seattle history, local causes, and longtime fans during shows. Seattle shows also tend to be longer and include more rarities.
+If you want to see Pearl Jam in the most electric possible setting, Seattle is it. The hometown crowd connection is real: Vedder often references Seattle history, local causes, and longtime fans during shows. Seattle shows also tend to be longer and include more rarities.
 
 **Climate Pledge Arena** in Seattle Center has become their primary Seattle venue. It holds around 18,000 and has excellent acoustics for a modern arena.
 
@@ -116,7 +116,7 @@ When they announce their next tour, expect:
 - Possibly a return to Australia/New Zealand
 - Multiple nights in major markets
 
-The question isn't if Pearl Jam will tour again — it's when. Keep an eye on the Ten Club newsletter and TourWax's [Pearl Jam page](/artists/pearl-jam) for announcements.
+The question isn't if Pearl Jam will tour again, it's when. Keep an eye on the Ten Club newsletter and TourWax's [Pearl Jam page](/artists/pearl-jam) for announcements.
 
 ---
 
