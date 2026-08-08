@@ -7,16 +7,18 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Jamie_xx_performing_at_Red_Rocks%2C_2016.jpg/1280px-Jamie_xx_performing_at_Red_Rocks%2C_2016.jpg"
 publishedAt: "2026-07-29"
-updatedAt: "2026-07-30"
+updatedAt: "2026-08-08"
 ---
 
-Red Rocks Amphitheatre in Morrison, Colorado is deep into its 2026 season, and the back half of the calendar is stacked: LCD Soundsystem, Santana, Goose, Brandi Carlile, Andrea Bocelli, Zac Brown Band, and deadmau5 all play the rocks between now and mid-November. Here's the full remaining 2026 schedule, month by month, plus what to know before you go.
+_Updated August 8, 2026._
+
+Red Rocks Amphitheatre in Morrison, Colorado is deep into its 2026 season, and the back half of the calendar is stacked: LCD Soundsystem, Santana, Goose, Brandi Carlile, Andrea Bocelli, Zac Brown Band, and deadmau5 all play the rocks between now and mid-November. More than 60 shows remain on the calendar as of August 8. Here's the full 2026 schedule from August on, month by month, plus what to know before you go.
 
 You can also browse the live, always-current listing on the [Red Rocks Amphitheatre page on TourWax](/venues/red-rocks-amphitheatre), which pulls ticket links directly from Ticketmaster and SeatGeek.
 
 ## August 2026 at Red Rocks
 
-August is the heart of the season, with shows nearly every night:
+August is the heart of the season, with shows nearly every night. The full month is listed here for reference; shows through August 7 have already taken place:
 
 | Date | Show |
 |------|------|
@@ -147,7 +149,7 @@ More shows may still be announced. The venue adds dates throughout the season, s
 ## Frequently Asked Questions
 
 ### How many shows are left at Red Rocks in 2026?
-Roughly 70 concerts remain on the calendar from August through mid-November 2026, including multi-night runs from Goose, LCD Soundsystem, GRiZ, Brandi Carlile, Andrea Bocelli, Zac Brown Band, and deadmau5.
+More than 60 concerts remain on the calendar from August 8 through mid-November 2026, including multi-night runs from Goose, LCD Soundsystem, Brandi Carlile, Andrea Bocelli, Zac Brown Band, and deadmau5.
 
 ### When does the Red Rocks 2026 season end?
 The last currently announced shows are mike. on November 14-15, 2026. The venue occasionally adds late-season dates, and the 2027 season typically begins announcing over the winter.

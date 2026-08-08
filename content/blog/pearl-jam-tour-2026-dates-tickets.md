@@ -7,10 +7,10 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Pearl_Jam_2016.jpg/1280px-Pearl_Jam_2016.jpg"
 publishedAt: "2026-04-29"
-updatedAt: "2026-07-25"
+updatedAt: "2026-08-08"
 ---
 
-_Updated July 25, 2026._
+_Updated August 8, 2026._
 
 Pearl Jam has been one of the most reliably touring bands in rock for over three decades. But after the massive Dark Matter World Tour that ran through 2024 and into 2025, fans are naturally asking: is Pearl Jam still touring in 2026?
 
@@ -18,7 +18,9 @@ Here's what we know.
 
 ## Is Pearl Jam Touring in 2026?
 
-**No full tour, but there is one confirmed show: Pearl Jam headlines Ohana Festival on September 27, 2026** at Doheny State Beach in Dana Point, California. Ohana is Eddie Vedder's own festival, and a Pearl Jam headline set there is the band's one confirmed 2026 performance so far.
+**No full tour, but there is one confirmed show: Pearl Jam headlines Ohana Festival on Sunday, September 27, 2026** at Doheny State Beach in Dana Point, California. Ohana is Eddie Vedder's own festival, celebrating its 10th anniversary September 25-27 with Pearl Jam, Eddie Vedder & Friends, Maná, and Tyler Childers headlining, plus Pixies, Fontaines D.C., and Rilo Kiley on the bill.
+
+The Ohana set carries extra weight this year: **it will be Pearl Jam's first concert since drummer Matt Cameron left the band**, and the band has not yet announced who will be behind the kit. Whoever plays drums on September 27 will be making their live debut with the band.
 
 Pearl Jam's Dark Matter World Tour, which supported their eleventh studio album *Dark Matter* (released April 2024), was one of their most ambitious touring cycles. The tour ran from May 2024 and concluded in May 2025 in Pittsburgh, covering North America, Europe, and Australia.
 
