@@ -40,6 +40,7 @@ const STOPWORDS = new Set(['the', 'at', 'of', 'by', 'a', 'an', 'and', 'for', 'on
 const GENERIC = new Set([
   'theatre', 'theater', 'hall', 'center', 'centre', 'arena', 'stadium', 'club',
   'ballroom', 'amphitheater', 'amphitheatre', 'pavilion', 'room', 'live', 'music', 'lounge',
+  'soundstage', 'auditorium', 'coliseum', 'outdoor', 'outdoors', 'performing', 'arts',
 ]);
 // Tight: only co-located records (same building) merge on coordinates, and only
 // when one name is a subset of the other. A broad radius chains distinct
@@ -61,8 +62,10 @@ function nameTokens(s: string): string[] {
 }
 
 interface Fingerprint {
-  norm: string;        // normalized name with the city/state suffix removed, for exact matching
-  core: Set<string>;   // identity tokens: name minus stopwords, city/state, and generic words
+  norm: string;          // normalized name with the city/state suffix removed, for exact matching
+  core: Set<string>;     // identity tokens: name minus stopwords, city/state, and generic words
+  stripped: Set<string>; // name minus city/state and stopwords, but KEEPING generic words
+  baseAt: Set<string> | null; // for "X at Y" names: X's tokens (same filtering as `stripped`), else null
 }
 
 /**
@@ -75,14 +78,34 @@ interface Fingerprint {
 function fingerprint(v: VenueLike): Fingerprint {
   const cityState = new Set([...nameTokens(v.city ?? ''), ...nameTokens(v.state ?? '')]);
   const nameWithoutCity = nameTokens(v.name).filter((t) => !cityState.has(t));
-  const core = new Set(nameWithoutCity.filter((t) => !STOPWORDS.has(t) && !GENERIC.has(t)));
-  return { norm: nameWithoutCity.join(' '), core };
+  const stripped = new Set(nameWithoutCity.filter((t) => !STOPWORDS.has(t)));
+  const core = new Set([...stripped].filter((t) => !GENERIC.has(t)));
+
+  // "Pacific Coliseum at the PNE" → base name {pacific, coliseum}. Tokenize the
+  // raw name (not nameWithoutCity) so a city token before "at" doesn't shift it.
+  const rawTokens = nameTokens(v.name);
+  const atIdx = rawTokens.indexOf('at');
+  const baseAt =
+    atIdx > 0
+      ? new Set(rawTokens.slice(0, atIdx).filter((t) => !cityState.has(t) && !STOPWORDS.has(t)))
+      : null;
+
+  return { norm: nameWithoutCity.join(' '), core, stripped, baseAt };
 }
 
 function isSubset(a: Set<string>, b: Set<string>): boolean {
   if (a.size === 0) return false;
   for (const t of a) if (!b.has(t)) return false;
   return true;
+}
+
+function setsEqual(a: Set<string>, b: Set<string>): boolean {
+  return a.size === b.size && isSubset(a, b);
+}
+
+function hasNonGeneric(a: Set<string>): boolean {
+  for (const t of a) if (!GENERIC.has(t)) return true;
+  return false;
 }
 
 function jaccard(a: Set<string>, b: Set<string>): number {
@@ -120,6 +143,39 @@ function sameVenue(a: VenueLike, fa: Fingerprint, b: VenueLike, fb: Fingerprint)
   // "Webster Theatre", both -> {webster}) don't merge on one shared word.
   if (small.size >= 2 && subset) return true;
   if (small.size >= 2 && jaccard(fa.core, fb.core) >= JACCARD_THRESHOLD) return true;
+
+  // One name extends the other by generic venue-type words only ("BC Place" vs
+  // "BC Place Stadium", "The Kessler" vs "The Kessler Theater"). GSC showed 430
+  // such pairs each getting its own indexable page. The smaller name must keep
+  // at least one non-generic token so all-generic names ("The Theatre") never
+  // swallow anything, and the leftover must be entirely generic so distinct
+  // rooms ("Carnegie Hall" vs "Carnegie Hall - Judy & Arthur Zankel Hall") stay
+  // separate. No coordinate requirement: these pairs usually come from different
+  // sources, and one source routinely lacks coordinates.
+  const [smallStripped, largeStripped] =
+    fa.stripped.size <= fb.stripped.size ? [fa.stripped, fb.stripped] : [fb.stripped, fa.stripped];
+  if (
+    hasNonGeneric(smallStripped) &&
+    isSubset(smallStripped, largeStripped) &&
+    [...largeStripped].every((t) => smallStripped.has(t) || GENERIC.has(t))
+  ) {
+    return true;
+  }
+
+  // "X at Y" where X is the other record's whole name ("Atlanta Symphony Hall
+  // at Woodruff Arts Center" vs "Atlanta Symphony Hall"), or both are "X at
+  // ..." with the same X. Requires exact base-name equality so a room inside a
+  // complex ("Constellation Room at The Observatory" vs "The Observatory")
+  // never merges into the complex. The base-vs-base branch also needs >=2
+  // tokens: a single descriptive word is not an identity ("Showroom at Casino
+  // Arizona" vs "Showroom at Talking Stick Resort" are different venues), while
+  // a multi-token base is a brand ("XS Nightclub at Wynn Las Vegas" vs "XS
+  // Nightclub at Encore" are the same club).
+  for (const [x, y] of [[fa, fb], [fb, fa]] as const) {
+    if (!x.baseAt || !hasNonGeneric(x.baseAt)) continue;
+    if (setsEqual(x.baseAt, y.stripped)) return true;
+    if (x.baseAt.size >= 2 && y.baseAt !== null && setsEqual(x.baseAt, y.baseAt)) return true;
+  }
 
   // Co-located (same building) and one name is a subset of the other. Catches
   // single-token cases like "The Dome" vs "The Dome by Rutter Mills" (identical

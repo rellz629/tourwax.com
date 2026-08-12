@@ -49,17 +49,28 @@ async function main() {
   console.log(`Artists: sampled ${sampleArtists.length}, mismatches so far: ${failures}`);
 
   // ---- Venues ----
-  const [bulkVenues, allVenueRows] = await Promise.all([
+  // Mirror getVenueBySlug (app/venues/[slug]/page.tsx): bulk counts are keyed
+  // by canonical cluster slug, and the page counts events across every cluster
+  // member, so the slug → venue-ids map must come from the same clustering.
+  const { clusterVenues } = await import('@/lib/venue-cluster');
+  const { events } = await import('@/db/schema');
+  const { sql: dsql } = await import('drizzle-orm');
+  const [bulkVenues, venueWeightRows] = await Promise.all([
     getAllVenueIndexCounts(now),
-    db.select({ id: venues.id, name: venues.name }).from(venues),
+    db
+      .select({
+        venue: venues,
+        weight: dsql<number>`count(${events.id}) filter (where ${events.eventDate} >= ${now.toISOString()})::int`,
+      })
+      .from(venues)
+      .leftJoin(events, eq(events.venueId, venues.id))
+      .groupBy(venues.id),
   ]);
+  const weights = new Map(venueWeightRows.map((r) => [r.venue.id, r.weight]));
+  const venueClusters = clusterVenues(venueWeightRows.map((r) => r.venue), (id) => weights.get(id) ?? 0);
   const venueIdsBySlug = new Map<string, string[]>();
-  for (const v of allVenueRows) {
-    if (!v.name) continue;
-    const slug = slugify(v.name);
-    const list = venueIdsBySlug.get(slug) ?? [];
-    list.push(v.id);
-    venueIdsBySlug.set(slug, list);
+  for (const cluster of new Set(venueClusters.values())) {
+    venueIdsBySlug.set(cluster.canonicalSlug, cluster.memberIds);
   }
   const venueSlugs = [...bulkVenues.keys()];
   const sampleVenues = venueSlugs.filter((_, i) => i % Math.ceil(venueSlugs.length / 15) === 0).slice(0, 15);

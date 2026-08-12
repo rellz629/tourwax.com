@@ -2,7 +2,7 @@ import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, venues, eventArtists } from '@/db/schema';
 import { eq, gte, lt, sql, and, isNotNull, ne, inArray } from 'drizzle-orm';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
@@ -201,6 +201,14 @@ export default async function VenuePage({ params, searchParams }: Props) {
 
   if (!match) {
     notFound();
+  }
+
+  // Duplicate-source slug ("bc-place-stadium" when the cluster canonicalized to
+  // "bc-place") → 308 so Google consolidates instead of seeing two identical
+  // indexable pages. GSC 2026-08: 430 duplicate venue pairs in "Crawled -
+  // currently not indexed".
+  if (venueSlug !== match.canonicalSlug) {
+    permanentRedirect(`/venues/${match.canonicalSlug}`);
   }
 
   const { venue } = match;

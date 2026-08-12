@@ -2,6 +2,7 @@ import { db } from '@/db';
 import { events, venues, eventArtists } from '@/db/schema';
 import { eq, sql, inArray } from 'drizzle-orm';
 import { slugify } from './slugify';
+import { clusterVenues } from './venue-cluster';
 
 /**
  * Canonical event counts used for indexing decisions.
@@ -73,29 +74,56 @@ export async function getArtistIndexCounts(artistId: string, now: Date = new Dat
 
 // ---- Venues ----
 
-/** Keyed by slugified venue name; same-name rows from different sources merge. */
+/**
+ * Keyed by canonical cluster slug (lib/venue-cluster.ts), so duplicate records
+ * of the same physical venue ("BC Place" / "BC Place Stadium") roll up into ONE
+ * sitemap entry — matching the venue page, which 308s non-canonical member
+ * slugs to the canonical one. Counts aggregate across cluster members; summing
+ * per-member distinct event ids is safe because an event id belongs to exactly
+ * one venue row.
+ */
 export async function getAllVenueIndexCounts(now: Date = new Date()): Promise<Map<string, IndexCounts & { name: string }>> {
-  const rows = await db
-    .select({
-      venueName: venues.name,
-      lifetime: sql<number>`count(distinct ${events.id})::int`,
-      upcoming: sql<number>`count(distinct ${events.id}) filter (where ${upcomingFilter(now)})::int`,
-    })
-    .from(events)
-    .innerJoin(venues, eq(venues.id, events.venueId))
-    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
-    .groupBy(venues.name);
+  const [countRows, venueRows] = await Promise.all([
+    db
+      .select({
+        venueId: events.venueId,
+        lifetime: sql<number>`count(distinct ${events.id})::int`,
+        upcoming: sql<number>`count(distinct ${events.id}) filter (where ${upcomingFilter(now)})::int`,
+      })
+      .from(events)
+      .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+      .groupBy(events.venueId),
+    // Same venue + weight query the venue page's getVenueBySlug runs, so both
+    // sides pick the same canonical member for every cluster.
+    db
+      .select({
+        venue: venues,
+        weight: sql<number>`count(${events.id}) filter (where ${upcomingFilter(now)})::int`,
+      })
+      .from(venues)
+      .leftJoin(events, eq(events.venueId, venues.id))
+      .groupBy(venues.id),
+  ]);
+
+  const countsById = new Map(countRows.filter((r) => r.venueId).map((r) => [r.venueId!, r]));
+  const weights = new Map(venueRows.map((r) => [r.venue.id, r.weight]));
+  const clusters = clusterVenues(venueRows.map((r) => r.venue), (id) => weights.get(id) ?? 0);
 
   const bySlug = new Map<string, IndexCounts & { name: string }>();
-  for (const r of rows) {
-    if (!r.venueName) continue;
-    const slug = slugify(r.venueName);
-    const cur = bySlug.get(slug);
+  for (const r of venueRows) {
+    const counts = countsById.get(r.venue.id);
+    if (!counts) continue;
+    const cluster = clusters.get(r.venue.id)!;
+    const cur = bySlug.get(cluster.canonicalSlug);
     if (cur) {
-      cur.lifetime += r.lifetime;
-      cur.upcoming += r.upcoming;
+      cur.lifetime += counts.lifetime;
+      cur.upcoming += counts.upcoming;
     } else {
-      bySlug.set(slug, { lifetime: r.lifetime, upcoming: r.upcoming, name: r.venueName });
+      bySlug.set(cluster.canonicalSlug, {
+        lifetime: counts.lifetime,
+        upcoming: counts.upcoming,
+        name: cluster.canonicalName,
+      });
     }
   }
   return bySlug;
