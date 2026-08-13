@@ -13,6 +13,11 @@ export function normalizeGenre(genre: string | null): string {
     'Chanson Francaise': 'Latin',
     'Undefined': 'Other',
     'undefined': 'Other',
+    // Case/spelling variants that collide on the same /tours/<slug> URL: both
+    // "Hip-hop" and "Hip-Hop" slugify to hip-hop, but pages filter artists by
+    // the normalized string, so the un-mapped variant's artists were invisible.
+    'Hip-hop': 'Hip-Hop',
+    'Rnb': 'R&B',
   };
   return map[genre] || genre;
 }

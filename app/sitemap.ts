@@ -2,16 +2,18 @@ import { MetadataRoute } from 'next';
 import { db } from '@/db';
 import { artists, events, venues } from '@/db/schema';
 import { eq, gte, isNotNull, and } from 'drizzle-orm';
+import { eventArtists } from '@/db/schema';
 import { SITE_URL } from '@/lib/seo';
 import { slugify } from '@/lib/slugify';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
 import { getAllPosts } from '@/lib/blog';
 import { getAllFestivals, getArchivedFestivals, findBrandFestival } from '@/lib/festivals';
 import {
-  shouldNoindexArtist,
-  shouldNoindexVenue,
-  shouldNoindexCity,
   shouldNoindexFestival,
+  shouldNoindexGenre,
+  shouldOmitArtistFromSitemap,
+  shouldOmitVenueFromSitemap,
+  shouldOmitCityFromSitemap,
 } from '@/lib/seo-pruning';
 import {
   getAllArtistIndexCounts,
@@ -53,11 +55,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.5 },
   ];
 
-  // ---- Artists (drop thin pages) ----
+  // ---- Artists (drop thin pages and pages with no upcoming events) ----
   const artistRoutes: MetadataRoute.Sitemap = artistRows
     .filter((a) => {
       const counts = countsByArtistId.get(a.id) ?? { lifetime: 0, upcoming: 0 };
-      return !shouldNoindexArtist(counts);
+      return !shouldOmitArtistFromSitemap(counts);
     })
     .map((a) => ({
       url: `${SITE_URL}/artists/${a.slug}`,
@@ -70,7 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const cityRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/concerts`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     ...Array.from(countsByCitySlug.entries())
-      .filter(([, counts]) => !shouldNoindexCity(counts))
+      .filter(([, counts]) => !shouldOmitCityFromSitemap(counts))
       .map(([slug]) => ({
         url: `${SITE_URL}/concerts/${slug}`,
         lastModified: new Date(),
@@ -79,28 +81,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })),
   ];
 
-  // ---- Genres ----
-  const allGenreArtists = await db
-    .select({ genre: artists.genre })
-    .from(artists)
-    .where(eq(artists.isActive, true));
-  const genreSlugs = new Set<string>();
+  // ---- Genres (drop genres with almost nobody on tour) ----
+  // Same touring-artist definition as the genre page's noindex decision:
+  // distinct active artists in the genre with at least one upcoming event.
+  const [allGenreArtists, touringArtistRows] = await Promise.all([
+    db
+      .select({ id: artists.id, genre: artists.genre })
+      .from(artists)
+      .where(eq(artists.isActive, true)),
+    db
+      .select({ artistId: eventArtists.artistId })
+      .from(eventArtists)
+      .innerJoin(events, eq(events.id, eventArtists.eventId))
+      .where(gte(events.eventDate, now))
+      .groupBy(eventArtists.artistId),
+  ]);
+  const touringArtistIds = new Set(touringArtistRows.map((r) => r.artistId));
+  const touringCountBySlug = new Map<string, number>();
   for (const a of allGenreArtists) {
-    genreSlugs.add(genreSlug(normalizeGenre(a.genre)));
+    const slug = genreSlug(normalizeGenre(a.genre));
+    if (!touringCountBySlug.has(slug)) touringCountBySlug.set(slug, 0);
+    if (touringArtistIds.has(a.id)) {
+      touringCountBySlug.set(slug, touringCountBySlug.get(slug)! + 1);
+    }
   }
   const genreRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/tours`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
-    ...Array.from(genreSlugs).map((slug) => ({
-      url: `${SITE_URL}/tours/${slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.7,
-    })),
+    ...Array.from(touringCountBySlug.entries())
+      .filter(([, touringArtistCount]) => !shouldNoindexGenre({ touringArtistCount }))
+      .map(([slug]) => ({
+        url: `${SITE_URL}/tours/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.7,
+      })),
   ];
 
-  // ---- Venues (drop thin pages, keep archived treatment for surviving ones) ----
+  // ---- Venues (drop thin pages and pages with no upcoming events) ----
   const venueEntries = Array.from(countsByVenueSlug.entries())
-    .filter(([, counts]) => !shouldNoindexVenue(counts));
+    .filter(([, counts]) => !shouldOmitVenueFromSitemap(counts));
 
   const venueRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/venues`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },

@@ -33,6 +33,7 @@ export const SEO_PRUNE = {
   CITY_MIN_UPCOMING_EVENTS: 5,
   FESTIVAL_MIN_ARTISTS_NO_BRAND: 5,
   FESTIVAL_MIN_DAYS_NO_BRAND: 2,
+  GENRE_MIN_TOURING_ARTISTS: 3,
 } as const;
 
 interface EventCounts {
@@ -85,4 +86,35 @@ export function shouldNoindexFestival(f: FestivalShape): boolean {
   if (f.daysCount >= SEO_PRUNE.FESTIVAL_MIN_DAYS_NO_BRAND) return false;
   if (f.artistCount >= SEO_PRUNE.FESTIVAL_MIN_ARTISTS_NO_BRAND) return false;
   return true;
+}
+
+/**
+ * Genre pages (/tours/<slug>) with almost nobody on tour ("Circus & Specialty
+ * Acts Tours 2026 - 1 Artists on Tour Now") sat in GSC "Crawled - currently not
+ * indexed" (2026-08-11 analysis). touringArtistCount = distinct artists in the
+ * genre with at least one upcoming event.
+ */
+export function shouldNoindexGenre({ touringArtistCount }: { touringArtistCount: number }): boolean {
+  return touringArtistCount < SEO_PRUNE.GENRE_MIN_TOURING_ARTISTS;
+}
+
+/**
+ * Sitemap-only tightening (2026-08-11): pages that pass the noindex floor on
+ * lifetime depth but currently have ZERO upcoming events (77 venues, 252
+ * artists at the time) stay indexable — Bing/DDG rank them and noindex would
+ * destroy that surface — but are no longer nominated to Google via sitemap.xml.
+ * They re-enter the sitemap automatically when events return. The invariant
+ * stays one-directional: everything in the sitemap is indexable, never the
+ * reverse.
+ */
+export function shouldOmitArtistFromSitemap(counts: EventCounts): boolean {
+  return shouldNoindexArtist(counts) || counts.upcoming === 0;
+}
+
+export function shouldOmitVenueFromSitemap(counts: EventCounts): boolean {
+  return shouldNoindexVenue(counts) || counts.upcoming === 0;
+}
+
+export function shouldOmitCityFromSitemap(counts: EventCounts): boolean {
+  return shouldNoindexCity(counts) || counts.upcoming === 0;
 }

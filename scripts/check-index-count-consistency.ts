@@ -118,7 +118,9 @@ async function main() {
   for (const c of bulkVenues.values()) if (!shouldNoindexVenue(c)) venuesIn++;
   let citiesIn = 0;
   for (const c of bulkCities.values()) if (!shouldNoindexCity(c)) citiesIn++;
-  console.log(`\nSitemap surface under dedup counts: artists ${artistsIn}/${artistRows.length}, venues ${venuesIn}/${bulkVenues.size}, cities ${citiesIn}/${bulkCities.size}`);
+  // Indexable = passes the noindex floor. The sitemap is stricter still: it
+  // also drops indexable pages with zero upcoming events (shouldOmit*FromSitemap).
+  console.log(`\nIndexable surface under dedup counts: artists ${artistsIn}/${artistRows.length}, venues ${venuesIn}/${bulkVenues.size}, cities ${citiesIn}/${bulkCities.size}`);
 
   // ---- Previously mismatched URLs (Ahrefs 2026-06-09 noindex-in-sitemap) ----
   const args = process.argv.slice(2);

@@ -14,6 +14,7 @@ import { getAffiliateUrl } from '@/lib/affiliate';
 import { eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { normalizeGenre, genreSlug, GENRE_DESCRIPTIONS, GENRE_DISPLAY_NAMES, GENRE_LONG_CONTENT } from '@/lib/genres';
+import { shouldNoindexGenre } from '@/lib/seo-pruning';
 import { slugify } from '@/lib/slugify';
 import Pagination from '@/components/Pagination';
 
@@ -125,6 +126,13 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
   if (currentPage > 1) {
     meta.title = `${genreName} Tours ${new Date().getFullYear()} - Page ${currentPage}`;
+  }
+
+  // Same touring-artist count the sitemap filter uses (app/sitemap.ts genre
+  // section), so a genre page is never noindexed while listed in sitemap.xml.
+  const touringArtistCount = new Set(genreEvents.map((row) => row.artistId)).size;
+  if (shouldNoindexGenre({ touringArtistCount })) {
+    return { ...meta, robots: { index: false, follow: true } };
   }
 
   return meta;
