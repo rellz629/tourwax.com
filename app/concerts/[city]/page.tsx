@@ -1,14 +1,15 @@
 import { cache } from 'react';
 import { db } from '@/db';
 import { artists, events, eventArtists, venues } from '@/db/schema';
-import { eq, gte, sql } from 'drizzle-orm';
+import { eq, gte, sql, and, isNotNull, notInArray, inArray } from 'drizzle-orm';
+import { resolveCityLocations, rawCountryTokens, type CityLocation } from '@/lib/city-locations';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { generateCityMetadata, SITE_URL } from '@/lib/seo';
 import { shouldNoindexCity } from '@/lib/seo-pruning';
-import { getCityIndexCounts } from '@/lib/event-counts';
+import { getCityIndexCounts, getCityLocationCountRows, cityLocationWhere } from '@/lib/event-counts';
 import { generateBreadcrumbSchema, generateCityEventListSchema, generateFAQSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -29,30 +30,42 @@ interface Props {
   searchParams: Promise<{ page?: string }>;
 }
 
-const getCityInfo = cache(async function getCityInfo(citySlug: string) {
-  // Find matching city by slug from all venues (not just those with future events)
-  const allCities = await db
-    .selectDistinct({
-      city: venues.city,
-      state: venues.state,
-    })
-    .from(venues);
+type ResolvedCity = CityLocation & { city: string; state: string | null };
 
-  const matches = allCities.filter(
-    (row) => row.city && slugify(row.city) === citySlug
+function withLegacyFields(loc: CityLocation): ResolvedCity {
+  return { ...loc, city: loc.displayCity, state: loc.displayState };
+}
+
+const getCityInfo = cache(async function getCityInfo(citySlug: string): Promise<ResolvedCity | null> {
+  // Resolve the slug to its DOMINANT physical location (lib/city-locations.ts):
+  // same-name cities elsewhere (Portland ME on /concerts/portland) no longer
+  // mix into the page. Uses the same count rows as the sitemap rollup so both
+  // always pick the same dominant location.
+  const countRows = await getCityLocationCountRows();
+  const resolved = resolveCityLocations(
+    countRows.filter((r) => r.city).map((r) => ({ ...r, city: r.city! }))
   );
-  if (matches.length === 0) return null;
+  const locations = resolved.get(citySlug);
+  if (locations) return withLegacyFields(locations[0]);
 
-  return {
-    ...matches[0],
-    // Every spelling sharing this slug — the indexing counts roll these up the
-    // same way the sitemap does.
-    allCityNames: [...new Set(matches.map((m) => m.city!))],
-  };
+  // Cities whose venues have no artist-linked events yet still render (empty
+  // state) rather than 404 — resolve them from the venues table alone.
+  const allCities = await db
+    .selectDistinct({ city: venues.city, state: venues.state, country: venues.country })
+    .from(venues)
+    .where(isNotNull(venues.city));
+  const fallback = resolveCityLocations(
+    allCities
+      .filter((r) => r.city)
+      .map((r) => ({ city: r.city!, state: r.state, country: r.country, upcoming: 0, lifetime: 0 }))
+  ).get(citySlug);
+  return fallback ? withLegacyFields(fallback[0]) : null;
 });
 
-const getNearbyCities = cache(async function getNearbyCities(cityName: string, state: string | null) {
-  if (!state) return [];
+const getNearbyCities = cache(async function getNearbyCities(loc: ResolvedCity) {
+  // Same normalized state AND country: "WA" is both Washington and Western
+  // Australia, so a state-only match would list Perth next to Seattle.
+  if (!loc.displayState) return [];
   const now = new Date();
 
   const cities = await db
@@ -62,7 +75,12 @@ const getNearbyCities = cache(async function getNearbyCities(cityName: string, s
     })
     .from(venues)
     .innerJoin(events, eq(events.venueId, venues.id))
-    .where(sql`${venues.state} = ${state} AND ${venues.city} != ${cityName} AND ${events.eventDate} >= ${now.toISOString()}`)
+    .where(and(
+      sql`upper(coalesce(${venues.state}, '')) = ${loc.displayState}`,
+      inArray(sql`upper(coalesce(${venues.country}, ''))`, rawCountryTokens(loc.displayCountry)),
+      notInArray(venues.city, loc.cityNames),
+      gte(events.eventDate, now)
+    ))
     .groupBy(venues.city)
     .orderBy(sql`count(distinct ${events.id}) desc`)
     .limit(8);
@@ -70,7 +88,7 @@ const getNearbyCities = cache(async function getNearbyCities(cityName: string, s
   return cities.filter((c) => c.city);
 });
 
-const getCityEvents = cache(async function getCityEvents(cityName: string) {
+const getCityEvents = cache(async function getCityEvents(loc: ResolvedCity) {
   const now = new Date();
 
   const cityEvents = await db
@@ -86,9 +104,7 @@ const getCityEvents = cache(async function getCityEvents(cityName: string) {
     .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .innerJoin(venues, eq(events.venueId, venues.id))
     .innerJoin(artists, eq(artists.id, eventArtists.artistId))
-    .where(
-      sql`${venues.city} = ${cityName} AND ${events.eventDate} >= ${now.toISOString()}`
-    )
+    .where(and(cityLocationWhere(loc), gte(events.eventDate, now)))
     .orderBy(events.eventDate);
 
   // Collapse festival lineups, package variants, and cross-source duplicates.
@@ -135,8 +151,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const [cityEvents, indexCounts] = await Promise.all([
-    getCityEvents(cityInfo.city),
-    getCityIndexCounts(cityInfo.allCityNames),
+    getCityEvents(cityInfo),
+    getCityIndexCounts(cityInfo),
   ]);
   const artistNames = [...new Set(cityEvents.map((e) => e.artistName))];
   const venueNames = [...new Set(cityEvents.filter((e) => e.venue).map((e) => e.venue!.name))];
@@ -171,8 +187,8 @@ export default async function CityPage({ params, searchParams }: Props) {
   }
 
   const [allCityEvents, nearbyCities] = await Promise.all([
-    getCityEvents(cityInfo.city),
-    getNearbyCities(cityInfo.city, cityInfo.state),
+    getCityEvents(cityInfo),
+    getNearbyCities(cityInfo),
   ]);
 
   const totalPages = Math.ceil(allCityEvents.length / EVENTS_PER_PAGE);

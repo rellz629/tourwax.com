@@ -1,8 +1,9 @@
 import { db } from '@/db';
 import { events, venues, eventArtists } from '@/db/schema';
-import { eq, sql, inArray } from 'drizzle-orm';
-import { slugify } from './slugify';
+import { eq, sql, inArray, and, or, isNull } from 'drizzle-orm';
+import type { SQL } from 'drizzle-orm';
 import { clusterVenues } from './venue-cluster';
+import { resolveCityLocations, type CityLocation } from './city-locations';
 
 /**
  * Canonical event counts used for indexing decisions.
@@ -147,11 +148,18 @@ export async function getVenueIndexCounts(venueIds: string[], now: Date = new Da
 
 // ---- Cities ----
 
-/** Keyed by slugified city name; same-slug spellings merge. */
-export async function getAllCityIndexCounts(now: Date = new Date()): Promise<Map<string, IndexCounts>> {
-  const rows = await db
+/**
+ * Per-(city, state, country) artist-linked event counts — the shared dominance
+ * measure for slug-collision resolution (lib/city-locations.ts). Used by the
+ * bulk rollup below, the city page's location resolution, and the consistency
+ * checker, so all three always pick the same dominant location per slug.
+ */
+export async function getCityLocationCountRows(now: Date = new Date()) {
+  return db
     .select({
       city: venues.city,
+      state: venues.state,
+      country: venues.country,
       lifetime: sql<number>`count(distinct ${events.id})::int`,
       upcoming: sql<number>`count(distinct ${events.id}) filter (where ${upcomingFilter(now)})::int`,
     })
@@ -159,24 +167,48 @@ export async function getAllCityIndexCounts(now: Date = new Date()): Promise<Map
     .innerJoin(venues, eq(venues.id, events.venueId))
     .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
     .where(sql`${venues.city} is not null`)
-    .groupBy(venues.city);
+    .groupBy(venues.city, venues.state, venues.country);
+}
+
+/**
+ * Keyed by slugified city name. Counts cover only the slug's DOMINANT physical
+ * location (Portland OR, not Portland ME) — matching what the page renders.
+ * Same-city spelling/format variants (Toronto ON/CA + ON/Canada) still merge.
+ */
+export async function getAllCityIndexCounts(now: Date = new Date()): Promise<Map<string, IndexCounts>> {
+  const rows = await getCityLocationCountRows(now);
+  const locations = resolveCityLocations(rows.map((r) => ({ ...r, city: r.city! })));
 
   const bySlug = new Map<string, IndexCounts>();
-  for (const r of rows) {
-    if (!r.city) continue;
-    const slug = slugify(r.city);
-    const cur = bySlug.get(slug) ?? { lifetime: 0, upcoming: 0 };
-    cur.lifetime += r.lifetime;
-    cur.upcoming += r.upcoming;
-    bySlug.set(slug, cur);
+  for (const [slug, locs] of locations) {
+    bySlug.set(slug, { lifetime: locs[0].lifetime, upcoming: locs[0].upcoming });
   }
   return bySlug;
 }
 
-/** cityNames must be every distinct spelling whose slugified form matches the
- *  page slug so this matches the bulk slug rollup. */
-export async function getCityIndexCounts(cityNames: string[], now: Date = new Date()): Promise<IndexCounts> {
-  if (cityNames.length === 0) return { lifetime: 0, upcoming: 0 };
+/** Drizzle filter matching venues belonging to one resolved city location. */
+export function cityLocationWhere(loc: Pick<CityLocation, 'cityNames' | 'states' | 'countries'>): SQL {
+  const nullableIn = (column: typeof venues.state | typeof venues.country, values: (string | null)[]) => {
+    const present = [...new Set(values.filter((v): v is string => v !== null))];
+    const hasNull = values.some((v) => v === null);
+    if (!hasNull) return inArray(column, present);
+    if (present.length === 0) return isNull(column);
+    return or(isNull(column), inArray(column, present))!;
+  };
+  return and(
+    inArray(venues.city, loc.cityNames),
+    nullableIn(venues.state, loc.states),
+    nullableIn(venues.country, loc.countries)
+  )!;
+}
+
+/** Counts for one resolved city location (what getCityInfo returned), matching
+ *  the bulk dominant-location rollup above. */
+export async function getCityIndexCounts(
+  loc: Pick<CityLocation, 'cityNames' | 'states' | 'countries'>,
+  now: Date = new Date()
+): Promise<IndexCounts> {
+  if (loc.cityNames.length === 0) return { lifetime: 0, upcoming: 0 };
   const rows = await db
     .select({
       lifetime: sql<number>`count(distinct ${events.id})::int`,
@@ -185,7 +217,7 @@ export async function getCityIndexCounts(cityNames: string[], now: Date = new Da
     .from(events)
     .innerJoin(venues, eq(venues.id, events.venueId))
     .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
-    .where(inArray(venues.city, cityNames));
+    .where(cityLocationWhere(loc));
 
   return rows[0] ?? { lifetime: 0, upcoming: 0 };
 }

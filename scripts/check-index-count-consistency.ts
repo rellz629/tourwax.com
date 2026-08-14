@@ -85,21 +85,22 @@ async function main() {
   console.log(`Venues: sampled ${sampleVenues.length}, mismatches so far: ${failures}`);
 
   // ---- Cities ----
+  // Mirror getCityInfo (app/concerts/[city]/page.tsx): bulk counts cover the
+  // slug's dominant physical location, so the per-slug lookup must resolve the
+  // same dominant location from the same count rows.
+  const { getCityLocationCountRows } = await import('@/lib/event-counts');
+  const { resolveCityLocations } = await import('@/lib/city-locations');
   const bulkCities = await getAllCityIndexCounts(now);
-  const allCityRows = await db.selectDistinct({ city: venues.city }).from(venues);
-  const cityNamesBySlug = new Map<string, string[]>();
-  for (const c of allCityRows) {
-    if (!c.city) continue;
-    const slug = slugify(c.city);
-    const list = cityNamesBySlug.get(slug) ?? [];
-    list.push(c.city);
-    cityNamesBySlug.set(slug, list);
-  }
+  const cityCountRows = await getCityLocationCountRows(now);
+  const cityLocationsBySlug = resolveCityLocations(
+    cityCountRows.filter((r) => r.city).map((r) => ({ ...r, city: r.city! }))
+  );
   const citySlugs = [...bulkCities.keys()];
   const sampleCities = citySlugs.filter((_, i) => i % Math.ceil(citySlugs.length / 15) === 0).slice(0, 15);
   for (const slug of sampleCities) {
     const bulk = bulkCities.get(slug)!;
-    const single = await getCityIndexCounts(cityNamesBySlug.get(slug) ?? [], now);
+    const loc = cityLocationsBySlug.get(slug)![0];
+    const single = await getCityIndexCounts(loc, now);
     if (bulk.lifetime !== single.lifetime || bulk.upcoming !== single.upcoming) {
       failures++;
       console.log(`CITY MISMATCH ${slug}: bulk=${JSON.stringify(bulk)} single=${JSON.stringify(single)}`);
