@@ -83,9 +83,32 @@ export function getStubHubSearchUrl(artistName: string): string {
 }
 
 /**
- * Gets the appropriate affiliate URL for a stored event source.
+ * Extracts the plain merchant URL from an Impact tracking URL, or returns the
+ * input unchanged if it isn't one. Used to send crawlers to the merchant
+ * directly so they never register clicks on the affiliate network.
  */
-export function getAffiliateUrl(url: string, source: string): string {
+export function unwrapTrackingUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    const trackingHosts: string[] = [
+      AFFILIATE_CONFIG.ticketmaster.trackingDomain,
+      AFFILIATE_CONFIG.seatgeek.trackingDomain,
+    ];
+    if (trackingHosts.includes(parsed.hostname.toLowerCase())) {
+      const inner = parsed.searchParams.get('u');
+      if (inner) return inner;
+    }
+  } catch {
+    // not a URL; fall through
+  }
+  return url;
+}
+
+/**
+ * Wraps a stored event URL with affiliate tracking directly (no /out hop).
+ * Used by the /out redirect and by scripts that store wrapped URLs.
+ */
+export function wrapAffiliateUrl(url: string, source: string): string {
   if (!url) return url;
 
   switch (source.toLowerCase()) {
@@ -96,4 +119,21 @@ export function getAffiliateUrl(url: string, source: string): string {
     default:
       return url;
   }
+}
+
+/**
+ * Display-time ticket URL for Ticketmaster/SeatGeek events. Returns a
+ * first-party /out redirect (disallowed in robots.txt, bot-filtered in
+ * app/out/route.ts) so crawlers never reach the Impact tracking domains:
+ * ~99% of raw affiliate clicks were bots, which buries real click data and
+ * risks the network flagging the account. Humans get 302'd to the wrapped
+ * affiliate URL; the absolute URL keeps calendar (ICS) links working.
+ */
+export function getAffiliateUrl(url: string, source: string): string {
+  if (!url) return url;
+
+  const s = source.toLowerCase();
+  if (s !== 'ticketmaster' && s !== 'seatgeek') return url;
+
+  return `https://www.tourwax.com/out?u=${encodeURIComponent(url)}&s=${s}`;
 }

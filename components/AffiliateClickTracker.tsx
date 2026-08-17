@@ -29,14 +29,19 @@ export default function AffiliateClickTracker() {
       const anchor = target?.closest('a');
       if (!anchor || !anchor.href) return;
 
-      let host: string;
+      let url: URL;
       try {
-        host = new URL(anchor.href).hostname;
+        url = new URL(anchor.href);
       } catch {
         return;
       }
 
-      const source = TRACKING_DOMAINS[host];
+      // Ticket links now route through our first-party /out redirect; older
+      // markup may still link the tracking domains directly.
+      const source =
+        url.pathname === '/out'
+          ? (url.searchParams.get('s') ?? 'unknown')
+          : TRACKING_DOMAINS[url.hostname];
       if (!source) return;
 
       if (typeof window.gtag === 'function') {
