@@ -140,6 +140,7 @@ export default function RootLayout({
                   <li><Link href="/blog/feed.xml" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">RSS Feed</Link></li>
                   <li><a href="https://x.com/TourWaxUpdates" target="_blank" rel="noopener" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Follow us on X</a></li>
                   <li><Link href="/affiliate-disclosure" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">Affiliate Disclosure</Link></li>
+                  <li><a href="https://www.standupdates.com" className="text-gray-300 hover:text-orange-400 text-sm transition-colors">StandUpdates &middot; Comedy Tours</a></li>
                 </ul>
               </div>
             </nav>
