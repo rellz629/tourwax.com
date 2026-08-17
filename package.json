@@ -33,7 +33,8 @@
     "deactivate:junk-artists": "dotenv -e .env.local -- tsx scripts/deactivate-junk-artists.ts",
     "reattribute:promoter": "dotenv -e .env.local -- tsx scripts/reattribute-promoter-events.ts",
     "find:nonartists": "dotenv -e .env.local -- tsx scripts/find-nonartist-artists.ts",
-    "ahrefs": "dotenv -e .env.local -- tsx scripts/ahrefs-report.ts"
+    "ahrefs": "dotenv -e .env.local -- tsx scripts/ahrefs-report.ts",
+    "impact": "dotenv -e .env.local -- tsx scripts/impact-report.ts"
   },
   "browserslist": [
     "chrome >= 90",
