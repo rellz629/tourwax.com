@@ -12,7 +12,7 @@ updatedAt: "2026-08-21"
 
 Four acts open for [Luke Combs](/artists/luke-combs) on the 2027 leg of the My Kinda Saturday Night Tour: **Treaty Oak Revival, Avery Anna, Shenandoah, and Wyatt McCubbin**. Unlike the 2026 run, where the support bill rotated city by city, all four openers are billed on all 12 dates. Whichever stadium you pick, you get the same four sets.
 
-Combs announced the 2027 extension on August 13, 2026. It is a 12-show stadium run staged in the round, opening April 3, 2027 at AT&T Stadium in Arlington and closing June 26, 2027 at Petco Park in San Diego. General on-sale is today, Friday, August 21, 2026, at 10 a.m. local time.
+Combs announced the 2027 extension on August 13, 2026. It is a 12-show stadium run staged in the round, opening April 3, 2027 at AT&T Stadium in Arlington and closing June 26, 2027 at Petco Park in San Diego. Tickets went on general sale Friday, August 21, 2026 at 10 a.m. local time.
 
 ## Every 2027 Date
 
@@ -65,7 +65,7 @@ Both legs support *The Way I Am*.
 
 ## Tickets and On-Sale
 
-Fan club and venue presales ran earlier this week, with the Bootleggers presale first. The general public on-sale is Friday, August 21, 2026 at 10 a.m. local venue time through Ticketmaster.
+Fan club and venue presales ran August 18 through August 20, 2026, with the Bootleggers presale first. The general public on-sale opened Friday, August 21, 2026 at 10 a.m. local venue time through Ticketmaster.
 
 A stadium run this short tends to hold its price better than a 40-date arena tour, because there is only one date per market and no second night to absorb demand. If you are flexible, Boise and Edmonton are the two dates least likely to sell out fast. Our guides on [how to find cheap concert tickets](/blog/how-to-find-cheap-concert-tickets) and [how to buy floor tickets before they sell out](/blog/how-to-buy-floor-tickets-before-they-sell-out-2026) both apply, with the caveat that "floor" means something different at an in-the-round show.
 
@@ -99,6 +99,6 @@ Two: Edmonton at Commonwealth Stadium on May 29 and Vancouver at [BC Place](/ven
 
 ### When do tickets go on sale?
 
-General on-sale is Friday, August 21, 2026 at 10 a.m. local venue time through Ticketmaster, after fan club and venue presales earlier in the week.
+General on-sale opened Friday, August 21, 2026 at 10 a.m. local venue time through Ticketmaster, after fan club and venue presales that ran August 18 through August 20. Remaining inventory and resale listings are live now.
 
 Track every My Kinda Saturday Night Tour date and live ticket price on the [Luke Combs page](/artists/luke-combs), or browse more [country tours](/tours/country) on TourWax.
