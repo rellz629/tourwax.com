@@ -4,93 +4,60 @@ config({ path: '.env.local' });
 
 import { db } from '@/db';
 import { events } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { getTicketmasterAffiliateUrl, getSeatGeekAffiliateUrl } from '@/lib/affiliate';
+import { eq, or, like } from 'drizzle-orm';
+import { unwrapTrackingUrl } from '@/lib/affiliate';
 
 /**
- * Updates existing Ticketmaster and SeatGeek events with affiliate tracking URLs
+ * Unwraps affiliate tracking URLs stored in the events table back to plain
+ * merchant URLs (ticketmaster.com / seatgeek.com).
+ *
+ * The site used to store evyy.net / pxf.io wrapped URLs, which leaked into
+ * JSON-LD offers.url and API responses where scrapers harvested them,
+ * flooding Impact with bot clicks. Wrapping now happens only at render time
+ * via the /out redirect, so the stored form must be the plain merchant URL.
  */
-async function updateAffiliateUrls() {
-  console.log('🔗 Updating events with affiliate tracking...\n');
+async function unwrapAffiliateUrls() {
+  console.log('🔗 Unwrapping stored affiliate tracking URLs...\n');
 
-  try {
-    let totalUpdated = 0;
-    let totalSkipped = 0;
+  const wrapped = await db
+    .select({ id: events.id, name: events.name, ticketUrl: events.ticketUrl })
+    .from(events)
+    .where(or(
+      like(events.ticketUrl, '%ticketmaster.evyy.net%'),
+      like(events.ticketUrl, '%seatgeek.pxf.io%'),
+    ));
 
-    // Update Ticketmaster events
-    const ticketmasterEvents = await db
-      .select()
-      .from(events)
-      .where(eq(events.source, 'ticketmaster'));
+  console.log(`Found ${wrapped.length} events with wrapped URLs`);
 
-    console.log(`Found ${ticketmasterEvents.length} Ticketmaster events`);
+  let updated = 0;
+  let skipped = 0;
 
-    for (const event of ticketmasterEvents) {
-      if (!event.ticketUrl) {
-        totalSkipped++;
-        continue;
-      }
-
-      if (event.ticketUrl.includes('evyy.net')) {
-        totalSkipped++;
-        continue;
-      }
-
-      const affiliateUrl = getTicketmasterAffiliateUrl(event.ticketUrl);
-
-      await db
-        .update(events)
-        .set({ ticketUrl: affiliateUrl, updatedAt: new Date() })
-        .where(eq(events.id, event.id));
-
-      console.log(`  ✓ TM: ${event.name}`);
-      totalUpdated++;
+  for (const event of wrapped) {
+    const plain = unwrapTrackingUrl(event.ticketUrl!);
+    if (plain === event.ticketUrl) {
+      // Wrapped URL with no recoverable inner URL — leave it; /out unwraps at click time
+      console.log(`  ⏭️  No inner URL: ${event.name}`);
+      skipped++;
+      continue;
     }
 
-    // Update SeatGeek events
-    const seatgeekEvents = await db
-      .select()
-      .from(events)
-      .where(eq(events.source, 'seatgeek'));
-
-    console.log(`Found ${seatgeekEvents.length} SeatGeek events`);
-
-    for (const event of seatgeekEvents) {
-      if (!event.ticketUrl) {
-        totalSkipped++;
-        continue;
-      }
-
-      if (event.ticketUrl.includes('pxf.io')) {
-        totalSkipped++;
-        continue;
-      }
-
-      const affiliateUrl = getSeatGeekAffiliateUrl(event.ticketUrl);
-
-      await db
-        .update(events)
-        .set({ ticketUrl: affiliateUrl, updatedAt: new Date() })
-        .where(eq(events.id, event.id));
-
-      console.log(`  ✓ SG: ${event.name}`);
-      totalUpdated++;
-    }
-
-    console.log('\n📊 Summary:');
-    console.log(`  ✓ Updated: ${totalUpdated} events`);
-    console.log(`  ⏭️  Skipped: ${totalSkipped} events`);
-    console.log('\n✅ Affiliate URL update complete!');
-
-  } catch (error) {
-    console.error('❌ Error updating affiliate URLs:', error);
-    process.exit(1);
+    await db
+      .update(events)
+      .set({ ticketUrl: plain, updatedAt: new Date() })
+      .where(eq(events.id, event.id));
+    updated++;
+    if (updated % 250 === 0) console.log(`  ...${updated} unwrapped`);
   }
+
+  console.log('\n📊 Summary:');
+  console.log(`  ✓ Unwrapped: ${updated} events`);
+  console.log(`  ⏭️  Skipped (no inner URL): ${skipped} events`);
+  console.log('\n✅ Affiliate URL unwrap complete!');
 }
 
-updateAffiliateUrls()
+unwrapAffiliateUrls()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error('Fatal error:', error);
+    console.error('❌ Fatal error:', error);
     process.exit(1);
   });

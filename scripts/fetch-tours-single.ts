@@ -6,7 +6,6 @@ import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
-import { getTicketmasterAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import { nanoid } from 'nanoid';
@@ -106,11 +105,8 @@ async function main() {
   if (tmData.status === 'fulfilled') {
     const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo, festivalLineups: lineups } = tmData.value;
     festivalLineups = lineups;
-    const tmEventsWithAffiliate = tmEvents.map(e => ({
-      ...e,
-      ticketUrl: e.ticketUrl ? getTicketmasterAffiliateUrl(e.ticketUrl) : e.ticketUrl,
-    }));
-    allEvents.push(...tmEventsWithAffiliate);
+    // Store plain merchant URLs; affiliate wrapping happens at render via /out
+    allEvents.push(...tmEvents);
     allVenues.push(...tmVenues);
     if (ticketmasterId) updates.ticketmasterId = ticketmasterId;
     if (artistInfo?.imageUrl) updates.imageUrl = artistInfo.imageUrl;

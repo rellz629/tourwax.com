@@ -3,6 +3,7 @@ import { db } from '@/db';
 import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, and, gte, sql } from 'drizzle-orm';
 import { isPackage } from '@/lib/event-utils';
+import { unwrapTrackingUrl } from '@/lib/affiliate';
 import { boundingBox, haversineDistance, getLocationFromHeaders } from '@/lib/geo';
 
 export const dynamic = 'force-dynamic';
@@ -133,7 +134,9 @@ export async function GET(request: NextRequest) {
       id: row.eventId,
       name: row.eventName,
       date: row.eventDate.toISOString(),
-      ticketUrl: row.ticketUrl,
+      // Plain merchant URL only — the client wraps via /out; exposing the
+      // affiliate-wrapped URL in JSON lets scrapers generate bot clicks.
+      ticketUrl: row.ticketUrl ? unwrapTrackingUrl(row.ticketUrl) : row.ticketUrl,
       ticketSource: row.source,
       minPrice: row.minPrice,
       distanceMiles: Math.round(row.distance * 10) / 10,

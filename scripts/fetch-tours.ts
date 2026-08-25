@@ -7,7 +7,6 @@ import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, or } from 'drizzle-orm';
 import * as ticketmaster from '@/lib/ticketmaster';
 import * as seatgeek from '@/lib/seatgeek';
-import { getTicketmasterAffiliateUrl, getSeatGeekAffiliateUrl } from '@/lib/affiliate';
 import { isPackage } from '@/lib/event-utils';
 import { slugify } from '@/lib/slugify';
 import { nanoid } from 'nanoid';
@@ -243,17 +242,13 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
     if (tmData.status === 'fulfilled') {
       const { events: tmEvents, venues: tmVenues, ticketmasterId, artistInfo, festivalLineups: lineups } = tmData.value;
       festivalLineups = lineups;
-      // Apply affiliate tracking to Ticketmaster event URLs
-      const tmEventsWithAffiliate = tmEvents.map(e => ({
-        ...e,
-        ticketUrl: e.ticketUrl ? getTicketmasterAffiliateUrl(e.ticketUrl) : e.ticketUrl,
-      }));
-      allEvents.push(...tmEventsWithAffiliate);
+      // Store plain merchant URLs; affiliate wrapping happens at render via /out
+      allEvents.push(...tmEvents);
       allVenues.push(...tmVenues);
       if (ticketmasterId) updates.ticketmasterId = ticketmasterId;
       if (artistInfo?.imageUrl) updates.imageUrl = artistInfo.imageUrl;
       if (artistInfo?.genre) updates.genre = artistInfo.genre;
-      console.log(`  ✓ Ticketmaster: ${tmEvents.length} events (with affiliate tracking)`);
+      console.log(`  ✓ Ticketmaster: ${tmEvents.length} events`);
     } else {
       console.log(`  ✗ Ticketmaster: ${tmData.reason}`);
     }
@@ -261,18 +256,13 @@ async function fetchToursForArtist(artistId: string, artistName: string) {
     // Process SeatGeek data
     if (sgData.status === 'fulfilled') {
       const { events: sgEvents, venues: sgVenues, seatgeekId, artistInfo } = sgData.value;
-      // Apply affiliate tracking to SeatGeek event URLs
-      const sgEventsWithAffiliate = sgEvents.map(e => ({
-        ...e,
-        ticketUrl: e.ticketUrl ? getSeatGeekAffiliateUrl(e.ticketUrl) : e.ticketUrl,
-      }));
-      allEvents.push(...sgEventsWithAffiliate);
+      allEvents.push(...sgEvents);
       allVenues.push(...sgVenues);
       if (seatgeekId) updates.seatgeekId = seatgeekId.toString();
       // Only update image/genre from SeatGeek if we don't have it from Ticketmaster
       if (artistInfo?.imageUrl && !updates.imageUrl) updates.imageUrl = artistInfo.imageUrl;
       if (artistInfo?.genre && !updates.genre) updates.genre = artistInfo.genre;
-      console.log(`  ✓ SeatGeek: ${sgEvents.length} events (with affiliate tracking)`);
+      console.log(`  ✓ SeatGeek: ${sgEvents.length} events`);
     } else {
       console.log(`  ✗ SeatGeek: ${sgData.reason}`);
     }

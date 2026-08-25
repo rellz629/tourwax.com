@@ -1,5 +1,6 @@
 import type { Artist, Event, Venue, NewsArticle } from '@/db/schema';
 import { SITE_NAME, SITE_URL } from './seo';
+import { unwrapTrackingUrl } from './affiliate';
 
 export interface BreadcrumbItem {
   name: string;
@@ -134,10 +135,12 @@ export function generateMusicEventSchema(
   // URL for this event's detail page
   schema.url = `${SITE_URL}/artists/${artist.slug}`;
 
-  // Offers — always include so Google gets price/currency/validFrom
+  // Offers — always include so Google gets price/currency/validFrom.
+  // Emit the plain merchant URL, never the affiliate-wrapped one: scrapers
+  // harvest offers.url from JSON-LD, which was flooding Impact with bot clicks.
   const offer: Record<string, any> = {
     '@type': 'Offer',
-    url: event.ticketUrl || `${SITE_URL}/artists/${artist.slug}`,
+    url: event.ticketUrl ? unwrapTrackingUrl(event.ticketUrl) : `${SITE_URL}/artists/${artist.slug}`,
     availability: 'https://schema.org/InStock',
     priceCurrency: event.currency || 'USD',
     validFrom: new Date(event.createdAt).toISOString(),
@@ -435,7 +438,7 @@ export function generateFestivalEventSchema(festival: {
     const lowest = priced.reduce((min, e) => (e.minPrice! < min.minPrice! ? e : min), priced[0]);
     schema.offers = [{
       '@type': 'Offer',
-      url: lowest.ticketUrl || SITE_URL,
+      url: lowest.ticketUrl ? unwrapTrackingUrl(lowest.ticketUrl) : SITE_URL,
       availability: 'https://schema.org/InStock',
       price: lowest.minPrice,
       priceCurrency: lowest.currency || 'USD',

@@ -31,7 +31,7 @@ npm run fetch:bios          # Fetch artist biographies
 npm run import:spotify      # Import artists from Spotify
 npm run import:ticketmaster # Import artists with events from Ticketmaster
 npm run import:csv          # Import artists from CSV file
-npm run update:affiliate    # Update existing Ticketmaster events with affiliate tracking
+npm run unwrap:affiliate    # Unwrap stored affiliate URLs back to plain merchant URLs
 ```
 
 All data operation scripts use `dotenv -e .env.local -- tsx scripts/<script-name>.ts` pattern and require environment variables to be set in `.env.local`.
@@ -133,19 +133,21 @@ Use `Promise.allSettled()` when fetching from multiple APIs to ensure one failur
 **Ticketmaster Affiliate Program** (`lib/affiliate.ts`):
 - Uses Impact Radius tracking via `ticketmaster.evyy.net`
 - Affiliate ID: `6993168`, Campaign ID: `264167`, Creative ID: `4272`
-- `getTicketmasterAffiliateUrl(url)` - Wraps Ticketmaster URLs with affiliate tracking
-- `getAffiliateUrl(url, source)` - Generic function that applies appropriate affiliate tracking based on event source
+- `getAffiliateUrl(url, source)` - Returns a first-party `/out?u=&s=` link for display hrefs
+- `wrapAffiliateUrl(url, source)` - Direct tracking wrap; used only by the /out route
+- `unwrapTrackingUrl(url)` - Recovers the plain merchant URL from a wrapped one
 
-**Automatic Integration**:
-- All Ticketmaster ticket URLs are automatically wrapped with affiliate tracking when displayed on artist pages
-- New events fetched via `scripts/fetch-tours.ts` automatically have affiliate tracking applied before storage
-- Use `npm run update:affiliate` to retroactively update existing Ticketmaster events with affiliate URLs
+**Plain URLs at rest, wrap at render**:
+- The database stores plain merchant URLs (ticketmaster.com / seatgeek.com). Never store wrapped evyy.net / pxf.io URLs: they leak into JSON-LD `offers.url` and API JSON, where scrapers harvest them and flood Impact with bot clicks.
+- Display links go through `getAffiliateUrl()` → `/out`, which 302s bots to the plain merchant URL and humans to the affiliate wrap.
+- JSON-LD (`lib/schema.ts`) and API responses must emit `unwrapTrackingUrl(ticketUrl)`, never the wrapped form.
+- Use `npm run unwrap:affiliate` to strip tracking wrappers from any legacy wrapped rows.
 
 **Adding New Affiliate Programs**:
 1. Add configuration to `AFFILIATE_CONFIG` in `lib/affiliate.ts`
 2. Create a source-specific function (e.g., `getSeatGeekAffiliateUrl`)
-3. Update the `getAffiliateUrl()` switch statement to handle the new source
-4. Update `scripts/fetch-tours.ts` to apply tracking when processing events from that source
+3. Update the `wrapAffiliateUrl()` switch statement and /out's allowed-host and tracking-host patterns
+4. Keep storage plain: do NOT apply tracking in `scripts/fetch-tours.ts`
 
 ## Environment Variables
 
