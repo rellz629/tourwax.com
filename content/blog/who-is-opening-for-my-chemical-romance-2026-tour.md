@@ -6,8 +6,10 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/MCR820_%28cropped%29.jpg/1280px-MCR820_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-07-30"
+updatedAt: "2026-08-24"
 ---
+
+_Updated August 24, 2026. Remaining shows: Minneapolis (August 24), Denver (August 27), San Diego (August 30), Phoenix (September 6), San Antonio (September 12), the Louder Than Life and Aftershock festival headline sets, and the five-night Hollywood Bowl run in October._
 
 My Chemical Romance is taking the Long Live the Black Parade tour into its second year in 2026, celebrating the 20th anniversary of *The Black Parade* by performing the album in full at stadiums and festivals across North America. But the real talking point isn't just the setlist. It's the openers. Every single show has a different opening act, and the range of artists MCR has curated is genuinely impressive.
 
@@ -32,7 +34,7 @@ The openers span punk legends, post-punk revivalists, indie rock icons, Japanese
 | August 30 | San Diego, CA | Petco Park | Babymetal |
 | September 6 | [Phoenix](/concerts/phoenix), AZ | Chase Field | Jimmy Eat World |
 | September 12 | San Antonio, TX | Alamodome | The Mars Volta |
-| September 19 | Louisville, KY | Highland Festival Grounds | Louder Than Life Festival |
+| September 18 | Louisville, KY | Highland Festival Grounds | Louder Than Life Festival (Friday headliner) |
 | October 1 | Sacramento, CA | Discovery Park | Aftershock Festival |
 | October 21 | [Los Angeles](/concerts/los-angeles), CA | Hollywood Bowl | TBA |
 | October 23 | Los Angeles, CA | Hollywood Bowl | TBA |
@@ -80,11 +82,13 @@ Cedric Bixler-Zavala and Omar Rodriguez-Lopez bring progressive chaos to the Ala
 
 ## The Hollywood Bowl Closing Run
 
-MCR wraps the tour with five nights at the Hollywood Bowl in [Los Angeles](/concerts/los-angeles), their home city. Three of those shows (October 21, 23, and 24) still have openers TBA. But the final two nights are the ones to circle on your calendar.
+MCR wraps the US tour with five nights at the Hollywood Bowl in [Los Angeles](/concerts/los-angeles), the first act ever to play a five-night run there. Three of those shows (October 21, 23, and 24) still have openers TBA. But the final two nights are the ones to circle on your calendar.
 
 **October 30, The Used**: MCR and The Used came up together in the early 2000s New Jersey and Utah scenes respectively, and they share a deep history. Bert McCracken and Gerard Way collaborating on "Under Pressure" in 2004 was a defining moment for both bands. This is a Devil's Night show the night before Halloween.
 
-**October 31, Thrice**: Halloween night with Thrice closing out the entire tour. Dustin Kensrue's band has evolved from post-hardcore into something more expansive over the years, and they're a fitting final opener for a tour built on artistic ambition. Expect costumes, expect theatrics, expect a send-off.
+**October 31, Thrice**: Halloween night with Thrice closing out the US run. Dustin Kensrue's band has evolved from post-hardcore into something more expansive over the years, and they're a fitting final opener for a tour built on artistic ambition. Expect costumes, expect theatrics, expect a send-off.
+
+After the Bowl, the band takes The Black Parade to Asia in November, with announced stops including South Korea, Singapore, the Philippines, Thailand, Malaysia, and Indonesia. Support acts for the Asia dates have not been announced.
 
 ## The Black Parade: 20 Years Later
 

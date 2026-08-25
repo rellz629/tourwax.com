@@ -6,8 +6,10 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/b/b0/BrunoMars24KMagicWorldTourLive_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-07-31"
+updatedAt: "2026-08-24"
 ---
+
+_Updated August 24, 2026 with exact night counts for every remaining fall stop, the added second Falcon Stadium show, and the Mexico City and Japan dates._
 
 Bruno Mars is taking his biggest tour yet across stadiums worldwide in 2026, and he's bringing serious talent along for the ride. The Romantic Tour features a rotating cast of openers that changes by leg, and here's who you'll see at every stop.
 
@@ -46,28 +48,33 @@ DJ Pee .Wee (Anderson .Paak) and Leon Thomas are confirmed for the Las Vegas ope
 
 ## Fall North American Dates (RAYE Opening)
 
-After a European run over the summer, Mars returns to North America with RAYE taking over as opener:
+After a European run over the summer, Mars returned to North America in August with RAYE taking over as opener alongside DJ Pee .Wee. Here is the remaining fall schedule:
 
 | Date | City | Venue |
 |------|------|-------|
-| August 21–26 | East Rutherford, NJ | MetLife Stadium (5 nights) |
+| August 25–26 | East Rutherford, NJ | MetLife Stadium (final 2 of 4 nights) |
 | August 29 | [Pittsburgh](/concerts/pittsburgh), PA | Acrisure Stadium |
 | September 1–2 | [Philadelphia](/concerts/philadelphia), PA | Lincoln Financial Field (2 nights) |
 | September 5–6 | Foxborough, MA | Gillette Stadium (2 nights) |
 | September 9 | Indianapolis, IN | Lucas Oil Stadium |
-| September 12–16 | Tampa, FL | Raymond James Stadium (multi-night) |
+| September 12–13 | Tampa, FL | Raymond James Stadium (2 nights) |
 | September 16 | New Orleans, LA | Caesars Superdome |
-| September 19–23 | Miami Gardens, FL | Hard Rock Stadium (multi-night) |
+| September 19–20 | Miami Gardens, FL | Hard Rock Stadium (2 nights) |
 | September 23 | [San Antonio](/concerts/san-antonio), TX | Alamodome |
-| September 26–30 | Colorado Springs, CO | Falcon Stadium (multi-night) |
-| Sept 30–Oct 10 | Inglewood / Santa Clara, CA | SoFi Stadium & Levi's Stadium |
-| October 14–21 | Vancouver, BC | BC Place (multi-night) |
+| September 26–27 | Colorado Springs, CO | Falcon Stadium (2nd show added by demand) |
+| Sept 30, Oct 2–3, 6–7 | Inglewood, CA | SoFi Stadium (5 nights) |
+| October 10–11 | Santa Clara, CA | Levi's Stadium (2 nights) |
+| Oct 14, 16–17, 20–21 | Vancouver, BC | BC Place (5 nights) |
 
-DJ Pee .Wee and RAYE are confirmed for the East Rutherford dates, and both are on the bill for the Gillette Stadium shows in Foxborough on Saturday, September 5 and Sunday, September 6, with doors at 6:00 PM and the show at 7:00 PM.
+DJ Pee .Wee and RAYE are confirmed as the fall support pairing: RAYE made her debut as the tour opener at the August MetLife shows, and the two are explicitly billed together in New Jersey, Foxborough, and Colorado Springs, with the same lineup running through the Vancouver stand.
+
+## Mexico City and Japan
+
+The tour wraps the year with four nights at Estadio GNP Seguros in Mexico City (December 3, 4, 7, and 8), then heads to Japan in January 2027 for a 12-show dome run through Nagoya, Sapporo, Tokorozawa, Osaka, Fukuoka, and Tokyo. DJ Pee .Wee is on those bills; no second opener has been announced for the Mexico or Japan dates.
 
 ## The Scale of This Tour
 
-The Romantic Tour is one of the largest touring operations of 2026. Mars is playing multi-night stadium residencies in most markets, including five nights at MetLife Stadium, five in Toronto, and multiple dates in Philadelphia, Tampa, and the Bay Area. The tour runs from April through December, wrapping with four nights in Mexico City.
+The Romantic Tour is one of the largest touring operations of 2026. Mars is playing multi-night stadium residencies in most markets, including four nights at MetLife Stadium, five in Toronto, five at SoFi Stadium, and five at BC Place in Vancouver. The North American run wraps in late October, followed by four nights in Mexico City in December and a 12-show Japan dome run in January 2027.
 
 This approach, fewer cities but more nights per city, reflects Mars' draw as one of the top-grossing live acts in the world. If you're in a city that's on the list, you likely have multiple dates to choose from.
 

@@ -6,8 +6,10 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Glasto2023.jpg/1280px-Glasto2023.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-07-30"
+updatedAt: "2026-08-24"
 ---
+
+_Updated August 24, 2026 with the newly added AC/DC guest slot in St. Louis, the fall festival stops, and the Mohegan Sun arena show._
 
 The [Foo Fighters](/artists/foo-fighters) are heading out on a 12-date North American stadium run this summer and fall as part of the Take Cover Tour 2026. The support bill reads like a who's who of modern rock: Queens of the Stone Age on nearly every date, plus Mannequin Pussy and Gouge Away rotating in as additional openers. Here's everything you need to know about who's playing when.
 
@@ -21,7 +23,7 @@ Josh Homme and company are on every date except the September 12 stop in Fargo. 
 
 ### Mannequin Pussy: Select Dates
 
-The Philadelphia hardcore punk band joins the bill for at least three dates: [Toronto](/concerts/toronto) (August 4), Fargo (September 12), and Regina (September 15). In Fargo, they're the sole support act and the only opener on the bill, making that show the most unique date on the tour.
+The Philadelphia hardcore punk band joins the bill for four dates: [Toronto](/concerts/toronto) (August 4), Fargo (September 12), Regina (September 15), and Edmonton (September 17). In Fargo, they're the sole support act and the only opener on the bill, making that show the most unique date on the tour.
 
 ### Gouge Away: Select Dates
 
@@ -40,9 +42,22 @@ The Fort Lauderdale post-hardcore group rounds out the lineup on at least two da
 | August 17 | Washington, DC | Nationals Park | Queens of the Stone Age |
 | September 12 | Fargo, ND | Fargodome | Mannequin Pussy |
 | September 15 | Regina, SK | Mosaic Stadium | Queens of the Stone Age, Mannequin Pussy |
-| September 17 | Edmonton, AB | Commonwealth Stadium | Queens of the Stone Age |
+| September 17 | Edmonton, AB | Commonwealth Stadium | Queens of the Stone Age, Mannequin Pussy |
 | September 20 | Vancouver, BC | BC Place | Queens of the Stone Age, Gouge Away |
 | September 26 | Las Vegas, NV | Allegiant Stadium | Queens of the Stone Age, Gouge Away |
+| October 4 | Uncasville, CT | Mohegan Sun Arena | Support TBA |
+
+## The Special Dates: AC/DC, Festivals, and Mohegan Sun
+
+A handful of fall appearances sit outside the standard headline run:
+
+- **September 4, Rock in Rio (Rio de Janeiro):** the band headlines the festival's World Stage.
+- **September 8, St. Louis:** in a late-August surprise, Foo Fighters were announced as the OPENER for AC/DC at The Dome at America's Center, replacing The Pretty Reckless for that stop only. Foo Fighters opening for anyone is rare enough to make this one of the most talked-about rock tickets of the fall.
+- **September 24, Bourbon & Beyond (Louisville):** Thursday headline slot, sharing the day's bill with Queens of the Stone Age, Gary Clark Jr., Joan Jett, and Cheap Trick.
+- **October 3, Power to the People festival (Merriweather Post Pavilion, Columbia, MD):** Tom Morello's activist festival, with a lineup that includes Dave Matthews, Bruce Springsteen as a special guest, Joan Baez, and Cypress Hill.
+- **October 4, Mohegan Sun Arena (Uncasville, CT):** part of the casino's 30th birthday celebration, and by far the smallest room on the tour. No support act has been announced.
+
+The band has also announced a South American stadium tour for 2027, with the broader Take Cover run continuing into Oceania in November (Brisbane, Townsville, Sydney, Newcastle, Melbourne, and Adelaide).
 
 ## A New Era: Ilan Rubin on Drums
 
@@ -54,7 +69,7 @@ The Take Cover Tour marks the first Foo Fighters tour with drummer Ilan Rubin be
 
 **The support acts are pulling from punk and hardcore.** Mannequin Pussy and Gouge Away aren't safe, radio-friendly openers. They're loud, physical bands that make sense for a Foo Fighters crowd that still values raw energy. Both acts are getting a massive platform on these stadium dates.
 
-**Fargo is the outlier.** Every other date features Queens of the Stone Age. Fargo on September 12 is the only show where Mannequin Pussy is the sole support. If you're specifically going for QOTSA, double-check your date.
+**Fargo is the outlier.** Every other headline date features Queens of the Stone Age. Fargo on September 12 is the only show where Mannequin Pussy is the sole support. If you're specifically going for QOTSA, double-check your date.
 
 ## The Bigger Picture
 

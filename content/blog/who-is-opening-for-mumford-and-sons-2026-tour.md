@@ -6,14 +6,16 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Mumford_%26_Sons%2C_performing_at_Aviemore%2C_Scotland_2015.jpg/1280px-Mumford_%26_Sons%2C_performing_at_Aviemore%2C_Scotland_2015.jpg"
 publishedAt: "2026-06-21"
-updatedAt: "2026-06-21"
+updatedAt: "2026-08-24"
 ---
 
-[Mumford & Sons](/artists/mumford-sons) are touring North America in 2026 behind their album *Prizefighter*, and the support bill reads like a who's who of current folk and Americana. The run opens June 2 in Vancouver and closes October 6 at the Kia Forum near Los Angeles, with openers rotating by leg rather than one act carrying the whole tour. Here's who plays which stretch and what to expect.
+_Updated August 24, 2026 with the fall leg openers, the added second Kia Forum night, and the new Shoreline Amphitheatre closer._
+
+[Mumford & Sons](/artists/mumford-sons) are touring North America in 2026 behind their album *Prizefighter*, and the support bill reads like a who's who of current folk and Americana. The run opened June 2 in Vancouver, and the North American headline dates now close October 8 at Shoreline Amphitheatre in Mountain View after the band added a second Kia Forum night and a Bay Area stop. Openers rotate by leg rather than one act carrying the whole tour. Here's who plays which stretch and what to expect.
 
 ## How the Lineup Works
 
-The Prizefighter Tour is split into seasonal legs, and each leg has its own opener or pair of openers. Dylan Gossett anchors the early-June run, with [Sierra Ferrell](/artists/sierra-ferrell), [Caamp](/artists/caamp), and [Lord Huron](/artists/lord-huron) joining for specific dates. Medium Build covers the late-summer leg, and the [Marcus King Band](/artists/marcus-king-band) takes the fall stretch. Because the support changes from city to city, the opener is worth checking against your specific date.
+The Prizefighter Tour is split into seasonal legs, and each leg has its own opener or pair of openers. Dylan Gossett anchored the early-June run, with [Sierra Ferrell](/artists/sierra-ferrell), [Caamp](/artists/caamp), and [Lord Huron](/artists/lord-huron) joining for specific dates. Medium Build covered the late-summer leg. For the fall, the [Marcus King Band](/artists/marcus-king-band) opens the September headline dates and Sierra Ferrell returns to close out the tour in October. Because the support changes from city to city, the opener is worth checking against your specific date.
 
 ## Dylan Gossett
 
@@ -21,7 +23,7 @@ Dylan Gossett opens the bulk of the early-June dates, the longest single stretch
 
 ## Sierra Ferrell
 
-Sierra Ferrell joins for select early-June dates, including the Boulder show. The West Virginia artist has become one of the most acclaimed names in modern Americana, with a vintage, genre-spanning style that pulls from old-time country, folk, and bluegrass. Her sets are a highlight wherever she lands on the schedule.
+Sierra Ferrell joined for select early-June dates, including the Boulder show, and she returns to close the tour: she opens the final four headline dates, Albuquerque (October 3), both Kia Forum nights in Inglewood (October 6-7), and the Shoreline Amphitheatre closer in Mountain View (October 8). The West Virginia artist has become one of the most acclaimed names in modern Americana, with a vintage, genre-spanning style that pulls from old-time country, folk, and bluegrass. Her sets are a highlight wherever she lands on the schedule.
 
 [Sierra Ferrell tour dates](/artists/sierra-ferrell)
 
@@ -43,7 +45,7 @@ Medium Build covers the late-July and August leg, from Minneapolis through stops
 
 ## Marcus King Band
 
-The Marcus King Band take the fall leg, with dates including Grand Rapids, Madison, Birmingham, and The Woodlands. Marcus King is a blistering guitarist and soulful vocalist whose blues-rock pedigree adds a different texture to the bill, leaning heavier and groovier than the folk acts on the earlier legs.
+The Marcus King Band open the September headline dates: Charlottesville (September 20), Grand Rapids (September 22), Madison (September 23), Birmingham (September 29), and The Woodlands (October 1). Marcus King is a blistering guitarist and soulful vocalist whose blues-rock pedigree adds a different texture to the bill, leaning heavier and groovier than the folk acts on the earlier legs.
 
 [Marcus King Band tour dates](/artists/marcus-king-band)
 
@@ -53,11 +55,33 @@ The Marcus King Band take the fall leg, with dates including Grand Rapids, Madis
 |---|---|---|
 | Early June | Vancouver through the Northeast | Dylan Gossett (with Sierra Ferrell, Caamp, and Lord Huron on select dates) |
 | Late July-August | Minneapolis through Gilford | Medium Build |
-| September-October | Grand Rapids through Los Angeles | Marcus King Band |
+| September 20 - October 1 | Charlottesville through The Woodlands | Marcus King Band |
+| October 3-8 | Albuquerque, Inglewood, Mountain View | Sierra Ferrell |
+
+## Remaining Fall 2026 Dates
+
+| Date | City | Venue | Support |
+|---|---|---|---|
+| September 12 | Rio de Janeiro, Brazil | Rock in Rio | Festival |
+| September 19 | Asbury Park, NJ | Sea.Hear.Now Festival | Festival (Saturday headliner) |
+| September 20 | Charlottesville, VA | John Paul Jones Arena | Marcus King Band |
+| September 22 | Grand Rapids, MI | Acrisure Amphitheater | Marcus King Band |
+| September 23 | Madison, WI | Kohl Center | Marcus King Band |
+| September 25 | [Louisville](/concerts/louisville), KY | Bourbon & Beyond | Festival |
+| September 27 | Ocean City, MD | Oceans Calling Festival | Festival (Sunday closer) |
+| September 29 | Birmingham, AL | Coca-Cola Amphitheater | Marcus King Band |
+| October 1 | The Woodlands, TX | Cynthia Woods Mitchell Pavilion | Marcus King Band |
+| October 3 | Albuquerque, NM | First Financial Credit Union Amphitheater | Sierra Ferrell |
+| October 6 | Inglewood, CA | Kia Forum | Sierra Ferrell |
+| October 7 | Inglewood, CA | Kia Forum | Sierra Ferrell |
+| October 8 | Mountain View, CA | Shoreline Amphitheatre | Sierra Ferrell |
+| November 20 | Mexico City, Mexico | Corona Capital | Festival |
+
+Four of the remaining stops are festival plays, Rock in Rio, Sea.Hear.Now, Bourbon & Beyond, and Oceans Calling, plus a Corona Capital slot in Mexico City on November 20, so those nights follow the festival's own lineup rather than the tour's support bill.
 
 ## What to Expect
 
-The Prizefighter Tour mixes the band's new material with the festival-ready singalongs that made *Sigh No More* and *Babel* arena staples. The routing includes marquee stops at Madison Square Garden, Wrigley Field, and Fenway Park before the Kia Forum closer, where the production has room to go big. With a support bill this deep in folk and Americana talent, the opener is a real part of the night on every date, so it pays to arrive early.
+The Prizefighter Tour mixes the band's new material with the festival-ready singalongs that made *Sigh No More* and *Babel* arena staples. The routing included marquee stops at Madison Square Garden, Wrigley Field, and Fenway Park, and the added Kia Forum and Shoreline dates give the West Coast a proper sendoff. With a support bill this deep in folk and Americana talent, the opener is a real part of the night on every date, so it pays to arrive early.
 
 ## How to Get Tickets
 

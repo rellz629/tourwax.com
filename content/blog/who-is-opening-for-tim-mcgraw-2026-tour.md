@@ -7,8 +7,10 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Tim_McGraw_October_24_2015.jpg"
 publishedAt: "2026-07-09"
-updatedAt: "2026-07-30"
+updatedAt: "2026-08-24"
 ---
+
+_Updated August 24, 2026. The tour is in its final month: remaining stops run from Cincinnati (August 27) through the West Palm Beach finale (September 26), with 49 Winchester and Timothy Wayne continuing as support._
 
 If you've got tickets to [Tim McGraw](/artists/tim-mcgraw)'s Pawn Shop Guitar Tour and want to know who's opening, the answer on most nights is **49 Winchester**, the Appalachian roots-country band from Castlewood, Virginia. On select dates the opener is **Timothy Wayne**, a rising country singer who also happens to be McGraw's nephew, and a few shows feature both.
 
@@ -46,7 +48,8 @@ The short version:
 
 - **Most amphitheater dates:** 49 Winchester opens.
 - **Select dates:** Timothy Wayne opens, sometimes alongside 49 Winchester (Ticketmaster listings show him in Charleston, Cincinnati, Austin, and Dallas, among others).
-- **Hershey, Boston, and Minneapolis:** The Chicks and Lady A join McGraw for stadium triple bills.
+- **Hershey, Boston, and Minneapolis:** The Chicks and Lady A joined McGraw for stadium triple bills (all three have now been played).
+- **September 5 in Snowmass Village, CO:** a Jazz Aspen Snowmass festival headline set, with the festival's own Saturday bill (including Shaboozey and Avery Anna) rather than the tour openers.
 
 Support acts can shift city to city over a summer-long run, so check your venue's listing close to showtime. The [Tim McGraw](/artists/tim-mcgraw) page on TourWax carries direct ticket links and current details for every date.
 
@@ -78,6 +81,7 @@ Support acts can shift city to city over a summer-long run, so check your venue'
 | August 27 | [Cincinnati](/concerts/cincinnati), OH | Riverbend Music Center |
 | August 28 | Clarkston, MI | Pine Knob Music Theatre |
 | August 29 | Grand Rapids, MI | Acrisure Amphitheater |
+| September 5 | Snowmass Village, CO | Jazz Aspen Snowmass (festival headliner) |
 | September 10 | [Austin](/concerts/austin), TX | Moody Center |
 | September 11 | [Dallas](/concerts/dallas), TX | Dos Equis Pavilion |
 | September 12 | Rogers, AR | Walmart AMP |

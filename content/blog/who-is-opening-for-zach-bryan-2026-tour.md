@@ -7,10 +7,14 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/0/07/Zach_Bryan_performing_at_Crypto.com_Arena_on_23_Aug_2023_%28cropped%29.jpg"
 publishedAt: "2026-04-08"
-updatedAt: "2026-07-30"
+updatedAt: "2026-08-24"
 ---
 
+_Updated August 24, 2026 with confirmed openers for the final stretch of the tour, including Glendale and the Auburn finale._
+
 [Zach Bryan](/artists/zach-bryan) is taking the With Heaven on Tour across North America in 2026, and the support lineup is one of the most impressive bills any artist has assembled this year. Kings of Leon, Alabama Shakes, Caamp, MJ Lenderman, Trampled by Turtles, Gregory Alan Isakov, and Dijon are all rotating through stadium dates in support of Bryan's sixth album *With Heaven on Top*. Here's who's playing at every show.
+
+**Remaining 2026 dates at a glance:** Glendale, AZ (September 5, MJ Lenderman), Dover, DE (September 18-19, Kings of Leon night one, Alabama Shakes night two), Toronto (September 21-22, Trampled by Turtles), Foxborough, MA (October 2-3, Gregory Alan Isakov), and the tour finale at Auburn's Jordan-Hare Stadium (October 10, Gregory Alan Isakov).
 
 ## The Support Lineup
 
@@ -18,11 +22,11 @@ Bryan's opener roster tells you everything about where he sits in the music land
 
 ### Kings of Leon: Direct Support on Select Dates
 
-The Followill family needs no introduction. Kings of Leon are arena headliners who've sold tens of millions of records, and they're playing support on at least three dates: [Louisville](/concerts/louisville) (April 11), Lincoln (April 25), and the two-day Dover festival (September 18-19). That a band of their stature is opening for Zach Bryan says everything about his meteoric rise from SoundCloud uploads to selling out college football stadiums.
+The Followill family needs no introduction. Kings of Leon are arena headliners who've sold tens of millions of records, and they're playing support on three dates: [Louisville](/concerts/louisville) (April 11), Lincoln (April 25), and night one of the two-night Dover stand (September 18). That a band of their stature is opening for Zach Bryan says everything about his meteoric rise from SoundCloud uploads to selling out college football stadiums.
 
 ### Alabama Shakes: Reunited and on the Road
 
-Brittany Howard and company are back together, and their return to touring includes support slots on Bryan's summer and fall dates. They're confirmed for Eugene (July 25) and the Dover two-day festival (September 18-19). Alabama Shakes bring a raw, Southern-rock energy that's a natural fit for Bryan's crowd.
+Brittany Howard and company are back together, and their return to touring includes support slots on Bryan's summer and fall dates. They're confirmed for Eugene (July 25) and night two of the Dover stand (September 19). Alabama Shakes bring a raw, Southern-rock energy that's a natural fit for Bryan's crowd.
 
 ### Caamp: Indie-Folk Support
 
@@ -30,7 +34,7 @@ The Columbus, Ohio indie-folk band joins the bill for the tour's opening night i
 
 ### MJ Lenderman: Indie Rock's Rising Star
 
-One of the most critically acclaimed young guitarists in indie rock, MJ Lenderman is confirmed for the [San Diego](/concerts/san-diego) show on July 31. Lenderman's scrappy, Americana-adjacent guitar work makes him a smart pick for a stadium crowd that skews toward fans who discovered Bryan through the internet rather than country radio.
+One of the most critically acclaimed young guitarists in indie rock, MJ Lenderman played the [San Diego](/concerts/san-diego) show on July 31 and returns for the Glendale, AZ date at State Farm Stadium on September 5. Lenderman's scrappy, Americana-adjacent guitar work makes him a smart pick for a stadium crowd that skews toward fans who discovered Bryan through the internet rather than country radio.
 
 ### Dijon: R&B Meets Indie
 
@@ -42,7 +46,7 @@ The Minnesota bluegrass outfit joins the bill in [Tulsa](/concerts/tulsa) (April
 
 ### Gregory Alan Isakov: Singer-Songwriter Support
 
-The Colorado-based singer-songwriter is confirmed for the two-night Foxborough run at Gillette Stadium (October 2-3). Isakov's atmospheric folk is a fitting complement to Bryan's more reflective material.
+The Colorado-based singer-songwriter is confirmed for the two-night Foxborough run at Gillette Stadium (October 2-3) and the tour finale at Jordan-Hare Stadium in Auburn on October 10. Isakov's atmospheric folk is a fitting complement to Bryan's more reflective material, and he gets the honor of opening the last show of the entire tour.
 
 ### J.R. Carroll, Fey Fili, and Gabriella Rose
 
@@ -76,11 +80,11 @@ J.R. Carroll appears on many of the first leg dates, including St. Louis, Tulsa,
 | August 13 | [Denver](/concerts/denver), CO | Empower Field at Mile High | TBA |
 | August 14 | [Denver](/concerts/denver), CO | Empower Field at Mile High | TBA |
 | August 22 | Arlington, TX | AT&T Stadium | TBA |
-| September 5 | Glendale, AZ | State Farm Stadium | TBA |
-| Sept 18-19 | Dover, DE | The Woodlands | Kings of Leon, Alabama Shakes, Fey Fili, Gabriella Rose |
+| September 5 | Glendale, AZ | State Farm Stadium | MJ Lenderman, Fey Fili |
+| Sept 18-19 | Dover, DE | The Woodlands | Kings of Leon (night 1), Alabama Shakes (night 2), Fey Fili, Gabriella Rose |
 | Sept 21-22 | Toronto, ON | Rogers Centre | Trampled by Turtles, Gabriella Rose |
 | Oct 2-3 | [Foxborough](/concerts/foxborough), MA | Gillette Stadium | Gregory Alan Isakov, Gabriella Rose |
-| October 10 | Auburn, AL | Jordan-Hare Stadium | TBA |
+| October 10 | Auburn, AL | Jordan-Hare Stadium | Gregory Alan Isakov, Gabriella Rose |
 
 *Bryan also has European dates with Ben Howard and Keenan O'Meara on support.*
 
@@ -88,7 +92,7 @@ J.R. Carroll appears on many of the first leg dates, including St. Louis, Tulsa,
 
 One of the defining features of the With Heaven Tour is its venue selection. Bryan isn't routing through traditional concert amphitheaters or even standard arenas. He's playing college football stadiums. Tiger Stadium in Baton Rouge. Davis Wade Stadium in Starkville. Memorial Stadium in Lincoln. Jordan-Hare in Auburn. H.A. Chapman in Tulsa. These are 40,000-to-100,000-capacity venues in college towns across the South and Midwest, and Bryan is filling them.
 
-It's a routing strategy that speaks directly to his fan base. Bryan's audience skews young, passionate about live music, and concentrated in the same regions where college football is a way of life. Playing these stadiums isn't just a capacity play; it's a cultural statement.
+It's a routing strategy that speaks directly to his fan base. Bryan's audience skews young, passionate about live music, and concentrated in the same regions where college football is a way of life. Playing these stadiums isn't just a capacity play; it's a cultural statement. The October 10 finale at Jordan-Hare caps it off: it's the first concert held at Auburn's stadium since 2017.
 
 ## Why This Tour Matters
 

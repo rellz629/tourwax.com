@@ -6,10 +6,12 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Noah_Kahan_at_Glastonbury_Festival_2025_04_%28cropped%29.jpg/1280px-Noah_Kahan_at_Glastonbury_Festival_2025_04_%28cropped%29.jpg"
 publishedAt: "2026-04-20"
-updatedAt: "2026-07-30"
+updatedAt: "2026-08-24"
 ---
 
-Noah Kahan is bringing The Great Divide Tour to some of the most storied venues in North America this summer: five nights at Fenway Park, two at Wrigley Field, the Rose Bowl, Citi Field, and a closer at T-Mobile Park in Seattle. It's a landmark run for a folk singer from Strafford, Vermont. Here's who's opening and the full schedule.
+_Updated August 24, 2026. The North American run wraps this week with Salt Lake City (August 25), Vancouver (August 28), and two Seattle nights (August 30-31), all with Gigi Perez and Annabelle Dinda opening._
+
+Noah Kahan is bringing The Great Divide Tour to some of the most storied venues in North America this summer: five nights at Fenway Park, two at Wrigley Field, the Rose Bowl, Citi Field, and a two-night closer at T-Mobile Park in Seattle. It's a landmark run for a folk singer from Strafford, Vermont. Here's who's opening and the full schedule.
 
 ## The Opening Acts
 
@@ -57,6 +59,7 @@ Annabelle Dinda is a New York-based singer-songwriter who graduated from NYU's G
 | Aug 25 | Salt Lake City, UT | America First Field | Gigi Perez, Annabelle Dinda |
 | Aug 28 | Vancouver, BC | BC Place | Gigi Perez, Annabelle Dinda |
 | Aug 30 | Seattle, WA | T-Mobile Park | Gigi Perez, Annabelle Dinda |
+| Aug 31 | Seattle, WA | T-Mobile Park | Gigi Perez, Annabelle Dinda |
 
 ## Festival Appearance
 
@@ -68,7 +71,11 @@ The Boston stretch is the centerpiece of this tour. Five consecutive nights at F
 
 ## International Leg
 
-After the North American run closes in Seattle on August 30, the tour moves to Europe, Australia, and New Zealand through December 2026. Those international dates feature different support acts, including Michael Marcagi, Bella Kay, and Mon Rovîa on select legs.
+After the North American run closes in Seattle on August 31, the tour goes global. The Australia and New Zealand leg runs September 25 through October 9, with two nights at Melbourne's Rod Laver Arena (September 25-26), two in Sydney (October 2-3), and Auckland's Spark Arena (October 9). The UK and European leg opens November 5-6 in Glasgow and runs through arena stands in Manchester, London, Dublin, Amsterdam, and more before closing December 7 in Paris. Those international dates feature different support acts, including Michael Marcagi, Bella Kay, and Mon Rovîa on select legs.
+
+## What Comes After: 2027 Stadium Shows
+
+Kahan has already announced his first 2027 dates, a stadium run billed as the Last of the Bugs World Tour: Hampden Park in Glasgow (July 13, 2027), Aviva Stadium in Dublin (July 17), and Wembley Stadium in London (July 23). A North American stadium leg has been rumored but not officially announced, so treat anything beyond those three shows as unconfirmed for now.
 
 ## How to Get Tickets
 

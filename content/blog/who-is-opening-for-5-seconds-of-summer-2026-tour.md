@@ -8,8 +8,10 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/5sos-NZ4A4323.jpg/1280px-5sos-NZ4A4323.jpg"
 publishedAt: "2026-06-17"
-updatedAt: "2026-07-30"
+updatedAt: "2026-08-24"
 ---
+
+_Updated August 24, 2026. Three North American shows remain this week, then the tour heads to Latin America, Australia, and New Zealand._
 
 [5 Seconds of Summer](/artists/5-seconds-of-summer) are out on their sixth headlining run, the EVERYONE'S A STAR! World Tour, supporting their 2026 album of the same name. Unlike a lot of festival-heavy summers, this is a true headline tour with a clear support act, so if you are wondering who you will catch before 5SOS take the stage, the answer is straightforward. Here is who is opening, what they bring, and where the tour goes next.
 
@@ -23,11 +25,15 @@ The Band Camino are a Nashville-based alt-pop and rock group who built their fol
 
 ## Support Acts on the International Legs
 
-The opener changes once the tour leaves North America. On the European leg, 5SOS are joined by a rotating set of support acts including South Arcade, Master Peace, and Haiden Henderson. The Asia-Pacific dates feature Australian band Cub Sport in the support slot. If you are catching the tour overseas, check your specific date, since the lineup differs by region.
+The opener changes once the tour leaves North America. On the completed European leg, 5SOS were joined by a rotating set of support acts including South Arcade, Master Peace, and Haiden Henderson. The Australia and New Zealand dates feature Cub Sport in the support slot, announced in April for every show on that leg. Mexico, South America, and most of the Asia dates have no confirmed opener yet, so check your specific date before you buy.
 
 ## Where 5 Seconds of Summer Are Playing Next
 
-The North American run covers arenas and amphitheaters from coast to coast. Upcoming stops include Orlando on June 18, [Nashville](/concerts/nashville) on June 20, [Austin](/concerts/austin) on June 22, and Fort Worth on June 24, before the West Coast swing through Glendale, Anaheim, Portland, [Seattle](/concerts/seattle), Vancouver, Sacramento, San Diego, and Inglewood in late June and early July. The amphitheater leg picks back up in late July across the Midwest and East, hitting Cincinnati, Toronto, Camden, and [Charlotte](/concerts/charlotte), and wraps the North American dates in late August. From there the tour heads to Mexico in September, Brazil mid-month, and Oceania in October and November.
+The North American run wraps this week with three final dates, all with The Band Camino opening: West Valley City, UT (August 26), Shoreline Amphitheatre in Mountain View, CA (August 28), and PH Live at Planet Hollywood in Las Vegas (August 29).
+
+From there the tour heads to Mexico in September (Mexico City September 9, Guadalajara September 11, Monterrey September 12), then a South American arena run through Buenos Aires, São Paulo, Belo Horizonte, Santiago, Bogotá, and Lima (September 16-27). No support act has been announced for the Mexico or South America dates yet.
+
+The Australia and New Zealand leg runs late October into November, opening at Auckland's Spark Arena on October 24 and hitting Brisbane, Sydney, Melbourne, Adelaide, and Perth, with Cub Sport supporting all of those shows. An Asia leg follows in November and December, with the band's new album *Everyone's a Star!* landing mid-tour on November 14.
 
 You can see the full, current routing on the [5 Seconds of Summer artist page](/artists/5-seconds-of-summer), which pulls live dates as they are announced.
 
