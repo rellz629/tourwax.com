@@ -1,24 +1,25 @@
 ---
 title: "Red Rocks 2026 Concert Schedule: Every Show Through November"
-metaTitle: "Red Rocks 2026 Concert Schedule: Full List of Shows"
+metaTitle: "Red Rocks 2026 Concert Schedule: Every Fall Show & Tickets"
+metaDescription: "Updated Aug 30, 2026: the full Red Rocks fall schedule. Brandi Carlile, Andrea Bocelli, Beck, deadmau5, Steve Lacy and every show through November."
 slug: "red-rocks-2026-concert-schedule"
-excerpt: "The full Red Rocks Amphitheatre 2026 concert schedule from August through November: LCD Soundsystem, Santana, Brandi Carlile, Andrea Bocelli, deadmau5, Zac Brown Band, and dozens more."
+excerpt: "The full Red Rocks Amphitheatre 2026 concert schedule through November: Brandi Carlile, Andrea Bocelli, Beck, Zac Brown Band, deadmau5, Steve Lacy, Fuerza Regida, and dozens more."
 author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Jamie_xx_performing_at_Red_Rocks%2C_2016.jpg/1280px-Jamie_xx_performing_at_Red_Rocks%2C_2016.jpg"
 publishedAt: "2026-07-29"
-updatedAt: "2026-08-08"
+updatedAt: "2026-08-30"
 ---
 
-_Updated August 8, 2026._
+_Updated August 30, 2026 against the official Red Rocks calendar. New since our last update: Hasan Minhaj & Ronny Chieng (Sep 24), Fuerza Regida (Nov 2-3), and Steve Lacy (Nov 11)._
 
-Red Rocks Amphitheatre in Morrison, Colorado is deep into its 2026 season, and the back half of the calendar is stacked: LCD Soundsystem, Santana, Goose, Brandi Carlile, Andrea Bocelli, Zac Brown Band, and deadmau5 all play the rocks between now and mid-November. More than 60 shows remain on the calendar as of August 8. Here's the full 2026 schedule from August on, month by month, plus what to know before you go.
+Red Rocks Amphitheatre in Morrison, Colorado is heading into the fall stretch of its 2026 season, and the calendar is stacked: Brandi Carlile, Andrea Bocelli, Beck, Zac Brown Band, deadmau5, and Steve Lacy all play the rocks between now and mid-November. About 70 shows remain on the calendar as of August 30. Here's the full 2026 schedule from August on, month by month, plus what to know before you go.
 
 You can also browse the live, always-current listing on the [Red Rocks Amphitheatre page on TourWax](/venues/red-rocks-amphitheatre), which pulls ticket links directly from Ticketmaster and SeatGeek.
 
 ## August 2026 at Red Rocks
 
-August is the heart of the season, with shows nearly every night. The full month is listed here for reference; shows through August 7 have already taken place:
+August is nearly wrapped: only Ty Myers (Aug 30) and John Fogerty (Aug 31) remain. The full month stays listed here for reference:
 
 | Date | Show |
 |------|------|
@@ -71,6 +72,7 @@ September mixes multi-night residencies with some of the biggest single nights o
 | Sep 20-21 | Andrea Bocelli |
 | Sep 22 | [Foster the People](/artists/foster-the-people) with The Beaches |
 | Sep 23 | [Bleachers](/artists/bleachers) with American Football |
+| Sep 24 | Hasan Minhaj & Ronny Chieng (comedy) |
 | Sep 25 | The Revivalists |
 | Sep 26 | [Big Gigantic](/artists/big-gigantic) |
 | Sep 27-28 | Jungle |
@@ -119,15 +121,17 @@ deadmau5 closing October with two Halloween nights is a Red Rocks tradition-in-t
 
 ## November 2026 at Red Rocks
 
-The season winds down in November, weather permitting:
+The season winds down in November, weather permitting. Fuerza Regida's two nights and Steve Lacy are late additions to the calendar:
 
 | Date | Show |
 |------|------|
 | Nov 1 | Yandel |
+| Nov 2-3 | Fuerza Regida |
 | Nov 4 | Joshua Slone with Jake Minch |
 | Nov 6 | Dabin |
 | Nov 7 | ATLiens |
 | Nov 8 | Face Vocal Band |
+| Nov 11 | Steve Lacy |
 | Nov 12 | [Clipse](/artists/clipse) & [J.I.D](/artists/jid) with Samara Cyn · [Tickets](https://seatgeek.com/clipse-tickets/morrison-colorado-red-rocks-amphitheatre-2026-11-12-6-pm/concert/18285515) |
 | Nov 13 | Gryffin with Oliver Heldens |
 | Nov 14-15 | mike. |
@@ -149,10 +153,10 @@ More shows may still be announced. The venue adds dates throughout the season, s
 ## Frequently Asked Questions
 
 ### How many shows are left at Red Rocks in 2026?
-More than 60 concerts remain on the calendar from August 8 through mid-November 2026, including multi-night runs from Goose, LCD Soundsystem, Brandi Carlile, Andrea Bocelli, Zac Brown Band, and deadmau5.
+About 70 concerts remain on the calendar from late August through mid-November 2026, including multi-night runs from Goose, Brandi Carlile, Andrea Bocelli, Zac Brown Band, deadmau5, and Fuerza Regida.
 
 ### When does the Red Rocks 2026 season end?
-The last currently announced shows are mike. on November 14-15, 2026. The venue occasionally adds late-season dates, and the 2027 season typically begins announcing over the winter.
+The last currently announced shows are mike. on November 14-15, 2026. The venue occasionally adds late-season dates, and the 2027 season is already starting to fill in: Rod Stewart plays September 2-3, 2027, the first 2027 dates on the official calendar.
 
 ### Was Rezz Rocks 2026 canceled?
 Yes. Rezz Rocks VIII, scheduled for October 3, 2026, was canceled. Deorro now plays that date, and refunds for the canceled show process automatically through your point of purchase.
