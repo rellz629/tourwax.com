@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import type { Artist, Event, Venue } from '@/db/schema';
 
 export const SITE_NAME = 'TourWax';
@@ -25,6 +26,17 @@ const TITLE_SUFFIX = ' | TourWax';
 // Returns a value suitable for Next's Metadata `title` field.
 export function pageTitle(raw: string): string | { absolute: string } {
   return (raw + TITLE_SUFFIX).length <= 70 ? raw : { absolute: raw };
+}
+
+// "<title> - Page N" for deep pagination pages, keeping the site-suffix rule
+// from pageTitle(). Accepts whatever a metadata generator already produced.
+export function pagedTitle(title: Metadata['title'], page: number): string | { absolute: string } {
+  const raw = typeof title === 'string'
+    ? title
+    : title && typeof title === 'object' && 'absolute' in title && title.absolute
+      ? title.absolute
+      : SITE_NAME;
+  return pageTitle(`${raw} - Page ${page}`);
 }
 
 // Trim prose to a max length on a word boundary, appending an ellipsis. Used to

@@ -206,7 +206,7 @@ export default function NearMeClient({ initialData }: Props) {
           {data.events.map((event) => (
             <div
               key={event.id}
-              className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100"
+              className="group event-card"
             >
               <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                 <div className="flex items-start gap-4 flex-1">
@@ -221,7 +221,6 @@ export default function NearMeClient({ initialData }: Props) {
                         width={56}
                         height={56}
                         className="w-full h-full object-cover"
-                        sizes="56px"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">
@@ -232,7 +231,7 @@ export default function NearMeClient({ initialData }: Props) {
                   <div className="flex-1 min-w-0">
                     <Link
                       href={`/artists/${event.artist.slug}`}
-                      className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg"
+                      className="event-title"
                     >
                       {event.artist.name}
                     </Link>

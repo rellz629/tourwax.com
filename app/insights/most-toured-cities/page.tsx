@@ -7,7 +7,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import { getMostTouredCities } from '@/lib/insights';
 
 export const dynamic = 'force-static';
-export const revalidate = 1800;
+export const revalidate = 21600; // 6 hours: matches the fetch-tours cron cadence
 
 export async function generateMetadata(): Promise<Metadata> {
   return generateInsightMetadata({

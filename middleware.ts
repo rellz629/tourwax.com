@@ -2,6 +2,46 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GONE_URLS } from '@/lib/gone-urls';
 
 /**
+ * Legacy pagination redirects. Listings used to paginate with `?page=N` and
+ * filter with `?q=`/`?letter=`/`?state=` on the listing URL itself. Reading
+ * searchParams made those routes fully dynamic (every request a cold function
+ * render), so page numbers moved into the path (`/page/N`) and index filters
+ * moved to a dedicated dynamic `/browse` route. 301 the old shapes so stray
+ * links and crawler memory do not 404.
+ */
+const PAGINATED_BASE = /^\/(artists|venues|festivals)$|^\/(tours|concerts|venues)\/[^/]+$/;
+// Second segments under /concerts and /venues that are not listing slugs.
+const NON_LISTING_SEGMENTS = new Set(['tonight', 'this-week', 'this-weekend', 'near-me', 'on-sale-today', 'state', 'compare', 'browse', 'page']);
+const INDEX_FILTER_KEYS: Record<string, string[]> = {
+  '/artists': ['q', 'genre', 'letter'],
+  '/venues': ['q', 'state'],
+};
+
+function redirectLegacyPagination(request: NextRequest): NextResponse | null {
+  const { pathname, searchParams } = request.nextUrl;
+  if (!PAGINATED_BASE.test(pathname)) return null;
+  const second = pathname.split('/')[2];
+  if (second && NON_LISTING_SEGMENTS.has(second)) return null;
+
+  const filterKeys = INDEX_FILTER_KEYS[pathname] ?? [];
+  const hasFilter = filterKeys.some((key) => (searchParams.get(key) ?? '').trim() !== '');
+  const page = searchParams.get('page');
+  if (!hasFilter && page === null) return null;
+
+  const url = request.nextUrl.clone();
+  if (hasFilter) {
+    // Keep the whole query (including page) on the dynamic browse route.
+    url.pathname = `${pathname}/browse`;
+    return NextResponse.redirect(url, 301);
+  }
+
+  url.searchParams.delete('page');
+  const n = page !== null && /^[1-9]\d{0,5}$/.test(page) ? Number(page) : 1;
+  url.pathname = n > 1 ? `${pathname}/page/${n}` : pathname;
+  return NextResponse.redirect(url, 301);
+}
+
+/**
  * Normalize URL slugs: strip diacritics, fix encoding issues, block "null" segments.
  * Redirects to the canonical slug with a 301 if the URL changes after normalization.
  *
@@ -27,6 +67,9 @@ const DYNAMIC_ROUTES = ['/artists/', '/venues/', '/concerts/', '/tours/', '/fest
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  const legacy = redirectLegacyPagination(request);
+  if (legacy) return legacy;
 
   // Only process dynamic routes
   const matchedRoute = DYNAMIC_ROUTES.find((route) => pathname.startsWith(route));
@@ -70,5 +113,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/artists/:path+', '/venues/:path+', '/concerts/:path+', '/tours/:path+', '/festivals/:path+'],
+  matcher: ['/artists', '/venues', '/festivals', '/artists/:path+', '/venues/:path+', '/concerts/:path+', '/tours/:path+', '/festivals/:path+'],
 };

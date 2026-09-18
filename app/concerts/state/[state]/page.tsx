@@ -12,7 +12,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import { slugify } from '@/lib/slugify';
 
 export const dynamic = 'force-static';
-export const revalidate = 1800;
+export const revalidate = 21600; // 6 hours: matches the fetch-tours cron cadence
 
 interface Props {
   params: Promise<{ state: string }>;
@@ -184,7 +184,7 @@ export default async function StatePage({ params }: Props) {
                 <Link
                   key={row.city}
                   href={`/concerts/${citySlug}`}
-                  className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100"
+                  className="group tile"
                 >
                   <div className="h-3 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
                   <div className="p-6">

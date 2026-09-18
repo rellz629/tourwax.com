@@ -44,7 +44,6 @@ export default function ArtistAvatar({
       height={height}
       priority={priority}
       className={className}
-      sizes={`(max-width: 768px) ${width / 2}px, ${width}px`}
     />
   );
 }

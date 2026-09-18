@@ -13,6 +13,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import { isPackage } from '@/lib/event-utils';
 import { slugify, eventSlug } from '@/lib/slugify';
 import type { Metadata } from 'next';
+import Icon from '@/components/Icon';
 
 export const dynamic = 'force-static';
 export const revalidate = 86400; // Revalidate every 24 hours (past data rarely changes)
@@ -205,7 +206,6 @@ export default async function TourHistoryPage({ params, searchParams }: Props) {
                   width={80}
                   height={80}
                   className="w-full h-full object-cover"
-                  sizes="80px"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-white text-2xl font-bold">
@@ -288,9 +288,7 @@ export default async function TourHistoryPage({ params, searchParams }: Props) {
         {pastEvents.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
             <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-orange-500" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <Icon name="clock" className="w-8 h-8 text-orange-500" />
             </div>
             <p className="text-gray-500 text-lg">
               {selectedYear

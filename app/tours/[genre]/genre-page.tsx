@@ -1,0 +1,521 @@
+import { cache } from 'react';
+import { db } from '@/db';
+import { artists, events, venues, eventArtists } from '@/db/schema';
+import { eq, gte, sql, inArray, and } from 'drizzle-orm';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import type { Metadata } from 'next';
+import { generateGenreMetadata, generateCanonicalUrl, SITE_URL } from '@/lib/seo';
+import { generateBreadcrumbSchema, generateGenreEventListSchema, generateFAQSchema } from '@/lib/schema';
+import StructuredData from '@/components/StructuredData';
+import Breadcrumbs from '@/components/Breadcrumbs';
+import { getAffiliateUrl } from '@/lib/affiliate';
+import { eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
+import EventLink from '@/components/EventLink';
+import { normalizeGenre, genreSlug, GENRE_DESCRIPTIONS, GENRE_DISPLAY_NAMES, GENRE_LONG_CONTENT } from '@/lib/genres';
+import { shouldNoindexGenre } from '@/lib/seo-pruning';
+import { slugify } from '@/lib/slugify';
+import Pagination from '@/components/Pagination';
+import Icon from '@/components/Icon';
+
+const ARTISTS_PER_PAGE = 60;
+const EVENTS_PER_PAGE = 50;
+
+// Shared by app/tours/[genre]/page.tsx (page 1) and
+// app/tours/[genre]/page/[page]/page.tsx (page 2+). Pagination lives in the
+// path, not searchParams, so both routes stay static/ISR: reading searchParams
+// made every request a cold function render (see CLAUDE.md, Pagination).
+interface ViewProps {
+  slug: string;
+  currentPage: number;
+}
+
+function findGenreBySlug(slug: string, genreMap: Map<string, string>): string | null {
+  // Try the display name map first
+  if (GENRE_DISPLAY_NAMES[slug]) return GENRE_DISPLAY_NAMES[slug];
+  // Fall back to checking computed slugs from actual data
+  for (const [computedSlug, displayName] of genreMap) {
+    if (computedSlug === slug) return displayName;
+  }
+  return null;
+}
+
+const getGenreArtists = cache(async function getGenreArtists(genreName: string) {
+  const allArtists = await db
+    .select()
+    .from(artists)
+    .where(eq(artists.isActive, true))
+    .orderBy(artists.name);
+
+  return allArtists.filter((a) => normalizeGenre(a.genre) === genreName);
+});
+
+async function getGenreEvents(artistIds: string[]) {
+  if (artistIds.length === 0) return [];
+
+  const now = new Date();
+
+  const genreEvents = await db
+    .select({
+      event: events,
+      venue: venues,
+      artistId: eventArtists.artistId,
+      artistName: artists.name,
+      artistSlug: artists.slug,
+      artistImageUrl: artists.imageUrl,
+    })
+    .from(events)
+    .innerJoin(eventArtists, eq(eventArtists.eventId, events.id))
+    .innerJoin(artists, eq(artists.id, eventArtists.artistId))
+    .leftJoin(venues, eq(events.venueId, venues.id))
+    .where(and(
+      inArray(eventArtists.artistId, artistIds),
+      gte(events.eventDate, now)
+    ))
+    .orderBy(events.eventDate);
+
+  // Collapse festival lineups, package variants, and cross-source duplicates.
+  return dedupeEvents(genreEvents, (row) => ({
+    name: row.event.name,
+    artistName: row.artistName,
+    city: row.venue?.city,
+    eventDate: row.event.eventDate,
+  }));
+}
+
+/** Build a slug → displayName map from all active artists */
+const buildGenreSlugMap = cache(async function buildGenreSlugMap(): Promise<Map<string, string>> {
+  const allArtists = await db
+    .select({ genre: artists.genre })
+    .from(artists)
+    .where(eq(artists.isActive, true));
+
+  const map = new Map<string, string>();
+  for (const a of allArtists) {
+    const normalized = normalizeGenre(a.genre);
+    map.set(genreSlug(normalized), normalized);
+  }
+  return map;
+});
+
+export async function genreStaticParams() {
+  const slugMap = await buildGenreSlugMap();
+  return Array.from(slugMap.keys()).map((slug) => ({ genre: slug }));
+}
+
+export async function genreMetadata(slug: string, currentPage: number): Promise<Metadata> {
+  const slugMap = await buildGenreSlugMap();
+  const genreName = findGenreBySlug(slug, slugMap);
+
+  if (!genreName) {
+    return { title: 'Genre Not Found' };
+  }
+
+  const genreArtists = await getGenreArtists(genreName);
+  const artistIds = genreArtists.map((a) => a.id);
+  const genreEvents = await getGenreEvents(artistIds);
+
+  const meta = generateGenreMetadata({
+    genreName,
+    genreSlug: slug,
+    artistCount: genreArtists.length,
+    eventCount: genreEvents.length,
+    artistNames: genreArtists.map((a) => a.name),
+  });
+
+  // Deep pages are navigational: self-canonical, noindex, follow so link
+  // equity still flows to the artist and event pages beneath them.
+  if (currentPage > 1) {
+    return {
+      ...meta,
+      title: `${genreName} Tours ${new Date().getFullYear()} - Page ${currentPage}`,
+      alternates: { canonical: generateCanonicalUrl(`/tours/${slug}/page/${currentPage}`) },
+      robots: { index: false, follow: true },
+    };
+  }
+
+  // Same touring-artist count the sitemap filter uses (app/sitemap.ts genre
+  // section), so a genre page is never noindexed while listed in sitemap.xml.
+  const touringArtistCount = new Set(genreEvents.map((row) => row.artistId)).size;
+  if (shouldNoindexGenre({ touringArtistCount })) {
+    return { ...meta, robots: { index: false, follow: true } };
+  }
+
+  return meta;
+}
+
+export async function GenrePageView({ slug, currentPage }: ViewProps) {
+  const slugMap = await buildGenreSlugMap();
+  const genreName = findGenreBySlug(slug, slugMap);
+
+  if (!genreName) {
+    notFound();
+  }
+
+  const allGenreArtists = await getGenreArtists(genreName);
+  const artistIds = allGenreArtists.map((a) => a.id);
+  const allGenreEvents = await getGenreEvents(artistIds);
+
+  // Paginate artists
+  const totalArtistPages = Math.ceil(allGenreArtists.length / ARTISTS_PER_PAGE);
+  if (currentPage > 1 && currentPage > totalArtistPages) {
+    notFound();
+  }
+  const genreArtists = allGenreArtists.slice(
+    (currentPage - 1) * ARTISTS_PER_PAGE,
+    currentPage * ARTISTS_PER_PAGE
+  );
+
+  // Count events per artist for display (use full list)
+  const eventCountByArtist = new Map<string, number>();
+  for (const row of allGenreEvents) {
+    const current = eventCountByArtist.get(row.artistId) || 0;
+    eventCountByArtist.set(row.artistId, current + 1);
+  }
+
+  // Show events only on page 1, limited to EVENTS_PER_PAGE
+  const genreEvents = currentPage === 1 ? allGenreEvents.slice(0, EVENTS_PER_PAGE) : [];
+  const hasMore = currentPage === 1 && allGenreEvents.length > EVENTS_PER_PAGE;
+
+  // Group events by date
+  const eventsByDate = genreEvents.reduce((acc, row) => {
+    const dateKey = new Date(row.event.eventDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    if (!acc[dateKey]) acc[dateKey] = [];
+    acc[dateKey].push(row);
+    return acc;
+  }, {} as Record<string, typeof genreEvents>);
+
+  const description = GENRE_DESCRIPTIONS[genreName] || GENRE_DESCRIPTIONS['Other'];
+  const longContent = GENRE_LONG_CONTENT[genreName];
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: SITE_URL },
+    { name: 'Tours', url: `${SITE_URL}/tours` },
+    { name: genreName, url: `${SITE_URL}/tours/${slug}` },
+  ]);
+
+  const eventListSchema = generateGenreEventListSchema(
+    genreName,
+    slug,
+    genreEvents.slice(0, 50).map((row) => ({
+      event: row.event,
+      artist: {
+        name: row.artistName,
+        slug: row.artistSlug,
+        imageUrl: row.artistImageUrl,
+      },
+      venue: row.venue,
+    }))
+  );
+
+  const breadcrumbItems = [
+    { name: 'Home', url: '/' },
+    { name: 'Tours', url: '/tours' },
+    { name: genreName, url: `/tours/${slug}` },
+  ];
+
+  const year = new Date().getFullYear();
+  const topArtistNames = allGenreArtists.slice(0, 5).map((a) => a.name);
+  const uniqueCities = [...new Set(allGenreEvents.filter((e) => e.venue?.city).map((e) => e.venue!.city!))];
+
+  const faqs = [
+    {
+      question: `How many ${genreName} artists are currently on tour?`,
+      answer: `There are currently ${allGenreArtists.length} ${genreName} artist${allGenreArtists.length === 1 ? '' : 's'} on tour with ${allGenreEvents.length} upcoming show${allGenreEvents.length === 1 ? '' : 's'} in ${year}.`,
+    },
+    {
+      question: `Which ${genreName} artists are touring in ${year}?`,
+      answer: topArtistNames.length > 0
+        ? `${genreName} artists currently on tour include ${topArtistNames.join(', ')}${allGenreArtists.length > 5 ? `, and ${allGenreArtists.length - 5} more` : ''}.`
+        : `Check back for upcoming ${genreName} tour announcements.`,
+    },
+    {
+      question: `Where can I see ${genreName} concerts?`,
+      answer: uniqueCities.length > 0
+        ? `Upcoming ${genreName} concerts are scheduled in ${uniqueCities.slice(0, 5).join(', ')}${uniqueCities.length > 5 ? `, and ${uniqueCities.length - 5} more cities` : ''}.`
+        : `Browse our concerts page to find ${genreName} shows near you.`,
+    },
+    {
+      question: `How do I get ${genreName} concert tickets?`,
+      answer: `Browse ${genreName} tour dates on TourWax and click "Get Tickets" for any show. We compare prices from Ticketmaster and SeatGeek to help you find the best deal.`,
+    },
+  ];
+
+  const faqSchema = generateFAQSchema(faqs);
+
+  return (
+    <>
+      <StructuredData data={[breadcrumbSchema, eventListSchema, faqSchema]} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <Breadcrumbs items={breadcrumbItems} />
+
+        <div className="mb-12">
+          <h1 className="text-5xl md:text-6xl font-black mb-4">
+            <span className="gradient-text">
+              {genreName === 'Hip-Hop' ? 'Hip-Hop & Rap' : genreName} Tours {year}
+            </span>
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl">
+            {description}
+          </p>
+        </div>
+
+        {longContent && (
+          <section className="mb-16 max-w-4xl">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{longContent.headline}</h2>
+            <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
+              {longContent.paragraphs.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Artists Grid */}
+        <section className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="rule-lg"></div>
+            <h2 className="text-3xl font-bold text-gray-900">{genreName} Artists on Tour</h2>
+            <div className="rule-fade"></div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {genreArtists.map((artist) => {
+              const count = eventCountByArtist.get(artist.id) || 0;
+              return (
+                <Link
+                  key={artist.id}
+                  href={`/artists/${artist.slug}`}
+                  className="group tile"
+                >
+                  <div className="tile-media">
+                    {artist.imageUrl ? (
+                      <Image
+                        src={artist.imageUrl}
+                        alt={artist.name}
+                        width={300}
+                        height={300}
+                        className="tile-img"
+                      />
+                    ) : (
+                      <div className="tile-fallback">
+                        {artist.name.charAt(0)}
+                      </div>
+                    )}
+                    <div className="tile-overlay"></div>
+                  </div>
+                  <div className="p-4 bg-white">
+                    <h3 className="tile-title">
+                      {artist.name}
+                    </h3>
+                    {count > 0 && (
+                      <p className="text-sm text-gray-500 mt-1">
+                        {count} upcoming show{count === 1 ? '' : 's'}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Upcoming Events */}
+        {genreEvents.length > 0 && (
+          <section>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="rule-lg"></div>
+              <h2 className="text-3xl font-bold text-gray-900">Upcoming {genreName} Concerts</h2>
+              <div className="rule-fade"></div>
+            </div>
+            <div className="space-y-10">
+              {Object.entries(eventsByDate).map(([date, dateEvents]) => (
+                <section key={date}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="rule-sm"></div>
+                    <h3 className="text-xl font-bold text-gray-900">{date}</h3>
+                    <div className="h-px flex-1 bg-gray-200"></div>
+                  </div>
+                  <div className="space-y-4">
+                    {dateEvents.map((row) => {
+                      const label = eventPrimaryLabel({ name: row.event.name, ticketUrl: row.event.ticketUrl, source: row.event.source, artistName: row.artistName, artistSlug: row.artistSlug });
+                      return (
+                      <div
+                        key={row.event.id}
+                        className="group event-card"
+                      >
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                          <div className="flex items-start gap-4 flex-1">
+                            <EventLink
+                              label={label}
+                              className="event-thumb"
+                            >
+                              {row.artistImageUrl ? (
+                                <Image
+                                  src={row.artistImageUrl}
+                                  alt={label.text}
+                                  width={64}
+                                  height={64}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-white text-xl font-bold">
+                                  {label.text.charAt(0)}
+                                </div>
+                              )}
+                            </EventLink>
+                            <div className="flex-1">
+                              <EventLink
+                                label={label}
+                                showNewTabHint
+                                className="event-title"
+                              >
+                                {label.text}
+                              </EventLink>
+                              {label.text !== row.event.name && <h4 className="text-sm text-gray-600 mt-1">{row.event.name}</h4>}
+                              {row.venue && (
+                                <div className="mt-2 text-sm text-gray-500 flex items-center gap-2">
+                                  <Icon name="pin" className="w-4 h-4 text-gray-400" />
+                                  <Link href={`/venues/${slugify(row.venue.name)}`} className="font-medium hover:text-orange-600 transition-colors">{row.venue.name}</Link>
+                                  {row.venue.city && (
+                                    <span className="text-gray-500">
+                                      <Link href={`/concerts/${slugify(row.venue.city)}`} className="hover:text-orange-600 transition-colors">{row.venue.city}</Link>{row.venue.state ? `, ${row.venue.state}` : ''}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-500">
+                                <span className="flex items-center gap-1">
+                                  <Icon name="clock" className="w-4 h-4" />
+                                  {new Date(row.event.eventDate).toLocaleTimeString('en-US', {
+                                    hour: 'numeric',
+                                    minute: '2-digit',
+                                  })}
+                                </span>
+                                {(row.event.minPrice || row.event.maxPrice) && (
+                                  <>
+                                    <span className="text-gray-300">|</span>
+                                    <span className="font-semibold text-orange-600">
+                                      From {row.event.currency} {row.event.minPrice || row.event.maxPrice}
+                                      {row.event.maxPrice && row.event.minPrice !== row.event.maxPrice &&
+                                        ` - ${row.event.currency} ${row.event.maxPrice}`}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-2 items-end">
+                            {row.event.ticketUrl && (
+                              <a
+                                href={getAffiliateUrl(row.event.ticketUrl, row.event.source)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-primary whitespace-nowrap"
+                              >
+                                Get Tickets
+                              </a>
+                            )}
+                            <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">
+                              via {row.event.source}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {hasMore && (
+          <div className="mt-8 text-center">
+            <p className="text-gray-500">
+              Showing {genreEvents.length} of {allGenreEvents.length} upcoming {genreName} concerts.
+              Browse individual artist pages for complete tour schedules.
+            </p>
+          </div>
+        )}
+
+        <Pagination currentPage={currentPage} totalPages={totalArtistPages} basePath={`/tours/${slug}`} />
+
+        {/* Top Cities for this Genre */}
+        {uniqueCities.length > 0 && (
+          <section className="mt-16">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="rule-lg"></div>
+              <h2 className="text-3xl font-bold text-gray-900">Top Cities for {genreName}</h2>
+              <div className="rule-fade"></div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {uniqueCities.slice(0, 12).map((city) => (
+                <Link
+                  key={city}
+                  href={`/concerts/${slugify(city)}`}
+                  className="group bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5"
+                >
+                  <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">{city}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{genreName} shows</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* SEO Content Section */}
+        <section className="mt-16 max-w-4xl">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{genreName} Concerts & Tours in {year}</h2>
+          <div className="prose prose-gray max-w-none text-gray-600 leading-relaxed space-y-3">
+            <p>
+              {allGenreArtists.length > 0 && allGenreEvents.length > 0
+                ? `There are ${allGenreArtists.length} ${genreName} artists currently on tour with ${allGenreEvents.length} upcoming shows across ${uniqueCities.length} cities. ${topArtistNames.length > 0 ? `Top touring ${genreName} artists include ${topArtistNames.join(', ')}.` : ''}`
+                : `Stay up to date with ${genreName} tour announcements and concert dates.`
+              }
+            </p>
+            <p>
+              TourWax tracks {genreName} tour dates from Ticketmaster and SeatGeek so you can compare ticket prices and find the best deals.
+              Browse individual artist pages for complete tour schedules, or check{' '}
+              <Link href="/concerts/tonight" className="text-orange-500 hover:text-orange-600 font-medium">concerts tonight</Link>{' '}
+              and{' '}
+              <Link href="/concerts/this-weekend" className="text-orange-500 hover:text-orange-600 font-medium">concerts this weekend</Link>{' '}
+              for last-minute {genreName} shows near you.
+            </p>
+          </div>
+        </section>
+
+        {genreEvents.length === 0 && (
+          <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
+            <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <Icon name="calendar" className="w-8 h-8 text-orange-500" />
+            </div>
+            <p className="text-gray-500 text-lg">No upcoming {genreName} concerts. Check back soon!</p>
+          </div>
+        )}
+
+        {/* FAQ Section */}
+        <section className="mt-16">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <details key={i} className="group bg-white rounded-xl shadow-md border border-gray-100">
+                <summary className="cursor-pointer p-5 font-semibold text-gray-900 hover:text-orange-600 transition-colors list-none flex justify-between items-center">
+                  {faq.question}
+                  <Icon name="chevron-down" className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" />
+                </summary>
+                <div className="px-5 pb-5 text-gray-600">{faq.answer}</div>
+              </details>
+            ))}
+          </div>
+        </section>
+      </div>
+    </>
+  );
+}

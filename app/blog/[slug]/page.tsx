@@ -10,7 +10,7 @@ import { getPostBySlug, getAllSlugs, getAllPosts } from '@/lib/blog';
 import FollowOnX from '@/components/FollowOnX';
 import AffiliateDisclosure from '@/components/AffiliateDisclosure';
 
-export const revalidate = 1800;
+export const revalidate = 86400; // 24 hours: posts only change on deploy
 
 export function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));

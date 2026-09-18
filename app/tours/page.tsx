@@ -12,7 +12,7 @@ import { getTopTours } from '@/lib/top-lists';
 import { normalizeGenre, genreSlug } from '@/lib/genres';
 
 export const dynamic = 'force-static';
-export const revalidate = 1800;
+export const revalidate = 21600; // 6 hours: matches the fetch-tours cron cadence
 
 export async function generateMetadata(): Promise<Metadata> {
   return generateToursIndexMetadata();
@@ -102,7 +102,7 @@ export default async function ToursPage() {
               <Link
                 key={genre}
                 href={`/tours/${slug}`}
-                className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100"
+                className="group tile"
               >
                 <div className="h-3 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
                 <div className="p-6">

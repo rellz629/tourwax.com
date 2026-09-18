@@ -13,6 +13,7 @@ import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
 import ShowMoreEvents from '@/components/ShowMoreEvents';
 import HomepageNearMe from '@/components/HomepageNearMe';
+import Icon from '@/components/Icon';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 
 // Use Static Site Generation with ISR
 export const dynamic = 'force-static';
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 21600; // 6 hours: matches the fetch-tours cron cadence
 
 async function getFeaturedArtistsWithUpcomingEvents() {
   const now = new Date();
@@ -197,7 +198,7 @@ export default async function HomePage() {
               href={`/artists/${artist.slug}`}
               className="group bg-white rounded-lg shadow-md hover:shadow-xl card-hover overflow-hidden border border-gray-100"
             >
-              <div className="aspect-square bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 relative overflow-hidden">
+              <div className="tile-media">
                 {artist.imageUrl ? (
                   <Image
                     src={artist.imageUrl}
@@ -205,15 +206,14 @@ export default async function HomePage() {
                     width={200}
                     height={200}
                     quality={70}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    sizes="(max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                    className="tile-img"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold" role="img" aria-label={artist.name}>
+                  <div className="tile-fallback" role="img" aria-label={artist.name}>
                     {artist.name.charAt(0)}
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="tile-overlay"></div>
               </div>
               <div className="p-3 bg-white">
                 <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors text-sm truncate">
@@ -236,9 +236,7 @@ export default async function HomePage() {
         {upcomingEvents.length === 0 ? (
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-orange-500" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+              <Icon name="calendar" className="w-8 h-8 text-orange-500" />
             </div>
             <p className="text-gray-500 text-lg">No upcoming events yet. Check back soon!</p>
           </div>

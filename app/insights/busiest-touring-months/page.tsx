@@ -8,7 +8,7 @@ import { getBusiestTouringMonths } from '@/lib/insights';
 import { slugify } from '@/lib/slugify';
 
 export const dynamic = 'force-static';
-export const revalidate = 1800;
+export const revalidate = 21600; // 6 hours: matches the fetch-tours cron cadence
 
 export async function generateMetadata(): Promise<Metadata> {
   return generateInsightMetadata({

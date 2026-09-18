@@ -12,9 +12,10 @@ import { getAffiliateUrl } from '@/lib/affiliate';
 import { eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
+import Icon from '@/components/Icon';
 
 export const dynamic = 'force-static';
-export const revalidate = 900; // 15 minutes
+export const revalidate = 3600; // 1 hour
 
 async function getOnSaleTodayEvents() {
   const now = new Date();
@@ -169,9 +170,7 @@ export default async function OnSaleTodayPage() {
         {onSaleEvents.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
             <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-orange-500" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-              </svg>
+              <Icon name="ticket" className="w-8 h-8 text-orange-500" />
             </div>
             <p className="text-gray-500 text-lg">No tickets going on sale today. Check back tomorrow or browse <Link href="/concerts/this-week" className="text-orange-500 hover:text-orange-600 font-medium">this week&apos;s concerts</Link>.</p>
           </div>
@@ -181,18 +180,18 @@ export default async function OnSaleTodayPage() {
               const onsaleTime = formatOnsaleTime(row.event.metadata as Record<string, unknown> | null);
               const label = eventPrimaryLabel({ name: row.event.name, ticketUrl: row.event.ticketUrl, source: row.event.source, artistName: row.artistName, artistSlug: row.artistSlug });
               return (
-                <div key={row.event.id} className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100">
+                <div key={row.event.id} className="group event-card">
                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                     <div className="flex items-start gap-4 flex-1">
                       <EventLink label={label} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-500 to-red-500">
                         {row.artistImageUrl ? (
-                          <Image src={row.artistImageUrl} alt={label.text} width={56} height={56} className="w-full h-full object-cover" sizes="56px" />
+                          <Image src={row.artistImageUrl} alt={label.text} width={56} height={56} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">{label.text.charAt(0)}</div>
                         )}
                       </EventLink>
                       <div className="flex-1">
-                        <EventLink label={label} showNewTabHint className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg">{label.text}</EventLink>
+                        <EventLink label={label} showNewTabHint className="event-title">{label.text}</EventLink>
                         {label.text !== row.event.name && <p className="text-sm text-gray-600 mt-1">{row.event.name}</p>}
                         {row.venue && (
                           <p className="text-sm text-gray-500 mt-1">
@@ -206,9 +205,7 @@ export default async function OnSaleTodayPage() {
                         <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                           {onsaleTime && (
                             <span className="inline-flex items-center gap-1 text-green-700 bg-green-50 px-2 py-0.5 rounded-md font-medium">
-                              <svg className="w-3.5 h-3.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
+                              <Icon name="clock" className="w-3.5 h-3.5" />
                               On sale at {onsaleTime}
                             </span>
                           )}
@@ -259,13 +256,13 @@ export default async function OnSaleTodayPage() {
                       <div className="flex items-start gap-4 flex-1">
                         <EventLink label={label} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-400 to-gray-500">
                           {row.artistImageUrl ? (
-                            <Image src={row.artistImageUrl} alt={label.text} width={56} height={56} className="w-full h-full object-cover" sizes="56px" />
+                            <Image src={row.artistImageUrl} alt={label.text} width={56} height={56} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">{label.text.charAt(0)}</div>
                           )}
                         </EventLink>
                         <div className="flex-1">
-                          <EventLink label={label} showNewTabHint className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg">{label.text}</EventLink>
+                          <EventLink label={label} showNewTabHint className="event-title">{label.text}</EventLink>
                           {label.text !== row.event.name && <p className="text-sm text-gray-600 mt-1">{row.event.name}</p>}
                           {row.venue && (
                             <p className="text-sm text-gray-500 mt-1">
@@ -279,9 +276,7 @@ export default async function OnSaleTodayPage() {
                           <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                             {onsaleDate && (
                               <span className="inline-flex items-center gap-1 text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md font-medium">
-                                <svg className="w-3.5 h-3.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+                                <Icon name="calendar" className="w-3.5 h-3.5" />
                                 On sale {onsaleDate}
                               </span>
                             )}

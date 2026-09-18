@@ -14,7 +14,7 @@ import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
 
 export const dynamic = 'force-static';
-export const revalidate = 900; // 15 minutes
+export const revalidate = 3600; // 1 hour
 
 async function getTonightEvents() {
   const now = new Date();
@@ -105,7 +105,7 @@ export default async function TonightPage() {
             {Array.from(byCity.entries()).map(([city, cityEvents]) => (
               <section key={city}>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+                  <div className="rule-sm"></div>
                   <h2 className="text-xl font-bold text-gray-900">
                     {city !== 'Other' ? (
                       <Link href={`/concerts/${slugify(city)}`} className="hover:text-orange-600 transition-colors">{city}</Link>
@@ -118,18 +118,18 @@ export default async function TonightPage() {
                   {cityEvents.map((row) => {
                     const label = eventPrimaryLabel({ name: row.event.name, ticketUrl: row.event.ticketUrl, source: row.event.source, artistName: row.artistName, artistSlug: row.artistSlug });
                     return (
-                    <div key={row.event.id} className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100">
+                    <div key={row.event.id} className="group event-card">
                       <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                         <div className="flex items-start gap-4 flex-1">
                           <EventLink label={label} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-500 to-red-500">
                             {row.artistImageUrl ? (
-                              <Image src={row.artistImageUrl} alt={label.text} width={56} height={56} className="w-full h-full object-cover" sizes="56px" />
+                              <Image src={row.artistImageUrl} alt={label.text} width={56} height={56} className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">{label.text.charAt(0)}</div>
                             )}
                           </EventLink>
                           <div className="flex-1">
-                            <EventLink label={label} showNewTabHint className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg">{label.text}</EventLink>
+                            <EventLink label={label} showNewTabHint className="event-title">{label.text}</EventLink>
                             {label.text !== row.event.name && <p className="text-sm text-gray-600 mt-1">{row.event.name}</p>}
                             {row.venue && (
                               <p className="text-sm text-gray-500 mt-1">

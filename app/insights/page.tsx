@@ -4,9 +4,10 @@ import { generateInsightsIndexMetadata, SITE_URL } from '@/lib/seo';
 import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import Icon from '@/components/Icon';
 
 export const dynamic = 'force-static';
-export const revalidate = 1800;
+export const revalidate = 21600; // 6 hours: matches the fetch-tours cron cadence
 
 export async function generateMetadata(): Promise<Metadata> {
   return generateInsightsIndexMetadata();
@@ -18,10 +19,7 @@ const INSIGHTS = [
     description: 'Which cities are hosting the most concerts this year? We ranked the top 50 cities by event count with artist breakdowns.',
     href: '/insights/most-toured-cities',
     icon: (
-      <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
+      <Icon name="pin" className="w-8 h-8 text-orange-500" />
     ),
   },
   {
@@ -49,9 +47,7 @@ const INSIGHTS = [
     description: 'When is the best time to catch a concert? See which months have the most shows, top artists, and busiest cities.',
     href: '/insights/busiest-touring-months',
     icon: (
-      <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
+      <Icon name="calendar" className="w-8 h-8 text-orange-500" />
     ),
   },
   {
@@ -117,7 +113,7 @@ export default function InsightsPage() {
             <Link
               key={insight.href}
               href={insight.href}
-              className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100"
+              className="group tile"
             >
               <div className="h-3 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600"></div>
               <div className="p-8">

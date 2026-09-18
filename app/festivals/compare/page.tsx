@@ -9,7 +9,7 @@ import { getAllFestivals } from '@/lib/festivals';
 import { normalizeGenre } from '@/lib/genres';
 
 export const dynamic = 'force-static';
-export const revalidate = 1800;
+export const revalidate = 21600; // 6 hours: matches the fetch-tours cron cadence
 
 export async function generateMetadata(): Promise<Metadata> {
   const year = new Date().getFullYear();
@@ -185,7 +185,7 @@ export default async function FestivalComparePage() {
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-400 to-red-500">
                           {artist.imageUrl ? (
-                            <Image src={artist.imageUrl} alt={artist.name} width={48} height={48} className="w-full h-full object-cover" sizes="48px" />
+                            <Image src={artist.imageUrl} alt={artist.name} width={48} height={48} className="w-full h-full object-cover" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-white font-bold">{artist.name.charAt(0)}</div>
                           )}

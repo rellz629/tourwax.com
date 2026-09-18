@@ -22,10 +22,11 @@ import { getArtistSetlists } from '@/lib/setlistfm';
 import { getPostsMentioningArtist } from '@/lib/blog';
 import AddToCalendarButton from '@/components/AddToCalendarButton';
 import type { Metadata } from 'next';
+import Icon from '@/components/Icon';
 
 // Use Static Site Generation with ISR
 export const dynamic = 'force-static';
-export const revalidate = 1800; // Revalidate every 30 minutes
+export const revalidate = 21600; // 6 hours: matches the fetch-tours cron cadence
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -581,7 +582,6 @@ export default async function ArtistPage({ params }: Props) {
                     height={192}
                     priority
                     className="w-full h-full object-cover"
-                    sizes="192px"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-white text-6xl font-bold">
@@ -646,9 +646,7 @@ export default async function ArtistPage({ params }: Props) {
                 <div className="flex flex-wrap gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-orange-600" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                      <Icon name="calendar" className="w-5 h-5 text-orange-600" />
                     </div>
                     <div>
                       <p className="font-bold text-gray-900 text-lg">{artistEvents.length}</p>
@@ -664,9 +662,7 @@ export default async function ArtistPage({ params }: Props) {
                     return lowestPrice ? (
                       <div className="flex items-center gap-2">
                         <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                          <svg className="w-5 h-5 text-green-600" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                          </svg>
+                          <Icon name="ticket" className="w-5 h-5 text-green-600" />
                         </div>
                         <div>
                           <p className="font-bold text-gray-900 text-lg">From ${lowestPrice}</p>
@@ -678,9 +674,7 @@ export default async function ArtistPage({ params }: Props) {
                   {news.length > 0 && (
                     <div className="flex items-center gap-2">
                       <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                        <svg className="w-5 h-5 text-red-600" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                        </svg>
+                        <Icon name="building" className="w-5 h-5 text-red-600" />
                       </div>
                       <div>
                         <p className="font-bold text-gray-900 text-lg">{news.length}</p>
@@ -707,9 +701,7 @@ export default async function ArtistPage({ params }: Props) {
                 href={`/artists/${artist.slug}/tour-history`}
                 className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
               >
-                <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <Icon name="clock" className="w-4 h-4" />
                 Tour History
                 {tourHistory.totalPastShows > 0 && (
                   <span className="ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-600 text-xs font-bold rounded-full">
@@ -724,9 +716,7 @@ export default async function ArtistPage({ params }: Props) {
                   rel="nofollow"
                   className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
                 >
-                  <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+                  <Icon name="calendar" className="w-4 h-4" />
                   Export All Dates
                 </a>
               )}
@@ -735,9 +725,7 @@ export default async function ArtistPage({ params }: Props) {
           {artistEvents.length === 0 ? (
             <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
               <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-orange-500" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+                <Icon name="calendar" className="w-8 h-8 text-orange-500" />
               </div>
               <p className="text-gray-500 text-lg">No upcoming tour dates announced yet.</p>
             </div>
@@ -746,7 +734,7 @@ export default async function ArtistPage({ params }: Props) {
               {deduplicatedEvents.map(({ event, venue, ticketSources }) => (
                 <div
                   key={event.id}
-                  className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100"
+                  className="group event-card"
                 >
                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                     <div className="flex-1">
@@ -772,10 +760,7 @@ export default async function ArtistPage({ params }: Props) {
                           {venue && (
                             <div className="text-sm text-gray-600 space-y-1">
                               <div className="flex items-center gap-2">
-                                <svg className="w-4 h-4 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                                <Icon name="pin" className="w-4 h-4 text-gray-400" />
                                 <Link href={`/venues/${slugify(venue.name)}`} className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">{venue.name}</Link>
                               </div>
                               <p className="ml-6">
@@ -789,9 +774,7 @@ export default async function ArtistPage({ params }: Props) {
                           )}
                           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-gray-500">
                             <span className="flex items-center gap-1">
-                              <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
+                              <Icon name="clock" className="w-4 h-4" />
                               {new Date(event.eventDate).toLocaleTimeString('en-US', {
                                 hour: 'numeric',
                                 minute: '2-digit',
@@ -925,9 +908,7 @@ export default async function ArtistPage({ params }: Props) {
             {news.length === 0 ? (
               <div className="bg-white rounded-xl shadow-md p-8 text-center border border-gray-100">
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-3 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-orange-500" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                  </svg>
+                  <Icon name="building" className="w-6 h-6 text-orange-500" />
                 </div>
                 <p className="text-gray-500 text-sm">No recent news articles.</p>
               </div>
@@ -1006,11 +987,11 @@ export default async function ArtistPage({ params }: Props) {
                 </div>
                 <ol className="p-5 space-y-1.5 max-h-96 overflow-y-auto">
                   {setlist.songs.map((song, i) => (
-                    <li key={i} value={i + 1} className="flex items-start gap-2 text-sm">
+                    <li key={i} value={i + 1} className="row">
                       {song.encore ? (
                         <span className="text-xs font-bold text-orange-500 mt-0.5 w-6 text-right flex-shrink-0">E{song.encore}</span>
                       ) : (
-                        <span className="text-xs text-gray-500 mt-0.5 w-6 text-right flex-shrink-0">{i + 1}</span>
+                        <span className="row-num">{i + 1}</span>
                       )}
                       <span className={`${song.isTape ? 'text-gray-400 italic' : 'text-gray-700'}`}>
                         {song.name}
@@ -1148,9 +1129,7 @@ export default async function ArtistPage({ params }: Props) {
               className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
             >
               View Full Tour History
-              <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              <Icon name="arrow-right" className="w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -1168,24 +1147,23 @@ export default async function ArtistPage({ params }: Props) {
               <Link
                 key={related.id}
                 href={`/artists/${related.slug}`}
-                className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100"
+                className="group tile"
               >
-                <div className="aspect-square bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 relative overflow-hidden">
+                <div className="tile-media">
                   {related.imageUrl ? (
                     <Image
                       src={related.imageUrl}
                       alt={related.name}
                       width={200}
                       height={200}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      sizes="(max-width: 768px) 50vw, 16vw"
+                      className="tile-img"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">
+                    <div className="tile-fallback">
                       {related.name.charAt(0)}
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="tile-overlay"></div>
                 </div>
                 <div className="p-3 bg-white">
                   <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors text-sm line-clamp-1">
@@ -1296,15 +1274,7 @@ export default async function ArtistPage({ params }: Props) {
             >
               <summary className="flex items-center justify-between cursor-pointer p-6 font-semibold text-gray-900 hover:text-orange-600 transition-colors">
                 <span>{faq.question}</span>
-                <svg
-                  className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-4"
-                  aria-hidden="true"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <Icon name="chevron-down" className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-4" />
               </summary>
               <div className="px-6 pb-6 text-gray-600 leading-relaxed">
                 {faq.answer}

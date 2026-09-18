@@ -1,8 +1,15 @@
 import Link from 'next/link';
+import { pagePath } from '@/lib/pagination';
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  /**
+   * Listing URL for page 1. A plain path (`/tours/rock`) paginates by path
+   * segment (`/tours/rock/page/2`) so every page is a static/ISR entry. A path
+   * with a query string (`/artists/browse?letter=A`) is a filtered, dynamic
+   * view and paginates with `?page=N` instead.
+   */
   basePath: string;
 }
 
@@ -10,6 +17,7 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
   if (totalPages <= 1) return null;
 
   function pageUrl(page: number) {
+    if (!basePath.includes('?')) return pagePath(basePath, page);
     const [path, query = ''] = basePath.split('?');
     const params = new URLSearchParams(query);
     if (page === 1) {

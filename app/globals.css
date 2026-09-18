@@ -64,6 +64,54 @@ body {
 }
 
 @layer components {
+  /* Shared card/list primitives. Extracted 2026-09-17: listing pages repeat
+     these strings 50-110x each, and every byte of HTML is duplicated into the
+     RSC payload and billed per 8 KB of ISR cache. Keep new card markup on
+     these classes rather than inlining the utility strings. */
+  /* `group` cannot live in @apply; markup uses className="group tile". */
+  .tile {
+    @apply bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100;
+  }
+  .tile-media {
+    @apply aspect-square bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 relative overflow-hidden;
+  }
+  .tile-img {
+    @apply w-full h-full object-cover group-hover:scale-110 transition-transform duration-300;
+  }
+  .tile-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300;
+  }
+  .tile-title {
+    @apply font-bold text-gray-900 group-hover:text-orange-500 transition-colors line-clamp-1;
+  }
+  .tile-fallback {
+    @apply w-full h-full flex items-center justify-center text-white text-3xl font-bold;
+  }
+  .event-card {
+    @apply bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100;
+  }
+  .event-thumb {
+    @apply w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-500 to-red-500;
+  }
+  .event-title {
+    @apply font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg;
+  }
+  .rule-lg {
+    @apply h-1 w-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full;
+  }
+  .rule-sm {
+    @apply h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full;
+  }
+  .rule-fade {
+    @apply h-1 flex-1 bg-gradient-to-r from-red-500 to-transparent rounded-full;
+  }
+  .row-num {
+    @apply text-xs text-gray-500 mt-0.5 w-6 text-right flex-shrink-0;
+  }
+  .row {
+    @apply flex items-start gap-2 text-sm;
+  }
+
   .btn-primary {
     @apply bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-6 py-3 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-md hover:shadow-lg;
   }

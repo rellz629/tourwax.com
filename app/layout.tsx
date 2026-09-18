@@ -8,6 +8,7 @@ import SearchBar from "@/components/SearchBar";
 import MobileNav from "@/components/MobileNav";
 import NavLinks from "@/components/NavLinks";
 import AffiliateClickTracker from "@/components/AffiliateClickTracker";
+import IconSprite from '@/components/IconSprite';
 
 const inter = Inter({ subsets: ["latin"], display: "optional" });
 
@@ -69,6 +70,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <IconSprite />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-orange-500 focus:text-white focus:rounded-lg focus:text-sm focus:font-semibold">
           Skip to main content
         </a>

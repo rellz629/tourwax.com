@@ -14,9 +14,10 @@ import { getAffiliateUrl, getVividSeatsSearchUrl, getStubHubSearchUrl } from '@/
 import { slugify } from '@/lib/slugify';
 import { normalizeGenre } from '@/lib/genres';
 import { notFound, permanentRedirect } from 'next/navigation';
+import Icon from '@/components/Icon';
 
 export const dynamic = 'force-static';
-export const revalidate = 1800;
+export const revalidate = 21600; // 6 hours: matches the fetch-tours cron cadence
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -150,15 +151,11 @@ function EventCard({
           <h3 className="font-bold text-gray-900 text-lg">{event.name}</h3>
           <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-500">
             <span className="flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+              <Icon name="calendar" className="w-4 h-4" />
               {event.formattedDate}
             </span>
             <span className="flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <Icon name="clock" className="w-4 h-4" />
               {new Date(event.eventDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
             </span>
             {!isPast && event.minPrice !== null && (
@@ -311,9 +308,7 @@ export default async function FestivalPage({ params }: Props) {
 
         {isPast && (
           <div className="mb-6 rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 flex items-start gap-3">
-            <svg className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <Icon name="clock" className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold text-gray-900">Archived festival</p>
               <p className="text-sm text-gray-600 mt-0.5">
@@ -355,16 +350,11 @@ export default async function FestivalPage({ params }: Props) {
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-gray-600">
             <span className="flex items-center gap-2 text-lg">
-              <svg className="w-5 h-5 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+              <Icon name="calendar" className="w-5 h-5 text-gray-400" />
               {festival.formattedDateRange}
             </span>
             <span className="flex items-center gap-2 text-lg">
-              <svg className="w-5 h-5 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+              <Icon name="pin" className="w-5 h-5 text-gray-400" />
               <Link href={`/venues/${festival.venueSlug}`} className="hover:text-orange-600 transition-colors">
                 {festival.venue.name}
               </Link>
@@ -418,7 +408,7 @@ export default async function FestivalPage({ params }: Props) {
         {/* Lineup Grid */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+            <div className="rule-sm"></div>
             <h2 className="text-2xl font-bold text-gray-900">Lineup</h2>
             <div className="h-px flex-1 bg-gray-200"></div>
           </div>
@@ -438,7 +428,6 @@ export default async function FestivalPage({ params }: Props) {
                       width={200}
                       height={200}
                       className="w-full h-full object-cover"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-white text-4xl font-bold">
@@ -476,7 +465,7 @@ export default async function FestivalPage({ params }: Props) {
         {festival.isMultiDay && (
           <section id="lineup-by-day" className="mb-12">
             <div className="flex items-center gap-3 mb-6">
-              <div className="h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+              <div className="rule-sm"></div>
               <h2 className="text-2xl font-bold text-gray-900">Lineup by Day</h2>
               <div className="h-px flex-1 bg-gray-200"></div>
             </div>
@@ -504,7 +493,6 @@ export default async function FestivalPage({ params }: Props) {
                               width={120}
                               height={120}
                               className="w-full h-full object-cover"
-                              sizes="(max-width: 640px) 33vw, 14vw"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-white text-2xl font-bold">
@@ -527,7 +515,7 @@ export default async function FestivalPage({ params }: Props) {
         {/* Event Details: deduplicated tickets across the festival */}
         <section id="event-details" className="mb-12 scroll-mt-20">
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+            <div className="rule-sm"></div>
             <h2 className="text-2xl font-bold text-gray-900">
               {festival.events.length === 1 ? 'Event Details' : `Ticket Options (${festival.events.length})`}
             </h2>
@@ -549,7 +537,7 @@ export default async function FestivalPage({ params }: Props) {
         {/* Venue Info */}
         <section>
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
+            <div className="rule-sm"></div>
             <h2 className="text-2xl font-bold text-gray-900">Venue</h2>
             <div className="h-px flex-1 bg-gray-200"></div>
           </div>
@@ -590,9 +578,7 @@ export default async function FestivalPage({ params }: Props) {
               <details key={i} className="group bg-white rounded-xl shadow-md border border-gray-100">
                 <summary className="cursor-pointer p-5 font-semibold text-gray-900 hover:text-orange-600 transition-colors list-none flex justify-between items-center">
                   {faq.question}
-                  <svg className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
+                  <Icon name="chevron-down" className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2" />
                 </summary>
                 <div className="px-5 pb-5 text-gray-600">{faq.answer}</div>
               </details>

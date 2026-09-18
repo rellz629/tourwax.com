@@ -6,9 +6,10 @@ import { generateBreadcrumbSchema } from '@/lib/schema';
 import StructuredData from '@/components/StructuredData';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getAllPosts } from '@/lib/blog';
+import Icon from '@/components/Icon';
 
 export const dynamic = 'force-static';
-export const revalidate = 1800;
+export const revalidate = 86400; // 24 hours: posts only change on deploy
 
 export async function generateMetadata(): Promise<Metadata> {
   return generateBlogIndexMetadata();
@@ -45,9 +46,7 @@ export default function BlogPage() {
         {posts.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center border border-gray-100">
             <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-              </svg>
+              <Icon name="building" className="w-8 h-8 text-orange-500" />
             </div>
             <p className="text-gray-500 text-lg">No posts yet. Check back soon!</p>
           </div>
@@ -57,7 +56,7 @@ export default function BlogPage() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100"
+                className="group tile"
               >
                 {post.featuredImage ? (
                   <div className="relative h-48 overflow-hidden">

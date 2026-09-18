@@ -54,7 +54,7 @@ export default function config(phase: string): NextConfig {
       qualities: [70, 75],
       deviceSizes: [640, 750, 828, 1080, 1200],
       imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-      minimumCacheTTL: 86400,
+      minimumCacheTTL: 2678400, // 31 days: long-tail images were re-transforming daily under bot crawl
       remotePatterns: [
         {
           protocol: 'https',

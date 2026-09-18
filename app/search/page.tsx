@@ -165,18 +165,17 @@ export default async function SearchPage({ searchParams }: Props) {
                   href={`/artists/${artist.slug}`}
                   className="group bg-white rounded-lg shadow-md hover:shadow-xl card-hover overflow-hidden border border-gray-100"
                 >
-                  <div className="aspect-square bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 relative overflow-hidden">
+                  <div className="tile-media">
                     {artist.imageUrl ? (
                       <Image
                         src={artist.imageUrl}
                         alt={artist.name}
                         width={200}
                         height={200}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
+                        className="tile-img"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">
+                      <div className="tile-fallback">
                         {artist.name.charAt(0)}
                       </div>
                     )}

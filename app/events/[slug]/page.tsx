@@ -15,6 +15,7 @@ import { getAffiliateUrl, getVividSeatsSearchUrl, getStubHubSearchUrl } from '@/
 import { isPackage } from '@/lib/event-utils';
 import { slugify, eventSlug, parseDateFromEventSlug } from '@/lib/slugify';
 import type { Metadata } from 'next';
+import Icon from '@/components/Icon';
 
 export const dynamic = 'force-static';
 export const revalidate = 86400; // 24 hours — past events don't change
@@ -237,9 +238,7 @@ export default async function EventPage({ params }: Props) {
         {/* Past event badge */}
         {isPast && (
           <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">
-            <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+            <Icon name="clock" className="w-4 h-4" />
             This concert has already taken place
           </div>
         )}
@@ -261,7 +260,6 @@ export default async function EventPage({ params }: Props) {
                     height={128}
                     priority
                     className="w-full h-full object-cover"
-                    sizes="128px"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-white text-4xl font-bold">
@@ -316,10 +314,7 @@ export default async function EventPage({ params }: Props) {
             {/* Venue & Location */}
             <div className="flex items-start gap-4">
               <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
-                <svg className="w-7 h-7" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+                <Icon name="pin" className="w-7 h-7" />
               </div>
               <div>
                 <p className="font-bold text-gray-900 text-lg">Venue</p>
@@ -476,9 +471,7 @@ export default async function EventPage({ params }: Props) {
                 className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
               >
                 View Full Tour History
-                <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+                <Icon name="arrow-right" className="w-4 h-4" />
               </Link>
             </div>
           </div>

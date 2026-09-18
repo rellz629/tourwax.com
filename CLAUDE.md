@@ -57,10 +57,23 @@ All data operation scripts use `dotenv -e .env.local -- tsx scripts/<script-name
 
 **Next.js App Router** with Static Site Generation (SSG) + Incremental Static Regeneration (ISR):
 - Artist pages use `generateStaticParams()` to pre-build top 100 artists at build time
-- `revalidate: 1800` (30 minutes) for ISR on artist pages
+- `revalidate: 21600` (6 hours, matching the fetch-tours cron) for ISR on data-driven pages; blog and past-event pages use 86400, time-window pages 3600. Longer intervals were set 2026-09-17 because ISR writes are billed per 8 KB and bot crawl was regenerating large pages every 30 minutes.
 - Server Components for data fetching (no client-side state management needed for most pages)
 - SEO metadata generated via `generateMetadata()` async function
 - Structured data (JSON-LD) for search engines via `StructuredData` component
+
+**Pagination (path-based, since 2026-09-17)**: listings paginate with a path segment, never `?page=`:
+- `/tours/[genre]`, `/concerts/[city]`, `/venues/[slug]`, `/artists`, `/venues`, `/festivals` are page 1 and are `force-static` + ISR. Pages 2+ live at `<base>/page/[page]` (ISR on demand, `generateStaticParams` returns `[]`, noindex/follow with a self-canonical, 404 past the last page, `/page/1` 308s to the base).
+- Each route pair shares a view module next to it (`genre-page.tsx`, `city-page.tsx`, `venue-page.tsx`, `artists-index.tsx`, `venues-index.tsx`, `festivals-index.tsx`) that exports the view component, a metadata builder taking `(slug, currentPage)`, and the static-params list.
+- Search, genre, letter, and state filters on the artist and venue indexes live on `/artists/browse` and `/venues/browse` (the only `force-dynamic` listing routes, noindex, `?page=` pagination via `Pagination` when `basePath` has a query string).
+- `middleware.ts` 301s legacy `?page=N` URLs to `/page/N` and legacy `/artists?q=`/`/venues?state=` URLs to the browse routes.
+- Why: reading `searchParams` makes a route fully dynamic, so `revalidate` is ignored and every request (mostly bot crawl) is a cold function render with database queries. Never read `searchParams` in a listing page; add a browse-style route instead. `lib/pagination.ts` has `parsePageSegment()` and `pagePath()`.
+
+**Page weight (since 2026-09-17)**: HTML bytes are billed twice (HTML + RSC payload) per 8 KB of ISR cache, so listing pages keep bytes per card low:
+- Card and thumbnail `<Image>`s take `width`/`height` only, no `sizes`. A `sizes` value with `vw` makes Next emit 8 srcset entries and a px-only `sizes` emits all 13; omitting it emits a 1x/2x pair. Only true hero images (blog hero, artist hero) keep `sizes`.
+- Repeated line icons use `<Icon name="pin" className="w-4 h-4" />` (`components/Icon.tsx`), which references the symbol sheet `components/IconSprite.tsx` mounted once in `app/layout.tsx`. Add new icons to the sprite instead of inlining `<svg><path/></svg>` in a loop.
+- Card markup uses the component classes in `app/globals.css` (`tile`, `tile-media`, `tile-img`, `tile-overlay`, `tile-title`, `tile-fallback`, `event-card`, `event-thumb`, `event-title`, `rule-lg`, `rule-sm`, `rule-fade`, `row`, `row-num`) rather than repeating the utility strings.
+- `/sitemap.xml` is a sitemap index (`app/sitemap.xml/route.ts`); sections live at `/sitemaps/<section>.xml` (`app/sitemaps/[section]/route.ts`, logic in `lib/sitemap-sections.ts`). There is no `app/sitemap.ts` anymore.
 
 **Key Routes**:
 - `/` - Homepage
