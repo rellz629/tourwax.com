@@ -7,7 +7,7 @@ author: "TourWax Team"
 category: "Guide"
 featuredImage: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Kenny_Chesney_Sun_Goes_Down_Tour_Denver_2024.jpg/1280px-Kenny_Chesney_Sun_Goes_Down_Tour_Denver_2024.jpg"
 publishedAt: "2026-09-18"
-updatedAt: "2026-09-18"
+updatedAt: "2026-09-22"
 ---
 
 **[Eric Church](/artists/eric-church), [Sheryl Crow](/artists/sheryl-crow), and [Greylan James](/artists/greylan-james) open every date on [Kenny Chesney](/artists/kenny-chesney)'s Original Vibe Room Tour 2027.** There is exactly one exception: at Highmark Stadium in Buffalo on June 19, **[Old Dominion](/artists/old-dominion) plays in Sheryl Crow's slot**, alongside Church and James.
@@ -58,7 +58,7 @@ Two stops on this run are opening nights for brand new stadiums, which is unusua
 
 **Nissan Stadium in Nashville** is scheduled to finish construction in February 2027, with concerts and major events starting that April. Chesney's July 3 show will be one of its first. He already holds the record for the most headline appearances at the current Nissan Stadium with six.
 
-**Highmark Stadium in Orchard Park** is the Buffalo Bills' replacement venue, and the June 19 date is confirmed as **the first full-length concert ever held there**. That is almost certainly why the Buffalo bill is the one that differs: a building's first concert tends to get a custom lineup, and Old Dominion is a bigger regional draw in western New York than the tour's default third slot.
+**Highmark Stadium in Orchard Park** is the Buffalo Bills' replacement venue, and the Bills announced the June 19 date as **the first concert at the new stadium**. That framing is no longer clean: on September 16, the day after Chesney's announcement, Metallica announced a show at the same building on **June 8, 2027**, which falls 11 days earlier. Buffalo outlets have kept describing Chesney's show as the building's first, and neither camp has publicly sorted out the billing, so treat it as unsettled. Either way, the custom Buffalo lineup makes sense: Old Dominion is a bigger regional draw in western New York than the tour's default third slot.
 
 ## Tickets and On-Sale
 
