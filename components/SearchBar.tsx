@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useId } from 'react';
 import { useRouter } from 'next/navigation';
 import Icon from '@/components/Icon';
 
@@ -23,7 +23,12 @@ interface SearchResults {
   cities: CityResult[];
 }
 
-export default function SearchBar() {
+interface Props {
+  /** `nav` is the compact header field; `hero` is the full-width homepage field. */
+  variant?: 'nav' | 'hero';
+}
+
+export default function SearchBar({ variant = 'nav' }: Props) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResults>({ artists: [], cities: [] });
   const [isOpen, setIsOpen] = useState(false);
@@ -32,6 +37,12 @@ export default function SearchBar() {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  // Two instances can be on the page at once (header + hero), so ids must be unique.
+  const uid = useId();
+  const listboxId = `search-listbox${uid}`;
+  const optionId = (slug: string) => `search-option${uid}-${slug}`;
+
+  const isHero = variant === 'hero';
 
   // Build flat list of all options for keyboard navigation
   const allOptions: { type: 'artist' | 'city'; slug: string; url: string }[] = [];
@@ -43,7 +54,7 @@ export default function SearchBar() {
   }
 
   const activeOptionId = activeIndex >= 0 && activeIndex < allOptions.length
-    ? `search-option-${allOptions[activeIndex].slug}`
+    ? optionId(allOptions[activeIndex].slug)
     : undefined;
 
   // Debounced fetch
@@ -118,11 +129,19 @@ export default function SearchBar() {
   const hasResults = results.artists.length > 0 || results.cities.length > 0;
   let optionIndex = -1;
 
+  const inputClass = isHero
+    ? 'w-full pl-11 pr-10 py-3.5 text-base rounded bg-paper text-ink border border-transparent focus:border-wax focus:outline-none placeholder:text-muted'
+    : 'w-48 sm:w-64 lg:w-72 pl-9 pr-8 py-2 text-sm rounded bg-page text-ink border border-line focus:bg-paper focus:border-wax focus:outline-none placeholder:text-muted';
+
+  const listboxClass = isHero
+    ? 'absolute top-full mt-2 left-0 w-full bg-paper rounded border border-line overflow-hidden z-50'
+    : 'absolute top-full mt-2 right-0 w-80 sm:w-96 bg-paper rounded border border-line overflow-hidden z-50';
+
   return (
     <div ref={containerRef} className="relative">
       <div className="relative">
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+          className={`absolute ${isHero ? 'left-4 w-5 h-5' : 'left-3 w-4 h-4'} top-1/2 -translate-y-1/2 text-muted pointer-events-none`}
           aria-hidden="true"
           fill="none"
           stroke="currentColor"
@@ -145,17 +164,17 @@ export default function SearchBar() {
           onFocus={() => {
             if (query.length >= 2 && hasResults) setIsOpen(true);
           }}
-          placeholder="Search artists & cities..."
+          placeholder={isHero ? 'Find an artist or a city' : 'Search artists and cities'}
           aria-label="Search artists and cities"
           aria-expanded={isOpen}
-          aria-controls="search-listbox"
+          aria-controls={listboxId}
           aria-autocomplete="list"
           aria-activedescendant={activeOptionId}
-          className="w-48 sm:w-64 lg:w-72 pl-9 pr-8 py-2 text-sm rounded-lg bg-gray-100 border border-transparent focus:bg-white focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400 transition-colors"
+          className={inputClass}
         />
         {isLoading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2" role="status">
-            <svg className="w-4 h-4 animate-spin text-orange-500" aria-hidden="true" fill="none" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 animate-spin text-wax" aria-hidden="true" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
@@ -166,26 +185,26 @@ export default function SearchBar() {
 
       {isOpen && (
         <div
-          id="search-listbox"
+          id={listboxId}
           role="listbox"
           aria-label="Search results"
-          className="absolute top-full mt-2 right-0 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50"
+          className={listboxClass}
         >
           {isLoading && !hasResults ? (
             <div className="p-4 space-y-3">
-              <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-              <div className="h-10 bg-gray-100 rounded animate-pulse" />
-              <div className="h-10 bg-gray-100 rounded animate-pulse" />
+              <div className="h-4 w-24 bg-line rounded animate-pulse" />
+              <div className="h-10 bg-page rounded animate-pulse" />
+              <div className="h-10 bg-page rounded animate-pulse" />
             </div>
           ) : !hasResults ? (
-            <div className="p-4 text-sm text-gray-500 text-center">
-              No results found for &ldquo;{query}&rdquo;
+            <div className="p-4 text-sm text-muted text-center">
+              No results for &ldquo;{query}&rdquo;
             </div>
           ) : (
             <div className="max-h-[70vh] overflow-y-auto">
               {results.artists.length > 0 && (
                 <div>
-                  <div className="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <div className="px-4 pt-3 pb-1 text-xs font-semibold text-muted">
                     Artists
                   </div>
                   {results.artists.map((artist) => {
@@ -194,12 +213,12 @@ export default function SearchBar() {
                     return (
                       <button
                         key={artist.slug}
-                        id={`search-option-${artist.slug}`}
+                        id={optionId(artist.slug)}
                         role="option"
                         aria-selected={activeIndex === idx}
                         onClick={() => navigate(`/artists/${artist.slug}`)}
                         className={`w-full flex items-center gap-3 px-4 py-2.5 transition-colors text-left ${
-                          activeIndex === idx ? 'bg-orange-50' : 'hover:bg-orange-50'
+                          activeIndex === idx ? 'bg-wax-tint' : 'hover:bg-wax-tint'
                         }`}
                       >
                         {artist.imageUrl ? (
@@ -209,18 +228,18 @@ export default function SearchBar() {
                             className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-ink flex items-center justify-center flex-shrink-0">
                             <span className="text-white text-xs font-bold">
                               {artist.name.charAt(0)}
                             </span>
                           </div>
                         )}
                         <div className="min-w-0">
-                          <div className="text-sm font-medium text-gray-900 truncate">
+                          <div className="text-sm font-medium text-ink truncate">
                             {artist.name}
                           </div>
                           {artist.genre && (
-                            <div className="text-xs text-gray-500 truncate">
+                            <div className="text-xs text-muted truncate">
                               {artist.genre}
                             </div>
                           )}
@@ -234,9 +253,9 @@ export default function SearchBar() {
               {results.cities.length > 0 && (
                 <div>
                   {results.artists.length > 0 && (
-                    <div className="border-t border-gray-100" />
+                    <div className="border-t border-line" />
                   )}
-                  <div className="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <div className="px-4 pt-3 pb-1 text-xs font-semibold text-muted">
                     Cities
                   </div>
                   {results.cities.map((city) => {
@@ -245,22 +264,22 @@ export default function SearchBar() {
                     return (
                       <button
                         key={city.slug}
-                        id={`search-option-${city.slug}`}
+                        id={optionId(city.slug)}
                         role="option"
                         aria-selected={activeIndex === idx}
                         onClick={() => navigate(`/concerts/${city.slug}`)}
                         className={`w-full flex items-center gap-3 px-4 py-2.5 transition-colors text-left ${
-                          activeIndex === idx ? 'bg-orange-50' : 'hover:bg-orange-50'
+                          activeIndex === idx ? 'bg-wax-tint' : 'hover:bg-wax-tint'
                         }`}
                       >
-                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                          <Icon name="pin" className="w-4 h-4 text-gray-500" />
+                        <div className="w-8 h-8 rounded-full bg-page flex items-center justify-center flex-shrink-0">
+                          <Icon name="pin" className="w-4 h-4 text-muted" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="text-sm font-medium text-gray-900 truncate">
+                          <div className="text-sm font-medium text-ink truncate">
                             {city.city}{city.state ? `, ${city.state}` : ''}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-muted numerals">
                             {city.count} upcoming event{city.count !== 1 ? 's' : ''}
                           </div>
                         </div>

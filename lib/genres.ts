@@ -39,6 +39,40 @@ export const GENRE_DISPLAY_NAMES: Record<string, string> = {
   'other': 'Other',
 };
 
+/** One hue per genre, keyed by slug. Shown as the strip under an artist tile
+ *  and the dot beside a genre in lists, so color says what kind of show it is. */
+export const GENRE_COLORS: Record<string, string> = {
+  'country': 'var(--g-country)',
+  'hip-hop': 'var(--g-hip-hop)',
+  'rock': 'var(--g-rock)',
+  'pop': 'var(--g-pop)',
+  'rb': 'var(--g-rb)',
+  'electronic': 'var(--g-electronic)',
+  'latin': 'var(--g-latin)',
+  'metal': 'var(--g-metal)',
+};
+
+/** Substring fallbacks so sub-genres ("Classic Rock", "Hip-Hop/Rap", "Dance") still get a family color. */
+const GENRE_COLOR_HINTS: [RegExp, string][] = [
+  [/metal/, 'metal'],
+  [/hip-hop|rap/, 'hip-hop'],
+  [/rock|alternative|indie|punk|grunge|emo/, 'rock'],
+  [/country|folk|americana|bluegrass/, 'country'],
+  [/electronic|dance|house|techno|edm|dubstep/, 'electronic'],
+  [/pop/, 'pop'],
+  [/latin|reggae|reggaeton|world|afro/, 'latin'],
+  [/r-b|rb|soul|jazz|blues|funk/, 'rb'],
+];
+
+/** Color for a raw artist genre string (normalized first). Unknown genres are muted. */
+export function genreColor(genre: string | null): string {
+  const slug = genreSlug(normalizeGenre(genre));
+  const direct = GENRE_COLORS[slug];
+  if (direct) return direct;
+  const hint = GENRE_COLOR_HINTS.find(([re]) => re.test(slug));
+  return hint ? GENRE_COLORS[hint[1]] : 'var(--muted)';
+}
+
 /** SEO description paragraphs for each genre */
 export const GENRE_DESCRIPTIONS: Record<string, string> = {
   'Hip-Hop': 'Find upcoming Hip-Hop and rap tour dates, concert tickets, and live show schedules. From stadium tours to intimate club shows, discover when your favorite rappers and Hip-Hop artists are performing near you.',

@@ -19,7 +19,7 @@ export default function ShowMoreEvents({ children, initialCount = 3 }: Props) {
       {!showAll && remaining > 0 && (
         <button
           onClick={() => setShowAll(true)}
-          className="w-full py-3 text-center text-sm font-semibold text-orange-500 hover:text-orange-600 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all"
+          className="w-full py-3 text-left text-sm font-semibold text-ink hover:text-wax border-t border-line transition-colors"
         >
           Show {remaining} more day{remaining === 1 ? '' : 's'}
         </button>

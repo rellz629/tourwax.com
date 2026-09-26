@@ -9,10 +9,11 @@ import { SITE_URL } from '@/lib/seo';
 import { isFestival, eventPrimaryLabel, dedupeEvents } from '@/lib/event-utils';
 import EventLink from '@/components/EventLink';
 import { slugify } from '@/lib/slugify';
-import { GENRE_DISPLAY_NAMES } from '@/lib/genres';
+import { GENRE_DISPLAY_NAMES, GENRE_COLORS, genreColor } from '@/lib/genres';
 import StructuredData from '@/components/StructuredData';
 import ShowMoreEvents from '@/components/ShowMoreEvents';
-import HomepageNearMe from '@/components/HomepageNearMe';
+import HomepageNearMe, { type FallbackEvent } from '@/components/HomepageNearMe';
+import SearchBar from '@/components/SearchBar';
 import Icon from '@/components/Icon';
 
 export const metadata: Metadata = {
@@ -89,24 +90,43 @@ async function getUpcomingEvents() {
   }));
 }
 
-function groupEventsByDay(eventsList: Awaited<ReturnType<typeof getUpcomingEvents>>) {
-  const groups: Map<string, typeof eventsList> = new Map();
+type UpcomingEvent = Awaited<ReturnType<typeof getUpcomingEvents>>[number];
+
+interface DayGroup {
+  key: string;
+  weekday: string;
+  day: string;
+  month: string;
+  events: UpcomingEvent[];
+}
+
+function groupEventsByDay(eventsList: UpcomingEvent[]): DayGroup[] {
+  const groups = new Map<string, DayGroup>();
 
   for (const event of eventsList) {
     const tz = event.venueTimezone ?? 'UTC';
-    const dayKey = new Date(event.eventDate).toLocaleDateString('en-US', {
+    const d = new Date(event.eventDate);
+    const key = d.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
       timeZone: tz,
     });
-    if (!groups.has(dayKey)) {
-      groups.set(dayKey, []);
+    let group = groups.get(key);
+    if (!group) {
+      group = {
+        key,
+        weekday: d.toLocaleDateString('en-US', { weekday: 'short', timeZone: tz }),
+        day: d.toLocaleDateString('en-US', { day: 'numeric', timeZone: tz }),
+        month: d.toLocaleDateString('en-US', { month: 'long', timeZone: tz }),
+        events: [],
+      };
+      groups.set(key, group);
     }
-    groups.get(dayKey)!.push(event);
+    group.events.push(event);
   }
 
-  return groups;
+  return Array.from(groups.values());
 }
 
 async function getSiteStats() {
@@ -142,6 +162,17 @@ async function getTopCities() {
     .limit(12);
 }
 
+// Rows shown per day on the homepage itinerary. Busy days can have 150+ shows;
+// every row is HTML + RSC bytes billed into the ISR cache, so cap and link out.
+const ROWS_PER_DAY = 12;
+
+const QUICK_LINKS = [
+  { href: '/concerts/tonight', label: 'Tonight', hot: true },
+  { href: '/concerts/this-weekend', label: 'This weekend', hot: false },
+  { href: '/concerts/near-me', label: 'Near me', hot: false },
+  { href: '/concerts/on-sale-today', label: 'On sale today', hot: false },
+];
+
 export default async function HomePage() {
   const [featuredArtists, upcomingEvents, stats, topCities] = await Promise.all([
     getFeaturedArtistsWithUpcomingEvents(),
@@ -149,6 +180,24 @@ export default async function HomePage() {
     getSiteStats(),
     getTopCities(),
   ]);
+
+  // Rows for the hero board when the visitor's location is unknown.
+  const fallbackEvents: FallbackEvent[] = upcomingEvents
+    .filter((e) => e.venueCity && !isFestival(e.name))
+    .slice(0, 5)
+    .map((e) => ({
+      id: e.id,
+      artistName: e.artistName,
+      artistSlug: e.artistSlug,
+      city: e.venueCity,
+      state: e.venueState,
+      eventDate: new Date(e.eventDate).toISOString(),
+      timezone: e.venueTimezone,
+      ticketUrl: e.ticketUrl,
+      source: e.source,
+    }));
+
+  const dayGroups = groupEventsByDay(upcomingEvents);
 
   // Generate structured data schemas
   const organizationSchema = generateOrganizationSchema();
@@ -160,245 +209,247 @@ export default async function HomePage() {
   return (
     <>
       <StructuredData data={[organizationSchema, websiteSchema, breadcrumbSchema]} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Hero Section */}
-      <div className="text-center mb-12">
-        <h1 className="text-6xl md:text-7xl font-black mb-6">
-          <span className="gradient-text">Never Miss a Show</span>
-        </h1>
-        <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          Track tour dates, venues, and the latest news for your favorite artists.
-          <span className="block mt-2 text-orange-500 font-semibold">Updated automatically, every day.</span>
-        </p>
-      </div>
 
-      {/* Concerts Near Me (client-side, hydrates after page load) */}
-      <HomepageNearMe />
-
-      {/* Featured Artists */}
-      <section className="mb-20">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-4xl font-bold text-gray-900">
-            Artists on <span className="gradient-text">Tour</span>
-          </h2>
-          <Link
-            href="/artists"
-            className="group inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-lg transition-colors"
-          >
-            View All
-            <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {featuredArtists.map((artist) => (
-            <Link
-              key={artist.id}
-              href={`/artists/${artist.slug}`}
-              className="group bg-white rounded-lg shadow-md hover:shadow-xl card-hover overflow-hidden border border-gray-100"
-            >
-              <div className="tile-media">
-                {artist.imageUrl ? (
-                  <Image
-                    src={artist.imageUrl}
-                    alt={artist.name}
-                    width={200}
-                    height={200}
-                    quality={70}
-                    className="tile-img"
-                  />
-                ) : (
-                  <div className="tile-fallback" role="img" aria-label={artist.name}>
-                    {artist.name.charAt(0)}
-                  </div>
-                )}
-                <div className="tile-overlay"></div>
-              </div>
-              <div className="p-3 bg-white">
-                <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors text-sm truncate">
-                  {artist.name}
-                </h3>
-                {artist.genre && (
-                  <p className="text-xs text-gray-500 font-medium truncate">{artist.genre}</p>
-                )}
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Upcoming Shows */}
-      <section>
-        <h2 className="text-4xl font-bold text-gray-900 mb-8">
-          Coming <span className="gradient-text">Soon</span>
-        </h2>
-        {upcomingEvents.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Icon name="calendar" className="w-8 h-8 text-orange-500" />
+      {/* Hero: full-bleed ink band, search on the left, the board on the right */}
+      <section className="grooves relative overflow-hidden bg-ink text-white" aria-label="Find a show">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 lg:grid lg:grid-cols-12 lg:gap-12 lg:items-start">
+          <div className="lg:col-span-7">
+            <h1 className="display text-4xl sm:text-5xl lg:text-6xl text-white">
+              Tour dates for <span className="text-label numerals">{stats.artists.toLocaleString()}</span> artists, updated every day.
+            </h1>
+            <p className="mt-5 text-lg lg:text-xl text-gray-300 max-w-md">
+              <span className="text-white font-semibold numerals">{stats.events.toLocaleString()}</span> upcoming shows across{' '}
+              <span className="text-white font-semibold numerals">{stats.cities.toLocaleString()}</span> cities, from Ticketmaster and SeatGeek.
+            </p>
+            <div className="mt-7 max-w-xl">
+              <SearchBar variant="hero" />
             </div>
-            <p className="text-gray-500 text-lg">No upcoming events yet. Check back soon!</p>
+            <ul className="mt-4 flex flex-wrap gap-2.5 list-none m-0 p-0 text-sm font-semibold">
+              {QUICK_LINKS.map((q) => (
+                <li key={q.href}>
+                  <Link
+                    href={q.href}
+                    className={
+                      q.hot
+                        ? 'inline-block rounded-full px-4 py-1.5 bg-label text-ink hover:bg-white transition-colors'
+                        : 'inline-block rounded-full px-4 py-1.5 border border-white/40 text-white hover:border-label hover:text-label transition-colors'
+                    }
+                  >
+                    {q.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
-        ) : (
-          <ShowMoreEvents initialCount={3}>
-            {Array.from(groupEventsByDay(upcomingEvents)).map(([dayLabel, dayEvents]) => (
-              <div key={dayLabel}>
-                <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-lg font-bold whitespace-nowrap"><span className="gradient-text">{dayLabel}</span></h3>
-                  <div className="h-px bg-gradient-to-r from-orange-200 to-transparent flex-1"></div>
-                  <span className="text-sm text-gray-500 whitespace-nowrap">{dayEvents.length} {dayEvents.length === 1 ? 'show' : 'shows'}</span>
-                </div>
-                <div className="bg-white rounded-xl shadow-md border border-gray-100 divide-y divide-gray-50">
-                  {dayEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className="group flex items-center gap-4 px-4 py-3 hover:bg-gradient-to-r hover:from-orange-50 hover:to-transparent transition-colors first:rounded-t-xl last:rounded-b-xl"
-                    >
-                      <div className="flex-1 min-w-0">
-                        {isFestival(event.name) ? (
-                          // Festivals list one event record per artist, so show the
-                          // festival name itself as the label (linking to tickets)
-                          // rather than an arbitrary artist from the lineup.
-                          <EventLink
-                            label={eventPrimaryLabel(event)}
-                            showNewTabHint
-                            className="font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate block"
-                          >
-                            {event.name}
-                          </EventLink>
-                        ) : (
-                          <>
-                            <div className="flex items-baseline gap-2">
-                              <Link href={`/artists/${event.artistSlug}`} className="font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate">
-                                {event.artistName}
-                              </Link>
-                              <span className="text-gray-500 hidden sm:inline">&middot;</span>
-                              <span className="text-gray-500 text-sm truncate hidden sm:inline">{event.name}</span>
-                            </div>
-                            <p className="text-sm text-gray-500 sm:hidden truncate">{event.name}</p>
-                          </>
-                        )}
-                        {(event.venueCity || event.venueState || event.venueCountry) && (
-                          <p className="text-sm text-gray-500 truncate">
-                            {event.venueCity ? (
-                              <Link href={`/concerts/${slugify(event.venueCity)}`} className="hover:text-orange-600 transition-colors">{event.venueCity}</Link>
-                            ) : null}
-                            {event.venueCity && (event.venueState || event.venueCountry) ? ', ' : ''}
-                            {[event.venueState, event.venueCountry].filter(Boolean).join(', ')}
-                          </p>
-                        )}
+          <div className="mt-10 lg:mt-0 lg:col-span-5">
+            <HomepageNearMe fallbackEvents={fallbackEvents} />
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-20">
+        {/* Artists on tour */}
+        <section aria-labelledby="artists-heading">
+          <div className="section-head">
+            <h2 id="artists-heading" className="display text-3xl sm:text-4xl text-ink">Artists on tour</h2>
+            <div className="flex items-baseline gap-5 text-sm text-muted whitespace-nowrap">
+              <span className="numerals hidden sm:inline">{featuredArtists.length} of {stats.artists.toLocaleString()}</span>
+              <Link href="/artists" className="font-semibold text-ink hover:text-wax transition-colors">All artists</Link>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {featuredArtists.map((artist) => {
+              const color = genreColor(artist.genre);
+              return (
+                <Link key={artist.id} href={`/artists/${artist.slug}`} className="group tile">
+                  <div className="tile-media">
+                    {artist.imageUrl ? (
+                      <Image
+                        src={artist.imageUrl}
+                        alt={artist.name}
+                        width={200}
+                        height={200}
+                        quality={70}
+                        className="tile-img"
+                      />
+                    ) : (
+                      <div className="tile-fallback" role="img" aria-label={artist.name}>
+                        {artist.name.charAt(0)}
                       </div>
-                      <time dateTime={new Date(event.eventDate).toISOString()} className="text-sm text-gray-500 font-medium whitespace-nowrap flex-shrink-0">
-                        {new Date(event.eventDate).toLocaleTimeString('en-US', {
-                          hour: 'numeric',
-                          minute: '2-digit',
-                          timeZone: event.venueTimezone ?? 'UTC',
-                        })}
-                        {event.venueTimezone && (
-                          <span className="text-gray-500 ml-1">
-                            {new Intl.DateTimeFormat('en-US', {
-                              timeZone: event.venueTimezone,
-                              timeZoneName: 'short',
-                            }).formatToParts(event.eventDate).find(p => p.type === 'timeZoneName')?.value}
-                          </span>
-                        )}
-                      </time>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </ShowMoreEvents>
-        )}
-      </section>
-
-      {/* Site Stats */}
-      <section className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 text-center">
-          <div className="text-3xl font-black gradient-text">{stats.artists.toLocaleString()}</div>
-          <div className="text-sm text-gray-500 font-medium mt-1">Artists Tracked</div>
-        </div>
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 text-center">
-          <div className="text-3xl font-black gradient-text">{stats.events.toLocaleString()}</div>
-          <div className="text-sm text-gray-500 font-medium mt-1">Upcoming Shows</div>
-        </div>
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 text-center">
-          <div className="text-3xl font-black gradient-text">{stats.cities.toLocaleString()}</div>
-          <div className="text-sm text-gray-500 font-medium mt-1">Cities</div>
-        </div>
-      </section>
-
-      {/* Browse by Genre */}
-      <section className="mt-20">
-        <h2 className="text-4xl font-bold text-gray-900 mb-8">
-          Browse by <span className="gradient-text">Genre</span>
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Object.entries(GENRE_DISPLAY_NAMES).filter(([slug]) => slug !== 'other').map(([slug, name]) => (
-            <Link
-              key={slug}
-              href={`/tours/${slug}`}
-              className="group bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5"
-            >
-              <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">{name}</h3>
-              <p className="text-sm text-gray-500 mt-1">View tour dates</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Find Concerts by City */}
-      {topCities.length > 0 && (
-        <section className="mt-20">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-4xl font-bold text-gray-900">
-              Find Concerts by <span className="gradient-text">City</span>
-            </h2>
-            <Link
-              href="/concerts"
-              className="group inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold text-lg transition-colors"
-            >
-              All Cities
-              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {topCities.map((row) => (
-              <Link
-                key={`${row.city}-${row.state}`}
-                href={`/concerts/${slugify(row.city!)}`}
-                className="group bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-5 transition-all hover:-translate-y-0.5"
-              >
-                <h3 className="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">{row.city}</h3>
-                <p className="text-sm text-gray-500 mt-1">{row.count} upcoming show{row.count === 1 ? '' : 's'}</p>
-              </Link>
-            ))}
+                    )}
+                  </div>
+                  <div className="tile-strip" style={{ background: color }} aria-hidden="true"></div>
+                  <div className="p-3">
+                    <h3 className="tile-title text-sm">{artist.name}</h3>
+                    {artist.genre && (
+                      <p className="text-xs font-semibold truncate" style={{ color }}>{artist.genre}</p>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
-      )}
 
-      {/* SEO Description */}
-      <section className="mt-20 bg-white rounded-xl shadow-md border border-gray-100 p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Guide to Live Music in {new Date().getFullYear()}</h2>
-        <div className="text-gray-600 leading-relaxed space-y-4">
-          <p>
-            TourWax is the easiest way to find concert tour dates, compare ticket prices, and never miss a show from your favorite artists.
-            We track upcoming concerts across Hip-Hop, Pop, Rock, Country, R&B, Electronic, and Latin music — updated daily with data from
-            Ticketmaster and SeatGeek.
-          </p>
-          <p>
-            Browse <Link href="/concerts" className="text-orange-500 hover:text-orange-600 font-medium">concerts by city</Link>, explore
-            {' '}<Link href="/tours" className="text-orange-500 hover:text-orange-600 font-medium">tours by genre</Link>, or find events at your
-            favorite <Link href="/venues" className="text-orange-500 hover:text-orange-600 font-medium">concert venues</Link>. Looking for something
-            happening soon? Check out <Link href="/concerts/this-weekend" className="text-orange-500 hover:text-orange-600 font-medium">concerts this
-            weekend</Link> or <Link href="/concerts/tonight" className="text-orange-500 hover:text-orange-600 font-medium">shows tonight</Link>.
-          </p>
-        </div>
-      </section>
-    </div>
+        {/* This week */}
+        <section aria-labelledby="week-heading">
+          <div className="section-head">
+            <h2 id="week-heading" className="display text-3xl sm:text-4xl text-ink">This week</h2>
+            <div className="flex items-baseline gap-5 text-sm text-muted whitespace-nowrap">
+              <span className="numerals hidden sm:inline">{upcomingEvents.length} shows in 7 days</span>
+              <Link href="/concerts/this-weekend" className="font-semibold text-ink hover:text-wax transition-colors">This weekend</Link>
+            </div>
+          </div>
+          {upcomingEvents.length === 0 ? (
+            <div className="border border-line bg-paper p-12 text-center">
+              <Icon name="calendar" className="w-8 h-8 text-muted mx-auto mb-3" />
+              <p className="text-muted text-lg">No shows in the next 7 days yet. Check back soon.</p>
+            </div>
+          ) : (
+            <ShowMoreEvents initialCount={3}>
+              {dayGroups.map((group, gi) => (
+                <div
+                  key={group.key}
+                  className={`md:grid md:grid-cols-[8rem_1fr] md:gap-8 py-5 ${gi === 0 ? '' : 'border-t border-line'}`}
+                >
+                  <h3 className="mb-3 md:mb-0 leading-none">
+                    <span className="block text-sm text-muted uppercase tracking-wide">{group.weekday}</span>
+                    <span className="display text-4xl md:text-5xl text-wax numerals">{group.day}</span>
+                    <span className="block text-sm text-muted mt-1.5 numerals">
+                      {group.month}, {group.events.length} {group.events.length === 1 ? 'show' : 'shows'}
+                    </span>
+                  </h3>
+                  <ul className="list-none m-0 p-0">
+                    {group.events.slice(0, ROWS_PER_DAY).map((event) => (
+                      <li
+                        key={event.id}
+                        className="group flex items-center gap-4 py-2.5 border-b border-line last:border-b-0"
+                      >
+                        <div className="flex-1 min-w-0">
+                          {isFestival(event.name) ? (
+                            // Festivals list one event record per artist, so show the
+                            // festival name itself as the label (linking to tickets)
+                            // rather than an arbitrary artist from the lineup.
+                            <EventLink
+                              label={eventPrimaryLabel(event)}
+                              showNewTabHint
+                              className="font-semibold text-ink hover:text-wax transition-colors truncate block"
+                            >
+                              {event.name}
+                            </EventLink>
+                          ) : (
+                            <>
+                              <div className="flex items-baseline gap-2">
+                                <Link href={`/artists/${event.artistSlug}`} className="font-semibold text-ink hover:text-wax transition-colors truncate">
+                                  {event.artistName}
+                                </Link>
+                                <span className="text-muted text-sm truncate hidden sm:inline">{event.name}</span>
+                              </div>
+                              <p className="text-sm text-muted sm:hidden truncate">{event.name}</p>
+                            </>
+                          )}
+                          {(event.venueCity || event.venueState || event.venueCountry) && (
+                            <p className="text-sm text-muted truncate">
+                              {event.venueCity ? (
+                                <Link href={`/concerts/${slugify(event.venueCity)}`} className="hover:text-wax transition-colors">{event.venueCity}</Link>
+                              ) : null}
+                              {event.venueCity && (event.venueState || event.venueCountry) ? ', ' : ''}
+                              {[event.venueState, event.venueCountry].filter(Boolean).join(', ')}
+                            </p>
+                          )}
+                        </div>
+                        <time dateTime={new Date(event.eventDate).toISOString()} className="text-sm text-muted numerals whitespace-nowrap flex-shrink-0">
+                          {new Date(event.eventDate).toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            timeZone: event.venueTimezone ?? 'UTC',
+                          })}
+                          {event.venueTimezone && (
+                            <span className="ml-1">
+                              {new Intl.DateTimeFormat('en-US', {
+                                timeZone: event.venueTimezone,
+                                timeZoneName: 'short',
+                              }).formatToParts(event.eventDate).find(p => p.type === 'timeZoneName')?.value}
+                            </span>
+                          )}
+                        </time>
+                      </li>
+                    ))}
+                    {group.events.length > ROWS_PER_DAY && (
+                      <li className="pt-3">
+                        <Link href="/concerts/this-week" className="text-sm font-semibold text-ink hover:text-wax transition-colors numerals">
+                          {group.events.length - ROWS_PER_DAY} more on {group.weekday} {group.day}
+                        </Link>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              ))}
+            </ShowMoreEvents>
+          )}
+        </section>
+
+        {/* Browse by genre and city */}
+        <section aria-labelledby="browse-heading">
+          <div className="section-head">
+            <h2 id="browse-heading" className="display text-3xl sm:text-4xl text-ink">Browse</h2>
+            <Link href="/concerts" className="text-sm font-semibold text-ink hover:text-wax transition-colors whitespace-nowrap">All cities</Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-14 gap-y-10">
+            <div>
+              <h3 className="text-lg font-semibold text-ink mb-1">By genre</h3>
+              <ul className="list-none m-0 p-0">
+                {Object.entries(GENRE_DISPLAY_NAMES).filter(([slug]) => slug !== 'other').map(([slug, name]) => (
+                  <li key={slug} className="border-b border-line">
+                    <Link href={`/tours/${slug}`} className="flex items-center gap-3 py-2.5 text-ink hover:text-wax transition-colors">
+                      <span
+                        className="inline-block w-2.5 h-2.5 rounded-full flex-shrink-0"
+                        style={{ background: GENRE_COLORS[slug] ?? 'var(--muted)' }}
+                        aria-hidden="true"
+                      ></span>
+                      <span className="font-medium">{name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {topCities.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-ink mb-1">By city</h3>
+                <ul className="list-none m-0 p-0">
+                  {topCities.map((row) => (
+                    <li key={`${row.city}-${row.state}`} className="border-b border-line">
+                      <Link href={`/concerts/${slugify(row.city!)}`} className="flex items-baseline justify-between gap-4 py-2.5 text-ink hover:text-wax transition-colors">
+                        <span className="font-medium truncate">{row.city}{row.state ? `, ${row.state}` : ''}</span>
+                        <span className="text-sm text-muted numerals whitespace-nowrap">{row.count} show{row.count === 1 ? '' : 's'}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* SEO Description */}
+        <section className="max-w-prose">
+          <h2 className="display text-2xl text-ink mb-4">Your guide to live music in {new Date().getFullYear()}</h2>
+          <div className="text-muted leading-relaxed space-y-4">
+            <p>
+              TourWax is the easiest way to find concert tour dates, compare ticket prices, and never miss a show from your favorite artists.
+              We track upcoming concerts across Hip-Hop, Pop, Rock, Country, R&B, Electronic, and Latin music, updated daily with data from
+              Ticketmaster and SeatGeek.
+            </p>
+            <p>
+              Browse <Link href="/concerts" className="text-wax font-medium underline underline-offset-2 decoration-line hover:decoration-wax">concerts by city</Link>, explore
+              {' '}<Link href="/tours" className="text-wax font-medium underline underline-offset-2 decoration-line hover:decoration-wax">tours by genre</Link>, or find events at your
+              favorite <Link href="/venues" className="text-wax font-medium underline underline-offset-2 decoration-line hover:decoration-wax">concert venues</Link>. Looking for something
+              happening soon? Check out <Link href="/concerts/this-weekend" className="text-wax font-medium underline underline-offset-2 decoration-line hover:decoration-wax">concerts this
+              weekend</Link> or <Link href="/concerts/tonight" className="text-wax font-medium underline underline-offset-2 decoration-line hover:decoration-wax">shows tonight</Link>.
+            </p>
+          </div>
+        </section>
+      </div>
     </>
   );
 }

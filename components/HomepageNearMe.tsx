@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getAffiliateUrl } from '@/lib/affiliate';
-import { slugify } from '@/lib/slugify';
 
 interface NearMeEvent {
   id: string;
@@ -38,12 +37,53 @@ interface NearMeData {
   events: NearMeEvent[];
 }
 
-const PREVIEW_LIMIT = 4;
+/** Server-rendered rows shown when the visitor's location is unavailable. */
+export interface FallbackEvent {
+  id: string;
+  artistName: string;
+  artistSlug: string;
+  city: string | null;
+  state: string | null;
+  /** ISO string */
+  eventDate: string;
+  timezone: string | null;
+  ticketUrl: string | null;
+  source: string;
+}
 
-export default function HomepageNearMe() {
+interface Props {
+  fallbackEvents: FallbackEvent[];
+}
+
+const PREVIEW_LIMIT = 5;
+
+interface Row {
+  id: string;
+  day: string;
+  month: string;
+  artistName: string;
+  artistSlug: string;
+  where: string;
+  ticketHref: string | null;
+  ticketLabel: string;
+}
+
+function dateParts(iso: string, timeZone?: string | null) {
+  const d = new Date(iso);
+  const opts = timeZone ? { timeZone } : {};
+  return {
+    day: d.toLocaleDateString('en-US', { day: 'numeric', ...opts }),
+    month: d.toLocaleDateString('en-US', { month: 'short', ...opts }),
+  };
+}
+
+/**
+ * The hero's right-hand board. Never renders empty: it shows nearby shows when
+ * the visitor's location is known, and the next few shows anywhere otherwise.
+ */
+export default function HomepageNearMe({ fallbackEvents }: Props) {
   const [data, setData] = useState<NearMeData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -51,14 +91,10 @@ export default function HomepageNearMe() {
       .then((res) => res.json())
       .then((json: NearMeData) => {
         if (cancelled) return;
-        if (!json.location || json.events.length === 0) {
-          setHidden(true);
-        } else {
-          setData(json);
-        }
+        if (json.location && json.events.length > 0) setData(json);
       })
       .catch(() => {
-        if (!cancelled) setHidden(true);
+        /* fall through to the fallback board */
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -68,105 +104,112 @@ export default function HomepageNearMe() {
     };
   }, []);
 
-  if (hidden) return null;
+  const located = !!(data && data.location && data.events.length > 0);
 
-  if (loading) {
-    // Mirror the loaded layout's height exactly (two-line header + PREVIEW_LIMIT
-    // rows + ticket button) so swapping in real data does not shift the page (CLS).
-    return (
-      <section className="mb-16" aria-label="Concerts near you">
-        <div className="bg-gradient-to-br from-orange-50 via-white to-red-50 rounded-2xl border border-orange-100 p-6 md:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
-            <div>
-              <div className="h-8 md:h-9 w-56 bg-orange-100 rounded animate-pulse"></div>
-              <div className="h-4 w-44 bg-orange-100/70 rounded animate-pulse mt-2"></div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-orange-100 divide-y divide-orange-50">
-            {Array.from({ length: PREVIEW_LIMIT }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4 px-4 py-3">
-                <div className="flex-1 min-w-0 space-y-2">
-                  <div className="h-4 w-40 bg-gray-100 rounded animate-pulse"></div>
-                  <div className="h-3 w-28 bg-gray-100 rounded animate-pulse"></div>
-                </div>
-                <div className="h-9 w-16 bg-orange-50 rounded-lg animate-pulse"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
+  let heading: string;
+  let sub: string;
+  let moreHref: string;
+  let moreLabel: string;
+  let rows: Row[];
+
+  if (located) {
+    const loc = data!.location!;
+    const locationLabel = loc.city
+      ? `${loc.city}${loc.region ? `, ${loc.region}` : ''}`
+      : 'you';
+    heading = `Near ${locationLabel}`;
+    sub = `Within ${loc.radiusMiles} miles of your approximate location.`;
+    moreHref = '/concerts/near-me';
+    moreLabel = 'See all nearby shows';
+    rows = data!.events.slice(0, PREVIEW_LIMIT).map((e) => {
+      const { day, month } = dateParts(e.date);
+      const place = e.venue.city || e.venue.name;
+      return {
+        id: e.id,
+        day,
+        month,
+        artistName: e.artist.name,
+        artistSlug: e.artist.slug,
+        where: `${place}, ${e.distanceMiles < 10 ? e.distanceMiles : Math.round(e.distanceMiles)} mi`,
+        ticketHref: e.ticketUrl ? getAffiliateUrl(e.ticketUrl, e.ticketSource) : null,
+        ticketLabel: e.minPrice ? `$${e.minPrice}+` : 'Tickets',
+      };
+    });
+  } else {
+    heading = 'This week';
+    sub = 'The next shows on the board, anywhere.';
+    moreHref = '/concerts/this-week';
+    moreLabel = 'See all shows this week';
+    rows = fallbackEvents.slice(0, PREVIEW_LIMIT).map((e) => {
+      const { day, month } = dateParts(e.eventDate, e.timezone);
+      return {
+        id: e.id,
+        day,
+        month,
+        artistName: e.artistName,
+        artistSlug: e.artistSlug,
+        where: [e.city, e.state].filter(Boolean).join(', '),
+        ticketHref: e.ticketUrl ? getAffiliateUrl(e.ticketUrl, e.source) : null,
+        ticketLabel: 'Tickets',
+      };
+    });
   }
 
-  if (!data || !data.location || data.events.length === 0) return null;
-
-  const locationLabel = data.location.city
-    ? `${data.location.city}${data.location.region ? `, ${data.location.region}` : ''}`
-    : 'You';
-
   return (
-    <section className="mb-16" aria-label={`Concerts near ${locationLabel}`}>
-      <div className="bg-gradient-to-br from-orange-50 via-white to-red-50 rounded-2xl border border-orange-100 p-6 md:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-black text-gray-900">
-              Concerts Near <span className="gradient-text">{locationLabel}</span>
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Within {data.location.radiusMiles} miles · approximate location
-            </p>
-          </div>
-          <Link
-            href="/concerts/near-me"
-            className="group inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-semibold transition-colors whitespace-nowrap"
+    <section
+      className="bg-paper text-ink border border-line border-t-4 border-t-wax p-5 lg:p-6"
+      aria-label={heading}
+      aria-busy={loading}
+    >
+      <h2 className="display text-3xl text-ink">
+        {loading ? <span className="inline-block h-8 w-48 bg-line animate-pulse align-middle" aria-hidden="true" /> : heading}
+        {loading && <span className="sr-only">Finding shows near you</span>}
+      </h2>
+      <p className="text-sm text-muted mt-1 mb-2">{loading ? ' ' : sub}</p>
+
+      <ol className="list-none m-0 p-0">
+        {rows.map((row) => (
+          <li
+            key={row.id}
+            className="grid grid-cols-[3.25rem_1fr_auto] items-center gap-3 py-3 border-t border-line"
           >
-            See all nearby
-            <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </Link>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-orange-100 divide-y divide-orange-50">
-          {data.events.map((event) => (
-            <div
-              key={event.id}
-              className="flex items-center gap-4 px-4 py-3 hover:bg-orange-50/50 transition-colors first:rounded-t-xl last:rounded-b-xl"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <Link
-                    href={`/artists/${event.artist.slug}`}
-                    className="font-semibold text-gray-900 hover:text-orange-600 transition-colors truncate"
-                  >
-                    {event.artist.name}
-                  </Link>
-                  <span className="text-xs text-gray-500 whitespace-nowrap">
-                    {event.distanceMiles} mi
-                  </span>
-                </div>
-                <p className="text-sm text-gray-500 truncate">
-                  {event.venue.city || event.venue.name}
-                  {' · '}
-                  {new Date(event.date).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </p>
-              </div>
-              {event.ticketUrl && (
-                <a
-                  href={getAffiliateUrl(event.ticketUrl, event.ticketSource)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-orange-500 hover:text-orange-600 bg-orange-50 px-3 py-2 rounded-lg transition-colors whitespace-nowrap"
-                >
-                  {event.minPrice ? `$${event.minPrice}+` : 'Tickets'}
-                  <span className="sr-only">(opens in new tab)</span>
-                </a>
-              )}
+            <div className="leading-none numerals" aria-hidden="true">
+              <span className="display text-3xl text-label">{row.day}</span>
+              <span className="block text-xs text-muted uppercase tracking-wide mt-0.5">{row.month}</span>
             </div>
-          ))}
-        </div>
+            <div className="min-w-0">
+              <Link
+                href={`/artists/${row.artistSlug}`}
+                className="block font-semibold text-ink hover:text-wax transition-colors truncate"
+              >
+                {row.artistName}
+              </Link>
+              <p className="text-sm text-muted truncate">
+                <span className="sr-only">{row.month} {row.day}, </span>
+                {row.where}
+              </p>
+            </div>
+            {row.ticketHref ? (
+              <a
+                href={row.ticketHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-wax hover:bg-wax-deep text-white text-sm font-semibold px-3 py-1.5 rounded transition-colors whitespace-nowrap numerals"
+              >
+                {row.ticketLabel}
+                <span className="sr-only"> for {row.artistName} (opens in new tab)</span>
+              </a>
+            ) : (
+              <span />
+            )}
+          </li>
+        ))}
+      </ol>
+
+      <div className="border-t-2 border-ink mt-1 pt-3">
+        <Link href={moreHref} className="font-semibold text-ink hover:text-wax transition-colors">
+          {moreLabel}
+        </Link>
       </div>
     </section>
   );

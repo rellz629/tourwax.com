@@ -17,7 +17,7 @@ export default function NavLinks() {
   const pathname = usePathname();
 
   return (
-    <div className="hidden sm:flex sm:gap-1">
+    <div className="hidden sm:flex sm:gap-5">
       {NAV_ITEMS.map(({ href, label }) => {
         const isActive = pathname === href || pathname.startsWith(`${href}/`);
         return (
@@ -25,10 +25,10 @@ export default function NavLinks() {
             key={href}
             href={href}
             aria-current={isActive ? 'page' : undefined}
-            className={`inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+            className={`inline-flex items-center py-1 text-sm font-semibold border-b-2 transition-colors ${
               isActive
-                ? 'text-orange-600 bg-orange-50'
-                : 'text-gray-700 hover:text-orange-500 hover:bg-orange-50'
+                ? 'text-ink border-wax'
+                : 'text-ink border-transparent hover:text-wax'
             }`}
           >
             {label}

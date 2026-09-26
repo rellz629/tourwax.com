@@ -2,26 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Design tokens ("tour poster" direction, 2026-09-26).
+   One typeface (Archivo) at two widths, ink navy from the logo's vinyl, one
+   solid accent red. Gradients live only inside the logo. Tailwind exposes these
+   as text-ink / bg-paper / border-line / bg-wax etc. (tailwind.config.ts). */
 :root {
-  --background: #fafafa;
-  --foreground: #171717;
-  --primary: #FF6B35;
-  --primary-dark: #E63946;
-  --accent: #2B2D42;
-  --accent-light: #8D99AE;
+  --ink: #1C1E33;
+  --page: #F6F6F8;
+  --paper: #FFFFFF;
+  --line: #DCDDE4;
+  --muted: #5F6377;
+  --wax: #D62839;
+  --wax-deep: #B31F2F;
+  --wax-tint: #FBEBED;
+  --label: #E8590C; /* logo orange, darkened one step so it passes contrast as text */
+
+  /* Genre colors: a strip under artist tiles, a dot in genre lists. */
+  --g-country: #E8871E;
+  --g-hip-hop: #D62839;
+  --g-rock: #2F5DA8;
+  --g-pop: #E23E8C;
+  --g-rb: #7A4FBF;
+  --g-electronic: #17A398;
+  --g-latin: #F2B705;
+  --g-metal: #1C1E33;
+
+  /* Legacy names still referenced by tailwind.config.ts */
+  --background: var(--page);
+  --foreground: var(--ink);
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: var(--page);
+  @apply font-sans;
 }
 
 /* Global keyboard focus indicator */
 :focus-visible {
-  outline: 2px solid #f97316;
+  outline: 2px solid var(--wax);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 /* Screen reader only utility */
@@ -37,29 +58,68 @@ body {
   border-width: 0;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 
+  /* Condensed poster voice: H1/H2 and big day numerals only. Archivo's wdth
+     axis (62-125) is selected with font-stretch. */
+  .display {
+    font-stretch: 66%;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+  }
+
+  .numerals {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Faint vinyl grooves for the ink hero band. */
+  .grooves::before {
+    content: "";
+    position: absolute;
+    right: -140px;
+    top: -140px;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    background: repeating-radial-gradient(circle, transparent 0 9px, rgba(255, 255, 255, 0.05) 9px 10px);
+    pointer-events: none;
+  }
+
+  /* Kept for the 35 files that wrap a heading word in it. It used to paint an
+     orange-to-red gradient; now it inherits, so headings read as one color. */
   .gradient-text {
-    background: linear-gradient(135deg, #D94A1A 0%, #C62D3A 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: #D94A1A;
+    background: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: currentColor;
+    background-clip: initial;
+    color: inherit;
   }
 
   .gradient-bg {
-    background: linear-gradient(135deg, #FF6B35 0%, #E63946 100%);
+    background: var(--wax);
   }
 
+  /* Formerly a translateY lift on hover. Flat now. */
   .card-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.15s ease;
   }
 
   .card-hover:hover {
-    transform: translateY(-4px);
+    transform: none;
   }
 }
 
@@ -70,54 +130,62 @@ body {
      these classes rather than inlining the utility strings. */
   /* `group` cannot live in @apply; markup uses className="group tile". */
   .tile {
-    @apply bg-white rounded-xl shadow-md hover:shadow-2xl card-hover overflow-hidden border border-gray-100;
+    @apply bg-paper border border-line overflow-hidden card-hover hover:border-ink;
   }
   .tile-media {
-    @apply aspect-square bg-gradient-to-br from-orange-400 via-red-400 to-pink-500 relative overflow-hidden;
+    @apply aspect-square bg-ink relative overflow-hidden;
   }
   .tile-img {
-    @apply w-full h-full object-cover group-hover:scale-110 transition-transform duration-300;
+    @apply w-full h-full object-cover;
   }
   .tile-overlay {
-    @apply absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300;
+    @apply hidden;
+  }
+  .tile-strip {
+    @apply h-1.5 bg-muted;
   }
   .tile-title {
-    @apply font-bold text-gray-900 group-hover:text-orange-500 transition-colors line-clamp-1;
+    @apply font-semibold text-ink group-hover:text-wax transition-colors line-clamp-1;
   }
   .tile-fallback {
-    @apply w-full h-full flex items-center justify-center text-white text-3xl font-bold;
+    @apply w-full h-full flex items-center justify-center text-white text-3xl display;
   }
   .event-card {
-    @apply bg-white rounded-xl shadow-md hover:shadow-2xl card-hover p-6 border border-gray-100;
+    @apply bg-paper border border-line p-6 card-hover hover:border-ink;
   }
   .event-thumb {
-    @apply w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-orange-500 to-red-500;
+    @apply w-16 h-16 rounded overflow-hidden flex-shrink-0 bg-ink;
   }
   .event-title {
-    @apply font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg;
+    @apply font-semibold text-ink group-hover:text-wax transition-colors text-lg;
   }
   .rule-lg {
-    @apply h-1 w-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full;
+    @apply h-0.5 w-12 bg-ink;
   }
   .rule-sm {
-    @apply h-1 w-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full;
+    @apply h-0.5 w-8 bg-ink;
   }
   .rule-fade {
-    @apply h-1 flex-1 bg-gradient-to-r from-red-500 to-transparent rounded-full;
+    @apply h-px flex-1 bg-line;
   }
   .row-num {
-    @apply text-xs text-gray-500 mt-0.5 w-6 text-right flex-shrink-0;
+    @apply text-xs text-muted mt-0.5 w-6 text-right flex-shrink-0 numerals;
   }
   .row {
     @apply flex items-start gap-2 text-sm;
   }
 
+  /* Poster section header: heading left, count/link right, 2px ink rule. */
+  .section-head {
+    @apply flex items-end justify-between gap-4 border-b-2 border-ink pb-2 mb-6;
+  }
+
   .btn-primary {
-    @apply bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold px-6 py-3 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-md hover:shadow-lg;
+    @apply bg-wax text-white font-semibold px-5 py-2.5 rounded hover:bg-wax-deep transition-colors;
   }
 
   .btn-secondary {
-    @apply bg-gray-800 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-900 transition-all duration-300;
+    @apply bg-ink text-white font-semibold px-5 py-2.5 rounded hover:bg-wax transition-colors;
   }
 
   .youtube-embed {
@@ -133,6 +201,6 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 0.75rem;
+    border-radius: 0.25rem;
   }
 }
