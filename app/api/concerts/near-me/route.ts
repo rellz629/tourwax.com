@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { artists, events, eventArtists, venues } from '@/db/schema';
 import { eq, and, gte, sql } from 'drizzle-orm';
-import { isPackage } from '@/lib/event-utils';
+import { isPackage, dedupeEvents } from '@/lib/event-utils';
 import { unwrapTrackingUrl } from '@/lib/affiliate';
 import { boundingBox, haversineDistance, getLocationFromHeaders } from '@/lib/geo';
 
@@ -102,8 +102,17 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // Collapse the same show reported by both Ticketmaster and SeatGeek (and
+  // package/VIP variants), the same way the homepage and city pages do.
+  const deduped = dedupeEvents(Array.from(grouped.values()), (r) => ({
+    name: r.eventName,
+    artistName: r.artistName,
+    city: r.venueCity,
+    eventDate: r.eventDate,
+  }));
+
   // Refine with true Haversine distance and filter by radius
-  const enriched = Array.from(grouped.values())
+  const enriched = deduped
     .map((row) => {
       const vLat = parseFloat(row.venueLat ?? '');
       const vLng = parseFloat(row.venueLng ?? '');
